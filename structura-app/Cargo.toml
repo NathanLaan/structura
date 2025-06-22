@@ -1,0 +1,9 @@
+[package]
+name = "structura-app"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Nathan Laan"]
+
+[dependencies]
+structura-lib = { path = "../structura-lib" }
