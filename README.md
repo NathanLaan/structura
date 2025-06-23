@@ -1,2 +1,2 @@
-# Rust MVC GUI
+# Structura Rust GUI Framework
 
