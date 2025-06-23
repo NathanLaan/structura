@@ -10,7 +10,7 @@ pub mod view;
 #[path = "mvc/message.rs"]
 pub mod message;
 
-pub mod control;
+pub mod component;
 
 pub mod event;
 mod geometry;

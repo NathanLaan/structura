@@ -1,7 +1,7 @@
 //!
 //! Rust MVC-UI
 //!
-use crate::control::Component;
+use crate::component::Component;
 use crate::message::Message;
 
 

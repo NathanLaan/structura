@@ -2,8 +2,9 @@
 //! Rust MVC-UI
 //!
 
-mod button;
-mod text;
+pub mod button;
+pub mod text;
+pub mod window;
 
 use crate::view::ViewContext;
 use crate::event::Event;
