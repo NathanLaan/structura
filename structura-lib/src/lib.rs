@@ -10,6 +10,9 @@ pub mod view;
 #[path = "mvc/message.rs"]
 pub mod message;
 
+#[path = "draw/primitive.rs"]
+pub mod primitive;
+
 pub mod component;
 
 pub mod event;
