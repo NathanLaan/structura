@@ -13,7 +13,7 @@ pub enum Event {
 
 // ///
 // /// Event holds a list of Callback<handler> references.
-// /// 
+// ///
 // pub struct Event<Handler> {
 //     event_callback_list: RefCell<Vec<Weak<Callback<Handler>>>>,
 // }
