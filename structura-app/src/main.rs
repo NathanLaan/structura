@@ -9,7 +9,8 @@ use std::rc::Rc;
 use structura_lib::view::View;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
-use winit::event::{Event, WindowEvent};
+use winit::dpi::PhysicalPosition;
+use winit::event::{ElementState, Event, MouseButton, WindowEvent};
 use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowAttributes, WindowId};
@@ -18,8 +19,43 @@ const WIDTH: u32 = 640;
 const HEIGHT: u32 = 480;
 const BOX_SIZE: u32 = 100; // Size of the square box
 
+struct Button {
+    x: usize,
+    y: usize,
+    width: usize,
+    height: usize,
+    color: u32,
+    label: &'static str,
+}
+
+impl Button {
+    fn contains(&self, px: usize, py: usize) -> bool {
+        px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
+    }
+
+    fn draw(&self, buffer: &mut [u32], screen_width: usize) {
+        for y in self.y..(self.y + self.height) {
+            for x in self.x..(self.x + self.width) {
+                let idx = y * screen_width + x;
+                buffer[idx] = self.color;
+            }
+        }
+    }
+}
+
 fn main() {
     let event_loop = EventLoop::new().unwrap();
+
+    let mut cursor_pos: Option<PhysicalPosition<f64>> = None;
+
+    let test_button = Button {
+        x: 100,
+        y: 100,
+        width: 150,
+        height: 50,
+        color: 0x0077CC, // blue
+        label: "Button!",
+    };
 
     let mut app = WinitAppBuilder::with_init(
         |elwt| {
@@ -61,14 +97,27 @@ fn main() {
 
                 let mut buffer = surface.buffer_mut().unwrap();
                 for y in 0..height {
-                    let blue = (255 * y / height) as u8; // fade from 0 to 255
-                    let color = (blue as u32) & 0x0000FF; // 0xRRGGBB
+                    // Vertical blue fade from 0 to 255
+                    //let blue = (255 * y / height) as u8;
+                    //let color = (blue as u32) & 0x0000FF;
 
                     for x in 0..width {
+                        // Diagonal fade from black to white
+                        let factor = ((x + y) as f32 / (width + height) as f32).clamp(0.0, 1.0);
+                        let gray = (factor * 255.0) as u8;
+                        let color = ((gray as u32) << 16) | ((gray as u32) << 8) | gray as u32;
                         let idx = y * width + x;
                         buffer[idx as usize] = color;
                     }
                 }
+
+                // Fill background
+                // for pixel in buffer.iter_mut() {
+                //     *pixel = 0x111111;
+                // }
+
+                // Draw the button
+                test_button.draw(&mut buffer, width as usize);
 
                 buffer.present().unwrap();
             }
@@ -78,6 +127,31 @@ fn main() {
             } if window_id == window.id() => {
                 elwt.exit();
             }
+
+            Event::WindowEvent {
+                event:
+                    WindowEvent::CursorMoved {
+                        device_id,
+                        position,
+                    },
+                window_id,
+            } if window_id == window.id() => {
+                cursor_pos = Some(position);
+            }
+
+            Event::WindowEvent {
+                event: WindowEvent::MouseInput { state, button, .. },
+                window_id,
+            } if window_id == window.id() => {
+                if let Some(pos) = cursor_pos {
+                    let x = pos.x as usize;
+                    let y = pos.y as usize;
+                    if test_button.contains(x, y) {
+                        println!("test_button clicked!");
+                    }
+                }
+            }
+
             _ => {}
         }
     });
