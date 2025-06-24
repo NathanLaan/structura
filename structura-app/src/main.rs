@@ -2,40 +2,39 @@
 //!
 //!
 
-use pixels::{Pixels, SurfaceTexture};
+use softbuffer::{Context, Surface};
+use std::marker::PhantomData;
+use std::num::NonZeroU32;
+use std::rc::Rc;
 use structura_lib::view::View;
+use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
 use winit::event::{Event, WindowEvent};
+use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::{ControlFlow, EventLoop};
-//use winit::WindowBuilder;
+use winit::window::{Window, WindowAttributes, WindowId};
 
 const WIDTH: u32 = 640;
 const HEIGHT: u32 = 480;
 const BOX_SIZE: u32 = 100; // Size of the square box
-
-use std::time::Duration;
-// use winit::{
-//     event::{Event, WindowEvent},
-//     event_loop::{ControlFlow, EventLoop},
-//     window::WindowBuilder,
-// };
-use raw_window_handle::{HasRawDisplayHandle, HasRawWindowHandle};
-use softbuffer::{Context, Surface};
 
 fn main() {
     let event_loop = EventLoop::new().unwrap();
 
     let mut app = WinitAppBuilder::with_init(
         |elwt| {
-            let window = {
-                let window = elwt.create_window(Window::default_attributes());
-                Rc::new(window.unwrap())
-            };
-            let context = softbuffer::Context::new(window.clone()).unwrap();
-
+            let window = Rc::new(
+                elwt.create_window(
+                    Window::default_attributes()
+                        .with_title("Structura.App")
+                        .with_inner_size(LogicalSize::new(WIDTH, HEIGHT)),
+                )
+                .unwrap(),
+            );
+            let context = Context::new(window.clone()).unwrap();
             (window, context)
         },
-        |_elwt, (window, context)| softbuffer::Surface::new(context, window.clone()).unwrap(),
+        |_elwt, (window, context)| Surface::new(context, window.clone()).unwrap(),
     )
     .with_event_handler(|(window, _context), surface, event, elwt| {
         elwt.set_control_flow(ControlFlow::Wait);
@@ -61,14 +60,14 @@ fn main() {
                     .unwrap();
 
                 let mut buffer = surface.buffer_mut().unwrap();
-                for index in 0..(width * height) {
-                    let y = index / width;
-                    let x = index % width;
-                    let red = x % 255;
-                    let green = y % 255;
-                    let blue = (x * y) % 255;
+                for y in 0..height {
+                    let blue = (255 * y / height) as u8; // fade from 0 to 255
+                    let color = (blue as u32) & 0x0000FF; // 0xRRGGBB
 
-                    buffer[index as usize] = blue | (green << 8) | (red << 16);
+                    for x in 0..width {
+                        let idx = y * width + x;
+                        buffer[idx as usize] = color;
+                    }
                 }
 
                 buffer.present().unwrap();
@@ -119,15 +118,6 @@ fn draw_box(frame: &mut [u8], frame_width: u32, frame_height: u32) {
         }
     }
 }
-
-/// Common boilerplate for setting up a winit application.
-use std::marker::PhantomData;
-use std::num::NonZeroU32;
-use std::rc::Rc;
-
-use winit::application::ApplicationHandler;
-use winit::event_loop::ActiveEventLoop;
-use winit::window::{Window, WindowAttributes, WindowId};
 
 /// Run a Winit application.
 #[allow(unused_mut)]
