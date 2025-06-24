@@ -7,11 +7,5 @@ authors = ["Nathan Laan"]
 
 [dependencies]
 structura-lib = { path = "../structura-lib" }
-winit = { version="0.30" } # Windowing library
-# Specify 'raw-window-handle-05' feature to align with winit 0.29's raw handle version
-pixels = { version = "0.15.0"}
-wgpu = "0.19" # pixels dependency for GPU rendering
-env_logger = "0.10" # For logging, useful for debugging
-log = "0.4" # Logging facade
+winit = { version="0.30" }
 softbuffer = "0.4.6"
-raw-window-handle = "0.6.2"

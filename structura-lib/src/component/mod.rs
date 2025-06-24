@@ -8,6 +8,13 @@ pub mod window;
 
 use crate::event::Event;
 use crate::view::ViewContext;
+use rusttype::Font;
+
+pub fn load_font() -> Font<'static> {
+    let font_data = include_bytes!("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
+    let font = Font::try_from_bytes(font_data as &[u8]).unwrap();
+    font
+}
 
 ///
 /// Root GUI Component.

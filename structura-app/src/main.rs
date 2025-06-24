@@ -6,6 +6,8 @@ use softbuffer::{Context, Surface};
 use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
+use structura_lib::component;
+use structura_lib::component::button::Button;
 use structura_lib::view::View;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
@@ -19,33 +21,7 @@ const WIDTH: u32 = 640;
 const HEIGHT: u32 = 480;
 const BOX_SIZE: u32 = 100; // Size of the square box
 
-struct Button {
-    x: usize,
-    y: usize,
-    width: usize,
-    height: usize,
-    color: u32,
-    label: &'static str,
-}
-
-impl Button {
-    fn contains(&self, px: usize, py: usize) -> bool {
-        px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
-    }
-
-    fn draw(&self, buffer: &mut [u32], screen_width: usize) {
-        for y in self.y..(self.y + self.height) {
-            for x in self.x..(self.x + self.width) {
-                let idx = y * screen_width + x;
-                buffer[idx] = self.color;
-            }
-        }
-    }
-}
-
 fn main() {
-    let event_loop = EventLoop::new().unwrap();
-
     let mut cursor_pos: Option<PhysicalPosition<f64>> = None;
 
     let test_button = Button {
@@ -55,6 +31,7 @@ fn main() {
         height: 50,
         color: 0x0077CC, // blue
         label: "Button!",
+        on_clicked: None,
     };
 
     let mut app = WinitAppBuilder::with_init(
@@ -117,7 +94,7 @@ fn main() {
                 // }
 
                 // Draw the button
-                test_button.draw(&mut buffer, width as usize);
+                test_button.draw(&mut buffer, width as usize, &component::load_font());
 
                 buffer.present().unwrap();
             }
@@ -156,6 +133,7 @@ fn main() {
         }
     });
 
+    let event_loop = EventLoop::new().unwrap();
     event_loop.run_app(&mut app).unwrap();
 }
 
