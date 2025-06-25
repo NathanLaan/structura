@@ -2,7 +2,12 @@
 //! Rust MVC-UI
 //!
 use crate::event::Callback;
+use crate::geometry::Size;
 use rusttype::{Font, Scale, point};
+
+//
+// TODO: Button State: Standard, MouseOver, MouseDown
+//
 
 pub struct Button {
     pub x: usize,
@@ -19,7 +24,13 @@ impl Button {
         px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
     }
 
-    pub fn draw(&self, buffer: &mut [u32], screen_width: usize, font: &Font<'_>) {
+    pub fn draw(
+        &self,
+        buffer: &mut [u32],
+        screen_width: usize,
+        screen_size: Size,
+        font: &Font<'_>,
+    ) {
         for y in self.y..(self.y + self.height) {
             for x in self.x..(self.x + self.width) {
                 let idx = y * screen_width + x;
@@ -28,7 +39,7 @@ impl Button {
         }
 
         // Text rendering parameters
-        let font_scale = Scale::uniform(20.0);
+        let font_scale = Scale::uniform(24.0);
         let v_metrics = font.v_metrics(font_scale);
 
         let start_x = self.x as i32 + 10;

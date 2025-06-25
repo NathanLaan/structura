@@ -8,6 +8,7 @@ use std::num::NonZeroU32;
 use std::rc::Rc;
 use structura_lib::component;
 use structura_lib::component::button::Button;
+use structura_lib::geometry::Size;
 use structura_lib::view::View;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
@@ -61,6 +62,13 @@ fn main() {
                     eprintln!("RedrawRequested fired before Resumed or after Suspended");
                     return;
                 };
+                let size = {
+                    let window_size = window.inner_size();
+                    Size {
+                        width: window_size.width as f32,
+                        height: window_size.height as f32,
+                    }
+                };
                 let (width, height) = {
                     let size = window.inner_size();
                     (size.width, size.height)
@@ -94,7 +102,7 @@ fn main() {
                 // }
 
                 // Draw the button
-                test_button.draw(&mut buffer, width as usize, &component::load_font());
+                test_button.draw(&mut buffer, width as usize, size, &component::load_font());
 
                 buffer.present().unwrap();
             }
