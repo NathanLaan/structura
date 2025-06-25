@@ -14,7 +14,9 @@ pub struct Button {
     pub y: usize,
     pub width: usize,
     pub height: usize,
-    pub color: u32,
+    pub background_color: u32,
+    pub border_color: u32,
+    pub border_width: usize,
     pub label: &'static str,
     pub on_clicked: Option<Callback<()>>,
 }
@@ -36,12 +38,8 @@ impl Button {
         font: &Font<'_>,
         font_size: f32,
     ) {
-        for y in self.y..(self.y + self.height) {
-            for x in self.x..(self.x + self.width) {
-                let idx = y * screen_width + x;
-                buffer[idx] = self.color;
-            }
-        }
+        self.fill_background(buffer, &screen_size);
+        self.draw_border(buffer, &screen_size);
 
         // Text rendering parameters
         let font_scale = Scale::uniform(font_size);
@@ -72,6 +70,44 @@ impl Button {
                         buffer[idx] = Self::basic_aa(buffer[idx], 0xFFFFFF, v);
                     }
                 });
+            }
+        }
+    }
+
+    ///
+    /// Fill in the background of the Button.
+    ///
+    fn fill_background(&self, buffer: &mut [u32], screen_size: &Size) {
+        let screen_width = screen_size.width as usize;
+        for y in self.y..(self.y + self.height) {
+            for x in self.x..(self.x + self.width) {
+                let idx = y * screen_width + x;
+                buffer[idx] = self.background_color;
+            }
+        }
+    }
+
+    ///
+    /// Draw the Button border.
+    ///
+    fn draw_border(&self, buffer: &mut [u32], screen_size: &Size) {
+        let bw = self.border_width;
+        let x0 = self.x;
+        let y0 = self.y;
+        let x1 = self.x + self.width;
+        let y1 = self.y + self.height;
+        let screen_width = screen_size.width as usize;
+        for y in y0..y1 {
+            for x in x0..x1 {
+                let is_top = y < y0 + bw;
+                let is_bottom = y >= y1 - bw;
+                let is_left = x < x0 + bw;
+                let is_right = x >= x1 - bw;
+
+                if is_top || is_bottom || is_left || is_right {
+                    let idx = y * screen_width + x;
+                    buffer[idx] = self.border_color;
+                }
             }
         }
     }

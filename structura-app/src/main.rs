@@ -30,7 +30,9 @@ fn main() {
         y: 100,
         width: 150,
         height: 50,
-        color: 0x0077CC, // blue
+        background_color: 0x0077CC, // blue
+        border_color: 0x000000,
+        border_width: 2,
         label: "Button!",
         on_clicked: None,
     };
