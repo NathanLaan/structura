@@ -79,10 +79,22 @@ impl Button {
     ///
     fn fill_background(&self, buffer: &mut [u32], screen_size: &Size) {
         let screen_width = screen_size.width as usize;
-        for y in self.y..(self.y + self.height) {
-            for x in self.x..(self.x + self.width) {
+        let screen_height = screen_size.height as usize;
+        let bw = self.border_width;
+        let x0 = self.x;
+        let y0 = self.y;
+        let x1 = self.x + self.width;
+        let y1 = self.y + self.height;
+        let fill_x0 = (x0 + bw).min(screen_width);
+        let fill_y0 = (y0 + bw).min(screen_height);
+        let fill_x1 = x1.saturating_sub(bw).min(screen_width);
+        let fill_y1 = y1.saturating_sub(bw).min(screen_height);
+        for y in fill_y0..fill_y1 {
+            for x in fill_x0..fill_x1 {
                 let idx = y * screen_width + x;
-                buffer[idx] = self.background_color;
+                if idx < buffer.len() {
+                    buffer[idx] = self.background_color;
+                }
             }
         }
     }
@@ -97,16 +109,23 @@ impl Button {
         let x1 = self.x + self.width;
         let y1 = self.y + self.height;
         let screen_width = screen_size.width as usize;
-        for y in y0..y1 {
-            for x in x0..x1 {
+        let screen_height = screen_size.height as usize;
+        let clipped_x0 = x0.min(screen_width);
+        let clipped_y0 = y0.min(screen_height);
+        let clipped_x1 = x1.min(screen_width);
+        let clipped_y1 = y1.min(screen_height);
+        for y in clipped_y0..clipped_y1 {
+            for x in clipped_x0..clipped_x1 {
                 let is_top = y < y0 + bw;
-                let is_bottom = y >= y1 - bw;
+                let is_bottom = y >= y1.saturating_sub(bw);
                 let is_left = x < x0 + bw;
-                let is_right = x >= x1 - bw;
+                let is_right = x >= x1.saturating_sub(bw);
 
                 if is_top || is_bottom || is_left || is_right {
                     let idx = y * screen_width + x;
-                    buffer[idx] = self.border_color;
+                    if idx < buffer.len() {
+                        buffer[idx] = self.border_color;
+                    }
                 }
             }
         }
