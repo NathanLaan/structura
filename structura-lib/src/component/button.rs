@@ -24,12 +24,17 @@ impl Button {
         px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
     }
 
+    ///
+    /// TODO: Font and font_size should come from theme/settings.
+    ///
+    ///
     pub fn draw(
         &self,
         buffer: &mut [u32],
         screen_width: usize,
         screen_size: Size,
         font: &Font<'_>,
+        font_size: f32,
     ) {
         for y in self.y..(self.y + self.height) {
             for x in self.x..(self.x + self.width) {
@@ -39,7 +44,7 @@ impl Button {
         }
 
         // Text rendering parameters
-        let font_scale = Scale::uniform(24.0);
+        let font_scale = Scale::uniform(font_size);
         let v_metrics = font.v_metrics(font_scale);
 
         let start_x = self.x as i32 + 10;
@@ -64,8 +69,7 @@ impl Button {
                         && (y as usize) < buffer.len() / screen_width
                     {
                         let idx = y as usize * screen_width + x as usize;
-                        let value = (v * 255.0) as u8;
-                        buffer[idx] = Self::blend_pixel(buffer[idx], value);
+                        buffer[idx] = Self::basic_aa(buffer[idx], 0xFFFFFF, v);
                     }
                 });
             }
@@ -76,6 +80,24 @@ impl Button {
         let r = brightness as u32;
         let g = brightness as u32;
         let b = brightness as u32;
+        (r << 16) | (g << 8) | b
+    }
+
+    fn basic_aa(bg: u32, fg: u32, alpha: f32) -> u32 {
+        let inv = 1.0 - alpha;
+
+        let br = ((bg >> 16) & 0xFF) as f32;
+        let bg_ = ((bg >> 8) & 0xFF) as f32;
+        let bb = (bg & 0xFF) as f32;
+
+        let fr = ((fg >> 16) & 0xFF) as f32;
+        let fg_ = ((fg >> 8) & 0xFF) as f32;
+        let fb = (fg & 0xFF) as f32;
+
+        let r = (br * inv + fr * alpha).round() as u32;
+        let g = (bg_ * inv + fg_ * alpha).round() as u32;
+        let b = (bb * inv + fb * alpha).round() as u32;
+
         (r << 16) | (g << 8) | b
     }
 }

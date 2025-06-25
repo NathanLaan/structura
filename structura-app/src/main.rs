@@ -102,7 +102,13 @@ fn main() {
                 // }
 
                 // Draw the button
-                test_button.draw(&mut buffer, width as usize, size, &component::load_font());
+                test_button.draw(
+                    &mut buffer,
+                    width as usize,
+                    size,
+                    &component::load_font(),
+                    32.0,
+                );
 
                 buffer.present().unwrap();
             }
