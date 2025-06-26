@@ -4,6 +4,12 @@
 use crate::component::Component;
 use crate::message::Message;
 
+pub struct BufferContext<'context> {
+    pub buffer: &'context mut [u32],
+    pub screen_width: usize,
+    pub screen_height: usize,
+}
+
 pub trait ViewContext {
     fn draw_text(&mut self, text: &str, x: i32, y: i32);
     fn draw_button(&mut self, label: &str, x: i32, y: i32, hovered: bool);

@@ -59,6 +59,7 @@ pub struct Button {
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
     pub on_clicked: Option<Callback<()>>,
+    pub was_clicked: bool,
 }
 
 impl Default for Button {
@@ -79,6 +80,7 @@ impl Default for Button {
                 text_color: 0x000000,
             },
             on_clicked: None,
+            was_clicked: false,
         }
     }
 }
@@ -94,6 +96,29 @@ impl Button {
 
     pub fn update_state(&mut self, cursor_x: usize, cursor_y: usize, mouse_pressed: bool) {
         if self.contains(cursor_x, cursor_y) {
+            self.component_state = if mouse_pressed {
+                ComponentState::Pressed
+            } else {
+                ComponentState::Hovered
+            };
+            return;
+        }
+        self.component_state = ComponentState::Active;
+    }
+
+    /// Update button based on mouse position and press state
+    pub fn update(
+        &mut self,
+        cursor_x: usize,
+        cursor_y: usize,
+        mouse_pressed: bool,
+        mouse_just_released: bool,
+    ) {
+        self.was_clicked = false;
+        if self.contains(cursor_x, cursor_y) {
+            if mouse_just_released {
+                self.was_clicked = true;
+            }
             self.component_state = if mouse_pressed {
                 ComponentState::Pressed
             } else {

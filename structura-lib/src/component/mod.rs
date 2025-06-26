@@ -6,8 +6,9 @@ pub mod button;
 pub mod text;
 pub mod window;
 
-use crate::event::Event;
-use crate::view::ViewContext;
+use crate::component::button::Button;
+use crate::event::{Event, MouseInput};
+use crate::view::{BufferContext, ViewContext};
 use rusttype::Font;
 
 pub fn load_font() -> Font<'static> {
@@ -31,6 +32,20 @@ pub struct ComponentStyle {
     pub border_color: u32,
 }
 
+/// Widget trait for all UI components
+pub trait Widget {
+    /// Called each frame to update state (e.g. hover, press)
+    fn update(&mut self, input: MouseInput);
+
+    /// Called each frame to render the widget to the pixel buffer
+    fn draw(&self, context: &mut BufferContext, font: &Font);
+
+    /// Optional click signal (for buttons, etc.)
+    fn was_clicked(&self) -> bool {
+        false
+    }
+}
+
 ///
 /// Root GUI Component.
 ///
@@ -44,6 +59,8 @@ pub trait Component<Message> {
     // /// Child controls.
     // ///
     // fn children() -> Vec<Self> where Self: Sized;
+
+    fn update(&mut self, input: MouseInput);
 
     ///
     /// Draw the component to the screen.
@@ -64,4 +81,79 @@ pub struct Column<Message> {
     /// The list of components contained within the `Column`.
     ///
     pub children: Vec<Box<dyn Component<Message>>>,
+}
+
+impl Widget for Button {
+    fn update(&mut self, input: MouseInput) {
+        self.was_clicked = false;
+        if let Some((mx, my)) = input.position {
+            if self.contains(mx, my) {
+                if input.just_released {
+                    self.was_clicked = true;
+                }
+                self.component_state = if input.pressed {
+                    ComponentState::Pressed
+                } else {
+                    ComponentState::Hovered
+                };
+                return;
+            }
+        }
+        self.component_state = ComponentState::Active;
+    }
+
+    fn draw(&self, context: &mut BufferContext, font: &Font) {
+        let bw = self.border_width;
+        let x0 = self.x.min(context.screen_width);
+        let y0 = self.y.min(context.screen_height);
+        let x1 = (self.x + self.width).min(context.screen_width);
+        let y1 = (self.y + self.height).min(context.screen_height);
+
+        let fill = self.background_color;
+
+        for y in y0..y1 {
+            for x in x0..x1 {
+                let idx = y * context.screen_width + x;
+                if x < x0 + bw || x >= x1 - bw || y < y0 + bw || y >= y1 - bw {
+                    context.buffer[idx] = self.border_color;
+                } else {
+                    context.buffer[idx] = self.background_color;
+                }
+            }
+        }
+        // Text drawing omitted for brevity
+    }
+
+    fn was_clicked(&self) -> bool {
+        self.was_clicked
+    }
+}
+
+/// Container node for building widget trees
+pub struct Container {
+    pub children: Vec<Box<dyn Widget>>,
+}
+
+impl Container {
+    pub fn new() -> Self {
+        Self { children: vec![] }
+    }
+
+    pub fn push<W: Widget + 'static>(&mut self, widget: W) {
+        self.children.push(Box::new(widget));
+    }
+}
+
+impl Widget for Container {
+    fn update(&mut self, input: MouseInput) {
+        for child in self.children.iter_mut() {
+            child.update(input);
+        }
+    }
+
+    fn draw(&self, context: &mut BufferContext, font: &Font) {
+        for child in self.children.iter() {
+            child.draw(context, font);
+        }
+    }
 }

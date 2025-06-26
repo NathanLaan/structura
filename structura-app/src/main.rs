@@ -144,6 +144,21 @@ fn main() {
                     },
                 window_id,
             } if window_id == window.id() => {
+                if let Some(pos) = cursor_pos {
+                    let x = pos.x as usize;
+                    let y = pos.y as usize;
+                    test_button.update(
+                        x,
+                        y,
+                        state == ElementState::Pressed,
+                        state == ElementState::Released,
+                    );
+                    // Handle click
+                    if test_button.was_clicked {
+                        println!("Button clicked!");
+                    }
+                }
+
                 match state {
                     ElementState::Pressed => {
                         mouse_pressed = true;

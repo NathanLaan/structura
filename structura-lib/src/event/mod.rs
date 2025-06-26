@@ -5,6 +5,14 @@
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
+/// Mouse state passed to widgets each frame
+#[derive(Clone, Copy, Debug)]
+pub struct MouseInput {
+    pub position: Option<(usize, usize)>,
+    pub pressed: bool,
+    pub just_released: bool,
+}
+
 #[derive(Debug)]
 pub enum Event {
     MouseClick { x: i32, y: i32 },
