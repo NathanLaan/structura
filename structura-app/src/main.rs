@@ -7,6 +7,7 @@ use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
 use structura_lib::component;
+use structura_lib::component::ComponentState;
 use structura_lib::component::button::Button;
 use structura_lib::geometry::Size;
 use structura_lib::view::View;
@@ -24,18 +25,10 @@ const BOX_SIZE: u32 = 100; // Size of the square box
 
 fn main() {
     let mut cursor_pos: Option<PhysicalPosition<f64>> = None;
+    let mut mouse_pressed = false;
 
-    let test_button = Button {
-        x: 100,
-        y: 100,
-        width: 150,
-        height: 50,
-        background_color: 0x0077CC, // blue
-        border_color: 0x000000,
-        border_width: 2,
-        label: "Button!",
-        on_clicked: None,
-    };
+    let mut test_button = Button::default();
+    test_button.set_text("Button!".to_string());
 
     let mut app = WinitAppBuilder::with_init(
         |elwt| {
@@ -103,7 +96,9 @@ fn main() {
                 //     *pixel = 0x111111;
                 // }
 
+                //
                 // Draw the button
+                //
                 test_button.draw(
                     &mut buffer,
                     width as usize,
@@ -130,18 +125,36 @@ fn main() {
                 window_id,
             } if window_id == window.id() => {
                 cursor_pos = Some(position);
+                if let Some(cursor_pos) = cursor_pos {
+                    test_button.update_state(
+                        cursor_pos.x as usize,
+                        cursor_pos.y as usize,
+                        mouse_pressed,
+                    );
+                    window.request_redraw();
+                }
             }
 
             Event::WindowEvent {
-                event: WindowEvent::MouseInput { state, button, .. },
+                event:
+                    WindowEvent::MouseInput {
+                        state,
+                        button: MouseButton::Left,
+                        ..
+                    },
                 window_id,
             } if window_id == window.id() => {
-                if let Some(pos) = cursor_pos {
-                    let x = pos.x as usize;
-                    let y = pos.y as usize;
-                    if test_button.contains(x, y) {
-                        println!("test_button clicked!");
+                if state == ElementState::Pressed {
+                    mouse_pressed = true;
+                    if let Some(pos) = cursor_pos {
+                        let x = pos.x as usize;
+                        let y = pos.y as usize;
+                        if test_button.contains(x, y) {
+                            println!("test_button clicked!");
+                        }
                     }
+                } else {
+                    mouse_pressed = false;
                 }
             }
 

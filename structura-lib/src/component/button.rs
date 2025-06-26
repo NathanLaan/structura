@@ -1,13 +1,51 @@
 //!
 //! Rust MVC-UI
 //!
+
+use crate::component::{ComponentState, ComponentStyle};
 use crate::event::Callback;
 use crate::geometry::Size;
 use rusttype::{Font, Scale, point};
+use std::ops::DerefMut;
+//
+// TODO: Button State: Idle, MouseOver, MouseDown
+//
 
+/*
+   pub(crate) fn button_style_primary(
+       theme: &Theme,
+       status: Status,
+   ) -> iced::widget::button::Style {
+       let palette = theme.extended_palette();
+       let background_color: Color = match status {
+           Status::Active => palette.primary.strong.color,
+           Status::Hovered => palette.primary.weak.color,
+           Status::Pressed => palette.primary.base.color,
+           Status::Disabled => palette.primary.weak.color,
+       };
+       iced::widget::button::Style {
+           text_color: theme.palette().text,
+           background: Some(background_color.into()),
+           ..iced::widget::button::Style::default()
+       }
+   }
+*/
+
+// pub struct ButtonStyle {
+//     pub idle: ButtonStateStyle,
+//     pub hovered: ButtonStateStyle,
+//     pub pressed: ButtonStateStyle,
+// }
 //
-// TODO: Button State: Standard, MouseOver, MouseDown
-//
+// impl ButtonStyle {
+//     pub fn for_state(&self, state: ButtonState) -> &ButtonStateStyle {
+//         match state {
+//             ButtonState::Idle => &self.idle,
+//             ButtonState::Hovered => &self.hovered,
+//             ButtonState::Pressed => &self.pressed,
+//         }
+//     }
+// }
 
 pub struct Button {
     pub x: usize,
@@ -17,13 +55,53 @@ pub struct Button {
     pub background_color: u32,
     pub border_color: u32,
     pub border_width: usize,
-    pub label: &'static str,
+    pub text: String,
+    pub component_state: ComponentState,
+    pub component_style: ComponentStyle,
     pub on_clicked: Option<Callback<()>>,
+}
+
+impl Default for Button {
+    fn default() -> Self {
+        Self {
+            x: 100,
+            y: 100,
+            width: 150,
+            height: 50,
+            background_color: 0x0077CC, // blue
+            border_color: 0x000000,
+            border_width: 2,
+            text: "button".to_string(),
+            component_state: ComponentState::Active,
+            component_style: ComponentStyle {
+                background_color: 0x0077CC,
+                border_color: 0x000000,
+                text_color: 0x000000,
+            },
+            on_clicked: None,
+        }
+    }
 }
 
 impl Button {
     pub fn contains(&self, px: usize, py: usize) -> bool {
         px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
+    }
+
+    pub fn set_text(&mut self, text: String) {
+        self.text = text;
+    }
+
+    pub fn update_state(&mut self, cursor_x: usize, cursor_y: usize, mouse_pressed: bool) {
+        if self.contains(cursor_x, cursor_y) {
+            self.component_state = if mouse_pressed {
+                ComponentState::Pressed
+            } else {
+                ComponentState::Hovered
+            };
+            return;
+        }
+        self.component_state = ComponentState::Active;
     }
 
     ///
@@ -50,7 +128,7 @@ impl Button {
 
         let glyphs: Vec<_> = font
             .layout(
-                self.label,
+                &self.text[..],
                 font_scale,
                 point(start_x as f32, start_y as f32),
             )
@@ -89,11 +167,17 @@ impl Button {
         let fill_y0 = (y0 + bw).min(screen_height);
         let fill_x1 = x1.saturating_sub(bw).min(screen_width);
         let fill_y1 = y1.saturating_sub(bw).min(screen_height);
+        let background_color = match self.component_state {
+            ComponentState::Active => self.component_style.background_color,
+            ComponentState::Hovered => 0x0033CC,
+            ComponentState::Pressed => 0x0033CC,
+            ComponentState::Disabled => 0xCCCCCC,
+        };
         for y in fill_y0..fill_y1 {
             for x in fill_x0..fill_x1 {
                 let idx = y * screen_width + x;
                 if idx < buffer.len() {
-                    buffer[idx] = self.background_color;
+                    buffer[idx] = background_color;
                 }
             }
         }

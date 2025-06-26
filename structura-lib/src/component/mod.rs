@@ -16,6 +16,21 @@ pub fn load_font() -> Font<'static> {
     font
 }
 
+#[derive(Debug, Clone)]
+pub enum ComponentState {
+    Active,
+    Hovered,
+    Pressed,
+    Disabled,
+}
+
+#[derive(Debug, Clone)]
+pub struct ComponentStyle {
+    pub text_color: u32,
+    pub background_color: u32,
+    pub border_color: u32,
+}
+
 ///
 /// Root GUI Component.
 ///
