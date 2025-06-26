@@ -28,11 +28,11 @@ fn main() {
     let mut cursor_pos: Option<PhysicalPosition<f64>> = None;
     let mut mouse_pressed = false;
 
-    let mut test_button = Button::default();
-    test_button.set_text("Button!".to_string());
+    let mut test_button1 = Button::default();
+    test_button1.set_text("Button 1!".to_string());
     let mut test_button2 = Button::default();
-    test_button2.set_text("Button!".to_string());
-    test_button2.x = test_button.x + test_button.width;
+    test_button2.set_text("Button 2!".to_string());
+    test_button2.x = test_button1.x + test_button1.width;
 
     let mut app = WinitAppBuilder::with_init(
         |elwt| {
@@ -104,7 +104,7 @@ fn main() {
                 //
                 // Draw the button
                 //
-                test_button.draw(
+                test_button1.draw(
                     &mut buffer,
                     size.width as usize,
                     size.clone(),
@@ -138,12 +138,12 @@ fn main() {
                 window_id,
             } if window_id == window.id() => {
                 cursor_pos = Some(position);
-                if let Some(cursor_pos) = cursor_pos {
-                    test_button.update_state(
-                        cursor_pos.x as usize,
-                        cursor_pos.y as usize,
-                        mouse_pressed,
-                    );
+                if let Some(pos) = cursor_pos {
+                    //
+                    // TODO: This is where we would crawl the component tree
+                    //
+                    test_button1.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
+                    test_button2.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
                     window.request_redraw();
                 }
             }
@@ -160,7 +160,8 @@ fn main() {
                 if let Some(pos) = cursor_pos {
                     let x = pos.x as usize;
                     let y = pos.y as usize;
-                    test_button.handle_mouse_event(x, y, state == ElementState::Pressed);
+                    test_button1.handle_mouse_event(x, y, state == ElementState::Pressed);
+                    test_button2.handle_mouse_event(x, y, state == ElementState::Pressed);
                     // Handle click
                     // if test_button.was_clicked {
                     //     println!("Button clicked!");

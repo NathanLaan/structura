@@ -113,10 +113,10 @@ impl Button {
     pub fn handle_mouse_event(&mut self, cursor_x: usize, cursor_y: usize, mouse_pressed: bool) {
         if self.contains(cursor_x, cursor_y) {
             if mouse_pressed {
-                println!("test_button pressed!");
+                println!("Button Pressed: {}", self.text);
                 self.component_state = ComponentState::Pressed;
             } else {
-                println!("test_button released!");
+                println!("Button Released: {}", self.text);
                 self.component_state = ComponentState::Hovered;
             }
         } else {
