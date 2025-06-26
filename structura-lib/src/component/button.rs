@@ -74,7 +74,7 @@ impl Default for Button {
             text: "button".to_string(),
             component_state: ComponentState::Active,
             component_style: ComponentStyle {
-                background_color: 0x0077CC,
+                background_color: 0x0033CC,
                 border_color: 0x000000,
                 text_color: 0x000000,
             },
@@ -169,8 +169,8 @@ impl Button {
         let fill_y1 = y1.saturating_sub(bw).min(screen_height);
         let background_color = match self.component_state {
             ComponentState::Active => self.component_style.background_color,
-            ComponentState::Hovered => 0x0033CC,
-            ComponentState::Pressed => 0x0033CC,
+            ComponentState::Hovered => 0x0077CC,
+            ComponentState::Pressed => 0x0099CC,
             ComponentState::Disabled => 0xCCCCCC,
         };
         for y in fill_y0..fill_y1 {

@@ -144,18 +144,32 @@ fn main() {
                     },
                 window_id,
             } if window_id == window.id() => {
-                if state == ElementState::Pressed {
-                    mouse_pressed = true;
-                    if let Some(pos) = cursor_pos {
-                        let x = pos.x as usize;
-                        let y = pos.y as usize;
-                        if test_button.contains(x, y) {
-                            println!("test_button clicked!");
+                match state {
+                    ElementState::Pressed => {
+                        mouse_pressed = true;
+                        if let Some(pos) = cursor_pos {
+                            let x = pos.x as usize;
+                            let y = pos.y as usize;
+                            test_button.component_state = ComponentState::Pressed;
+                            if test_button.contains(x, y) {
+                                println!("test_button pressed!");
+                            }
                         }
                     }
-                } else {
-                    mouse_pressed = false;
+                    ElementState::Released => {
+                        if let Some(pos) = cursor_pos {
+                            test_button.component_state = ComponentState::Active;
+                            let x = pos.x as usize;
+                            let y = pos.y as usize;
+                            if test_button.contains(x, y) {
+                                println!("test_button released!");
+                                test_button.component_state = ComponentState::Hovered;
+                            }
+                        }
+                        mouse_pressed = false;
+                    }
                 }
+                window.request_redraw();
             }
 
             _ => {}
