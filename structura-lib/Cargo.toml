@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 rusttype = "0.9"
+winit = { version="0.30" }
+softbuffer = "0.4.6"

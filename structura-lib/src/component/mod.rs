@@ -85,11 +85,11 @@ pub struct Column<Message> {
 
 impl Widget for Button {
     fn update(&mut self, input: MouseInput) {
-        self.was_clicked = false;
+        //self.was_clicked = false;
         if let Some((mx, my)) = input.position {
             if self.contains(mx, my) {
                 if input.just_released {
-                    self.was_clicked = true;
+                    //self.was_clicked = true;
                 }
                 self.component_state = if input.pressed {
                     ComponentState::Pressed
@@ -125,7 +125,8 @@ impl Widget for Button {
     }
 
     fn was_clicked(&self) -> bool {
-        self.was_clicked
+        //self.was_clicked
+        false
     }
 }
 

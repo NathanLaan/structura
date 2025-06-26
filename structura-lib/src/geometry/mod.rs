@@ -10,8 +10,8 @@ pub struct Point {
 
 #[derive(Debug, Clone)]
 pub struct Size {
-    pub width: f32,
-    pub height: f32,
+    pub width: u32,
+    pub height: u32,
 }
 
 #[derive(Debug, Clone)]
