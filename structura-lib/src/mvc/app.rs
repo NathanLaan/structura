@@ -103,7 +103,7 @@ where
 
 /// Run a Winit application.
 #[allow(unused_mut)]
-pub fn run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> + 'static) {
+pub fn _run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> + 'static) {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     event_loop.run_app(&mut app).unwrap();
 
@@ -113,7 +113,7 @@ pub fn run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> +
 
 /// Create a window from a set of window attributes.
 #[allow(dead_code)]
-pub fn make_window(
+pub fn _make_window(
     elwt: &ActiveEventLoop,
     f: impl FnOnce(WindowAttributes) -> WindowAttributes,
 ) -> Rc<Window> {
