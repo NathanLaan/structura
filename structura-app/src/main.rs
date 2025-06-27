@@ -34,23 +34,24 @@ fn main() {
     test_button2.set_text("Button 2!".to_string());
     test_button2.x = test_button1.x + test_button1.width;
 
-    let mut app = WinitAppBuilder::with_init(
-        |elwt| {
+    let mut app = WinitAppBuilder::create_winit_app(
+        |active_event_loop: &ActiveEventLoop| {
             let window = Rc::new(
-                elwt.create_window(
-                    Window::default_attributes()
-                        .with_title("Structura.App")
-                        .with_inner_size(LogicalSize::new(WIDTH, HEIGHT)),
-                )
-                .unwrap(),
+                active_event_loop
+                    .create_window(
+                        Window::default_attributes()
+                            .with_title("Structura.App")
+                            .with_inner_size(LogicalSize::new(WIDTH, HEIGHT)),
+                    )
+                    .unwrap(),
             );
             let context = Context::new(window.clone()).unwrap();
             (window, context)
         },
         |_elwt, (window, context)| Surface::new(context, window.clone()).unwrap(),
     )
-    .with_event_handler(|(window, _context), surface, event, elwt| {
-        elwt.set_control_flow(ControlFlow::Wait);
+    .with_event_handler(|(window, _context), surface, event, active_event_loop| {
+        active_event_loop.set_control_flow(ControlFlow::Wait);
 
         match event {
             Event::WindowEvent {
@@ -126,7 +127,7 @@ fn main() {
                 event: WindowEvent::CloseRequested,
                 window_id,
             } if window_id == window.id() => {
-                elwt.exit();
+                active_event_loop.exit();
             }
 
             Event::WindowEvent {

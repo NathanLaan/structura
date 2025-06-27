@@ -2,10 +2,12 @@
 //!
 //!
 
+use crate::component::Container;
 use crate::view::ViewContext;
+use softbuffer::Surface;
 use std::marker::PhantomData;
 use std::rc::Rc;
-use tokio::task::JoinHandle;
+use tokio::task::{JoinHandle, consume_budget};
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
 use winit::dpi::PhysicalPosition;
@@ -31,8 +33,10 @@ impl Application {
     // TODO: quit()
 }
 
-/// Easily constructable winit application.
-pub struct WinitApp<T, S, Init, InitSurface, Handler> {
+///
+/// Internal definition for constructable winit application.
+///
+pub struct WinitApp<ContainedState, SurfaceState, Init, InitSurface, Handler> {
     /// Closure to initialize `state`.
     init: Init,
 
@@ -43,18 +47,18 @@ pub struct WinitApp<T, S, Init, InitSurface, Handler> {
     event: Handler,
 
     /// Contained state.
-    state: Option<T>,
+    state: Option<ContainedState>,
 
     /// Contained surface state.
-    surface_state: Option<S>,
+    surface_state: Option<SurfaceState>,
 }
 
-impl<T, S, Init, InitSurface, Handler> ApplicationHandler
-    for WinitApp<T, S, Init, InitSurface, Handler>
+impl<ContainedState, SurfaceState, Init, InitSurface, Handler> ApplicationHandler
+    for WinitApp<ContainedState, SurfaceState, Init, InitSurface, Handler>
 where
-    Init: FnMut(&ActiveEventLoop) -> T,
-    InitSurface: FnMut(&ActiveEventLoop, &mut T) -> S,
-    Handler: FnMut(&mut T, Option<&mut S>, Event<()>, &ActiveEventLoop),
+    Init: FnMut(&ActiveEventLoop) -> ContainedState,
+    InitSurface: FnMut(&ActiveEventLoop, &mut ContainedState) -> SurfaceState,
+    Handler: FnMut(&mut ContainedState, Option<&mut SurfaceState>, Event<()>, &ActiveEventLoop),
 {
     fn resumed(&mut self, el: &ActiveEventLoop) {
         debug_assert!(self.state.is_none());
@@ -120,25 +124,26 @@ pub fn make_window(
     Rc::new(window.unwrap())
 }
 
-/// Builder that makes it so we don't have to name `T`.
-pub struct WinitAppBuilder<T, S, Init, InitSurface> {
+///
+/// Utility to encapsulate the process to stand up a WinitApp.
+///
+pub struct WinitAppBuilder<ContainedState, SurfaceState, Init, InitSurface> {
     /// Closure to initialize `state`.
     init: Init,
-
     /// Closure to initialize `surface_state`.
     init_surface: InitSurface,
-
     /// Eat the type parameter.
-    _marker: PhantomData<(Option<T>, Option<S>)>,
+    _marker: PhantomData<(Option<ContainedState>, Option<SurfaceState>)>,
 }
 
-impl<T, S, Init, InitSurface> WinitAppBuilder<T, S, Init, InitSurface>
+impl<ContainedState, SurfaceState, Init, InitSurface>
+    WinitAppBuilder<ContainedState, SurfaceState, Init, InitSurface>
 where
-    Init: FnMut(&ActiveEventLoop) -> T,
-    InitSurface: FnMut(&ActiveEventLoop, &mut T) -> S,
+    Init: FnMut(&ActiveEventLoop) -> ContainedState,
+    InitSurface: FnMut(&ActiveEventLoop, &mut ContainedState) -> SurfaceState,
 {
     /// Create with an "init" closure.
-    pub fn with_init(init: Init, init_surface: InitSurface) -> Self {
+    pub fn create_winit_app(init: Init, init_surface: InitSurface) -> Self {
         Self {
             init,
             init_surface,
@@ -147,19 +152,24 @@ where
     }
 
     /// Build a new application.
-    pub fn with_event_handler<F>(self, handler: F) -> WinitApp<T, S, Init, InitSurface, F>
+    pub fn with_event_handler<EventHandlerFunc>(
+        self,
+        handler: EventHandlerFunc,
+    ) -> WinitApp<ContainedState, SurfaceState, Init, InitSurface, EventHandlerFunc>
     where
-        F: FnMut(&mut T, Option<&mut S>, Event<()>, &ActiveEventLoop),
+        EventHandlerFunc:
+            FnMut(&mut ContainedState, Option<&mut SurfaceState>, Event<()>, &ActiveEventLoop),
     {
         WinitApp::new(self.init, self.init_surface, handler)
     }
 }
 
-impl<T, S, Init, InitSurface, Handler> WinitApp<T, S, Init, InitSurface, Handler>
+impl<ContainedState, SurfaceState, Init, InitSurface, Handler>
+    WinitApp<ContainedState, SurfaceState, Init, InitSurface, Handler>
 where
-    Init: FnMut(&ActiveEventLoop) -> T,
-    InitSurface: FnMut(&ActiveEventLoop, &mut T) -> S,
-    Handler: FnMut(&mut T, Option<&mut S>, Event<()>, &ActiveEventLoop),
+    Init: FnMut(&ActiveEventLoop) -> ContainedState,
+    InitSurface: FnMut(&ActiveEventLoop, &mut ContainedState) -> SurfaceState,
+    Handler: FnMut(&mut ContainedState, Option<&mut SurfaceState>, Event<()>, &ActiveEventLoop),
 {
     /// Create a new application.
     pub fn new(init: Init, init_surface: InitSurface, event: Handler) -> Self {
@@ -170,5 +180,35 @@ where
             state: None,
             surface_state: None,
         }
+    }
+}
+
+pub struct App {
+    pub root: Container,
+    pub cursor_pos: Option<(usize, usize)>,
+    pub mouse_pressed: bool,
+    active_event_loop: Option<ActiveEventLoop>,
+    //winit_app:
+}
+
+impl App {
+    ///
+    /// Constructor.
+    ///
+    pub fn new(root: Container) -> Self {
+        Self {
+            root,
+            cursor_pos: None,
+            mouse_pressed: false,
+            active_event_loop: None,
+        }
+    }
+
+    ///
+    /// Initialize and run.
+    ///
+    pub fn run(&mut self) {
+        //let event_loop = EventLoop::new().unwrap();
+        //event_loop.run_app(&mut app).unwrap();
     }
 }
