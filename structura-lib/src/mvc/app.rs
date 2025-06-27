@@ -55,9 +55,6 @@ impl Application {
     /// Initialize and run.
     ///
     pub fn run(&mut self) {
-        //let event_loop = EventLoop::new().unwrap();
-        //event_loop.run_app(&mut app).unwrap();
-
         let title = "Structura.App";
         let width = 1024.0;
         let height = 768.0;
@@ -65,7 +62,11 @@ impl Application {
         let mut app = WinitAppBuilder::create_winit_app(
             |elwt| Application::create_window_and_context(elwt, title, width, height),
             Application::create_surface,
-        );
+        )
+        .with_event_handler(Application::handle_events);
+
+        //let event_loop = EventLoop::new().unwrap();
+        //event_loop.run_app(&mut app).unwrap();
     }
 
     ///
@@ -100,7 +101,15 @@ impl Application {
         Surface::new(context, window.clone()).unwrap()
     }
 
-    pub fn handle_events() {}
+    fn handle_events(
+        state: &mut (Rc<Window>, Context<Rc<Window>>),
+        surface: Option<&mut Surface<Rc<Window>, Rc<Window>>>,
+        event: Event<()>,
+        elwt: &ActiveEventLoop,
+    ) {
+
+        //
+    }
 }
 
 ///
