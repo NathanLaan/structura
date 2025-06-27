@@ -6,11 +6,11 @@ use softbuffer::{Context, Surface};
 use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use structura_lib::app::WinitApp;
 use structura_lib::app::WinitAppBuilder;
+use structura_lib::app::{Application, WinitApp};
 use structura_lib::component;
-use structura_lib::component::ComponentState;
 use structura_lib::component::button::Button;
+use structura_lib::component::{ComponentState, Container};
 use structura_lib::geometry::Size;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
@@ -33,6 +33,12 @@ fn main() {
     let mut test_button2 = Button::default();
     test_button2.set_text("Button 2!".to_string());
     test_button2.x = test_button1.x + test_button1.width;
+
+    // let mut container = Container::new();
+    // container.push(test_button1);
+    // container.push(test_button2);
+    // let mut application = Application::new(container);
+    // application.run();
 
     let mut app = WinitAppBuilder::create_winit_app(
         |active_event_loop: &ActiveEventLoop| {

@@ -4,7 +4,7 @@
 
 use crate::component::Container;
 use crate::view::ViewContext;
-use softbuffer::Surface;
+use softbuffer::{Context, Surface};
 use std::marker::PhantomData;
 use std::rc::Rc;
 use tokio::task::{JoinHandle, consume_budget};
@@ -16,21 +16,91 @@ use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowAttributes, WindowId};
 
-pub struct ApplicationContext {
-    pub view_context: dyn ViewContext,
-}
-
+///
+/// Structure Application wrapper.
+///
 pub struct Application {
-    message_join_handle: JoinHandle<()>,
+    pub root: Container,
+    pub cursor_pos: Option<(usize, usize)>,
+    pub mouse_pressed: bool,
+    active_event_loop: Option<ActiveEventLoop>,
+    message_join_handle: Option<JoinHandle<()>>,
+    //view_context: dyn ViewContext,
     //
     // TODO: Separate UI rendering handle?
     //
+    //winit_app:
 }
 
 impl Application {
     // TODO: new()
     // TODO: run()
     // TODO: quit()
+
+    ///
+    /// Constructor.
+    ///
+    pub fn new(root: Container) -> Self {
+        Self {
+            root,
+            cursor_pos: None,
+            mouse_pressed: false,
+            active_event_loop: None,
+            message_join_handle: None,
+            //view_context: (),
+        }
+    }
+
+    ///
+    /// Initialize and run.
+    ///
+    pub fn run(&mut self) {
+        //let event_loop = EventLoop::new().unwrap();
+        //event_loop.run_app(&mut app).unwrap();
+
+        let title = "Structura.App";
+        let width = 1024.0;
+        let height = 768.0;
+
+        let mut app = WinitAppBuilder::create_winit_app(
+            |elwt| Application::create_window_and_context(elwt, title, width, height),
+            Application::create_surface,
+        );
+    }
+
+    ///
+    /// Used by `Application::run()` in the closure that calls `WinitAppBuilder::create_winit_app(...)`.
+    ///
+    fn create_window_and_context(
+        elwt: &ActiveEventLoop,
+        title: &str, // TODO: Move title+w+h to a new 'WindowSettings' struct
+        w: f64,
+        h: f64,
+    ) -> (Rc<Window>, Context<Rc<Window>>) {
+        let window = Rc::new(
+            elwt.create_window(
+                Window::default_attributes()
+                    .with_title(title)
+                    .with_inner_size(LogicalSize::new(w, h)),
+            )
+            .unwrap(),
+        );
+        let context = Context::new(window.clone()).unwrap();
+        (window, context)
+    }
+
+    ///
+    /// Used by `Application::run()` in the closure that calls `WinitAppBuilder::create_winit_app(...)`.
+    ///
+    fn create_surface(
+        _elwt: &ActiveEventLoop,
+        state: &mut (Rc<Window>, Context<Rc<Window>>),
+    ) -> Surface<Rc<Window>, Rc<Window>> {
+        let (window, context) = state;
+        Surface::new(context, window.clone()).unwrap()
+    }
+
+    pub fn handle_events() {}
 }
 
 ///
@@ -180,35 +250,5 @@ where
             state: None,
             surface_state: None,
         }
-    }
-}
-
-pub struct App {
-    pub root: Container,
-    pub cursor_pos: Option<(usize, usize)>,
-    pub mouse_pressed: bool,
-    active_event_loop: Option<ActiveEventLoop>,
-    //winit_app:
-}
-
-impl App {
-    ///
-    /// Constructor.
-    ///
-    pub fn new(root: Container) -> Self {
-        Self {
-            root,
-            cursor_pos: None,
-            mouse_pressed: false,
-            active_event_loop: None,
-        }
-    }
-
-    ///
-    /// Initialize and run.
-    ///
-    pub fn run(&mut self) {
-        //let event_loop = EventLoop::new().unwrap();
-        //event_loop.run_app(&mut app).unwrap();
     }
 }
