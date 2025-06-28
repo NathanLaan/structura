@@ -1,37 +1,13 @@
 //!
-//! Rust MVC-UI
+//! # Structura Component: Button.
+//!
+//! A basic button with text.
 //!
 
 use crate::component::{ComponentState, ComponentStyle, Widget};
 use crate::event::{Callback, MouseInput};
-use crate::geometry::Size;
 use crate::view::BufferContext;
-use rusttype::{Font, Scale, point};
-use std::ops::DerefMut;
-use winit::event::ElementState;
-//
-// TODO: Button State: Idle, MouseOver, MouseDown
-//
-
-/*
-   pub(crate) fn button_style_primary(
-       theme: &Theme,
-       status: Status,
-   ) -> iced::widget::button::Style {
-       let palette = theme.extended_palette();
-       let background_color: Color = match status {
-           Status::Active => palette.primary.strong.color,
-           Status::Hovered => palette.primary.weak.color,
-           Status::Pressed => palette.primary.base.color,
-           Status::Disabled => palette.primary.weak.color,
-       };
-       iced::widget::button::Style {
-           text_color: theme.palette().text,
-           background: Some(background_color.into()),
-           ..iced::widget::button::Style::default()
-       }
-   }
-*/
+use rusttype::{Scale, point};
 
 // pub struct ButtonStyle {
 //     pub idle: ButtonStateStyle,
@@ -49,6 +25,9 @@ use winit::event::ElementState;
 //     }
 // }
 
+///
+/// A basic Button component with text.
+///
 pub struct Button {
     pub x: usize,
     pub y: usize,
@@ -61,7 +40,6 @@ pub struct Button {
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
     pub on_clicked: Option<Callback<()>>,
-    //pub was_clicked: bool,
 }
 
 impl Default for Button {
@@ -82,7 +60,6 @@ impl Default for Button {
                 text_color: 0x000000,
             },
             on_clicked: None,
-            //was_clicked: false,
         }
     }
 }
@@ -130,7 +107,6 @@ impl Button {
     ///
     ///
     fn draw_button(&self, context: &mut BufferContext) {
-        //fn draw_button(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
         self.fill_background(context);
         self.draw_border(context);
 
@@ -284,9 +260,6 @@ impl Widget for Button {
     fn update(&mut self, input: MouseInput) {
         //self.was_clicked = false;
         if self.contains(input.position.x as usize, input.position.y as usize) {
-            if input.just_released {
-                //self.was_clicked = true;
-            }
             self.component_state = if input.pressed {
                 ComponentState::Pressed
             } else {
@@ -302,10 +275,5 @@ impl Widget for Button {
 
     fn draw(&self, context: &mut BufferContext) {
         self.draw_button(context);
-    }
-
-    fn was_clicked(&self) -> bool {
-        //self.was_clicked
-        false
     }
 }
