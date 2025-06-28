@@ -3,6 +3,7 @@
 //!
 
 pub mod button;
+mod layout;
 pub mod text;
 pub mod window;
 
@@ -40,10 +41,9 @@ pub trait Widget {
     /// Called each frame to render the widget to the pixel buffer
     fn draw(&self, context: &mut BufferContext);
 
-    /// Optional click signal (for buttons, etc.)
-    fn was_clicked(&self) -> bool {
-        false
-    }
+    fn set_position(&mut self, x: usize, y: usize) {}
+
+    fn set_size(&mut self, width: usize, height: usize) {}
 }
 
 ///
