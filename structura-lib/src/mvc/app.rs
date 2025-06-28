@@ -5,8 +5,8 @@
 use crate::component;
 use crate::component::Container;
 use crate::geometry::Size;
-use crate::view::ViewContext;
-use softbuffer::{Context, Surface};
+use crate::view::{BufferContext, ViewContext};
+use softbuffer::{Buffer, Context, Surface};
 use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
@@ -66,7 +66,11 @@ impl Application {
             |elwt| Application::create_window_and_context(elwt, title, width, height),
             Application::create_surface,
         )
-        .with_event_handler(Application::handle_events);
+        //.with_event_handler(Application::handle_events);
+        .with_event_handler({
+            let this = self; // capture mutable self
+            move |state, surface, event, elwt| this.handle_events(state, surface, event, elwt)
+        });
 
         let event_loop = EventLoop::new().unwrap();
         event_loop.run_app(&mut app).unwrap();
@@ -105,6 +109,7 @@ impl Application {
     }
 
     fn handle_events(
+        self: &mut Self,
         state: &mut (Rc<Window>, Context<Rc<Window>>),
         surface: Option<&mut Surface<Rc<Window>, Rc<Window>>>,
         event: Event<()>,
@@ -139,7 +144,7 @@ impl Application {
                     )
                     .unwrap();
 
-                let mut buffer = surface.buffer_mut().unwrap();
+                let mut buffer: Buffer<Rc<Window>, Rc<Window>> = surface.buffer_mut().unwrap();
                 for y in 0..size.height {
                     // Vertical blue fade from 0 to 255
                     //let blue = (255 * y / height) as u8;
@@ -161,6 +166,18 @@ impl Application {
                 //     *pixel = 0x111111;
                 // }
 
+                let mut buffer_context = BufferContext {
+                    buffer: buffer,
+                    screen_width: size.width as usize,
+                    screen_height: size.height as usize,
+                    font: &component::load_font(),
+                    font_size: 32.0,
+                };
+
+                for comp in &self.root.children {
+                    comp.draw(&mut buffer_context);
+                }
+
                 //
                 // Draw the button
                 //
@@ -179,7 +196,7 @@ impl Application {
                 //     32.0,
                 // );
 
-                buffer.present().unwrap();
+                buffer_context.buffer.present().unwrap();
             }
 
             Event::WindowEvent {

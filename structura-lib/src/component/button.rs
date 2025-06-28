@@ -128,14 +128,7 @@ impl Button {
     /// TODO: Font and font_size should come from theme/settings.
     ///
     ///
-    pub fn draw(
-        &self,
-        buffer: &mut [u32],
-        screen_width: usize,
-        screen_size: Size,
-        font: &Font<'_>,
-        font_size: f32,
-    ) {
+    pub fn draw(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
         self.fill_background(buffer, &screen_size);
         self.draw_border(buffer, &screen_size);
 
@@ -143,9 +136,14 @@ impl Button {
         let font_scale = Scale::uniform(font_size);
         let v_metrics = font.v_metrics(font_scale);
 
+        let screen_width = screen_size.width as usize;
+
         let start_x = self.x as i32 + 10;
         let start_y = self.y as i32 + (self.height as i32 / 2) + (v_metrics.ascent / 2.0) as i32;
 
+        //
+        // TODO: Move to text rendering component
+        //
         let glyphs: Vec<_> = font
             .layout(
                 &self.text[..],
@@ -160,7 +158,7 @@ impl Button {
                     let x = gx as i32 + bb.min.x;
                     let y = gy as i32 + bb.min.y;
                     if x >= 0
-                        && x < screen_width as i32
+                        && x < screen_size.width as i32
                         && y >= 0
                         && (y as usize) < buffer.len() / screen_width
                     {

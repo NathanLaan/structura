@@ -38,7 +38,7 @@ pub trait Widget {
     fn update(&mut self, input: MouseInput);
 
     /// Called each frame to render the widget to the pixel buffer
-    fn draw(&self, context: &mut BufferContext, font: &Font);
+    fn draw(&self, context: &mut BufferContext);
 
     /// Optional click signal (for buttons, etc.)
     fn was_clicked(&self) -> bool {
@@ -102,7 +102,7 @@ impl Widget for Button {
         self.component_state = ComponentState::Active;
     }
 
-    fn draw(&self, context: &mut BufferContext, font: &Font) {
+    fn draw(&self, context: &mut BufferContext) {
         let bw = self.border_width;
         let x0 = self.x.min(context.screen_width);
         let y0 = self.y.min(context.screen_height);
@@ -152,9 +152,9 @@ impl Widget for Container {
         }
     }
 
-    fn draw(&self, context: &mut BufferContext, font: &Font) {
+    fn draw(&self, context: &mut BufferContext) {
         for child in self.children.iter() {
-            child.draw(context, font);
+            child.draw(context);
         }
     }
 }

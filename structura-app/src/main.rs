@@ -39,15 +39,16 @@ fn main() {
     //
     // TODO: Setup UI "tree".
     //
-    // let mut container = Container::new();
-    // // container.push(test_button1);
-    // // container.push(test_button2);
-    // let mut application = Application::new(container);
-    // //
-    // // TODO: Setup message-handle functionality
-    // //
-    // application.run();
+    let mut container = Container::new();
+    container.push(test_button1);
+    container.push(test_button2);
+    let mut application = Application::new(container);
+    //
+    // TODO: Setup message-handle functionality
+    //
+    application.run();
 
+    /*
     let mut app = WinitAppBuilder::create_winit_app(
         |active_event_loop: &ActiveEventLoop| {
             let window = Rc::new(
@@ -217,6 +218,8 @@ fn main() {
 
     let event_loop = EventLoop::new().unwrap();
     event_loop.run_app(&mut app).unwrap();
+
+    */
 }
 
 ///
