@@ -37,10 +37,15 @@ fn main() {
     //
     // TODO: Working, without controls, but causes the code below to panic().
     //
+    // TODO: Setup UI "tree".
+    //
     // let mut container = Container::new();
     // // container.push(test_button1);
     // // container.push(test_button2);
     // let mut application = Application::new(container);
+    // //
+    // // TODO: Setup message-handle functionality
+    // //
     // application.run();
 
     let mut app = WinitAppBuilder::create_winit_app(
