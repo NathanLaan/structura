@@ -17,12 +17,13 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 
 ## Plan
 
-- [ ] Buttons
-- [ ] Text fields
-- [ ] Theme
-- [ ] Style support
-- [ ] Separate component properties
-- [ ] Model
-- [ ] View
-- [ ] Controller
-- [ ] Application
+- [ ] Buttons.
+- [ ] Text fields.
+- [ ] Theme.
+- [ ] Style support.
+- [ ] Model.
+- [ ] View.
+- [ ] Controller.
+- [ ] Application.
+- [ ] Event or Message system.
+- [ ] Trait-based API for creating Structura-based apps.
