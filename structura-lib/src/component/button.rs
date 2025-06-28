@@ -282,30 +282,7 @@ impl Widget for Button {
     }
 
     fn draw(&self, context: &mut BufferContext) {
-        //pub fn draw(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
         self.draw_button(context);
-
-        // let w = context.screen_size.width as usize;
-        // let h = context.screen_size.height as usize;
-        //
-        // let bw = self.border_width;
-        // let x0 = self.x.min(w);
-        // let y0 = self.y.min(h);
-        // let x1 = (self.x + self.width).min(w);
-        // let y1 = (self.y + self.height).min(h);
-        //
-        // let fill = self.background_color;
-        //
-        // for y in y0..y1 {
-        //     for x in x0..x1 {
-        //         let idx = y * w + x;
-        //         if x < x0 + bw || x >= x1 - bw || y < y0 + bw || y >= y1 - bw {
-        //             context.buffer[idx] = self.border_color;
-        //         } else {
-        //             context.buffer[idx] = self.background_color;
-        //         }
-        //     }
-        // }
     }
 
     fn was_clicked(&self) -> bool {
