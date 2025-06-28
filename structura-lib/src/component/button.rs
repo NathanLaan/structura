@@ -40,6 +40,8 @@ pub struct Button {
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
     pub on_clicked: Option<Callback<()>>,
+    /// Optional event handler
+    on_click: Option<Box<dyn FnMut()>>,
 }
 
 impl Default for Button {
@@ -59,6 +61,7 @@ impl Default for Button {
                 border_color: 0x000000,
                 text_color: 0x000000,
             },
+            on_click: None,
             on_clicked: None,
         }
     }
@@ -237,7 +240,7 @@ impl Button {
         (r << 16) | (g << 8) | b
     }
 
-    fn handle_event(&self) {
+    fn handle_event(&mut self) {
         match self.component_state {
             ComponentState::Active => {}
             ComponentState::Hovered => {}
@@ -248,11 +251,22 @@ impl Button {
         }
     }
 
-    fn event_button_pressed(&self) {
+    fn event_button_pressed(&mut self) {
         println!("Button Pressed {}", self.text);
+        if let Some(handler) = self.on_click.as_mut() {
+            handler(); // 🔥 callback fired
+        }
     }
     fn event_button_released(&self) {
         println!("Button Released {}", self.text);
+    }
+
+    ///
+    /// Add event handler.
+    ///
+    pub fn on_click<F: FnMut() + 'static>(mut self, f: F) -> Self {
+        self.on_click = Some(Box::new(f));
+        self
     }
 }
 
