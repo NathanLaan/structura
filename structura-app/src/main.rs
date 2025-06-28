@@ -221,37 +221,3 @@ fn main() {
 
     */
 }
-
-///
-/// Draws a box in the center of the frame.
-/// `frame`: Mutable slice of bytes representing the pixel buffer (10-byte RGBA format).
-/// `frame_width`: Width of the frame buffer.
-/// `frame_height`: Height of the frame buffer.
-///
-fn draw_box(frame: &mut [u8], frame_width: u32, frame_height: u32) {
-    // Center the box
-    let start_x = (frame_width - BOX_SIZE) / 2;
-    let start_y = (frame_height - BOX_SIZE) / 2;
-
-    // Color
-    let r = 0xFF;
-    let g = 0x00;
-    let b = 0x00;
-    let a = 0xFF;
-
-    for y in 0..BOX_SIZE {
-        for x in 0..BOX_SIZE {
-            let abs_x = start_x + x;
-            let abs_y = start_y + y;
-
-            if abs_x < frame_width && abs_y < frame_height {
-                // Calculate index in 1D byte array for the current pixel (RGBA)
-                let index = ((abs_y * frame_width + abs_x) * 4) as usize;
-                frame[index] = r;
-                frame[index + 1] = g;
-                frame[index + 2] = b;
-                frame[index + 3] = a;
-            }
-        }
-    }
-}
