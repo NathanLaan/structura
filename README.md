@@ -18,6 +18,7 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 ## Plan
 
 - [ ] Buttons.
+- [x] Button on_click event handler.
 - [ ] Text fields.
 - [ ] Layouts.
 - [ ] Theme.
