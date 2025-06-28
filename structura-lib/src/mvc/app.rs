@@ -24,7 +24,7 @@ use winit::window::{Window, WindowAttributes, WindowId};
 ///
 pub struct Application {
     pub root: Container,
-    pub cursor_pos: Option<(usize, usize)>,
+    pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
     active_event_loop: Option<ActiveEventLoop>,
     message_join_handle: Option<JoinHandle<()>>,
@@ -210,9 +210,12 @@ impl Application {
                     just_released: false,
                 };
 
+                self.cursor_pos = Some(mouse_input.position);
+
                 for comp in &mut self.root.children {
                     comp.update(mouse_input);
                 }
+                window.request_redraw();
 
                 // cursor_pos = Some(position);
                 // if let Some(pos) = cursor_pos {
@@ -234,42 +237,26 @@ impl Application {
                     },
                 window_id,
             } if window_id == window.id() => {
-                // if let Some(pos) = cursor_pos {
-                //     let x = pos.x as usize;
-                //     let y = pos.y as usize;
-                //     test_button1.handle_mouse_event(x, y, state == ElementState::Pressed);
-                //     test_button2.handle_mouse_event(x, y, state == ElementState::Pressed);
-                //     // Handle click
-                //     // if test_button.was_clicked {
-                //     //     println!("Button clicked!");
-                //     // }
-                // }
+                if let Some(pos) = self.cursor_pos {
+                    let mut mouse_input = crate::event::MouseInput {
+                        position: Point { x: pos.x, y: pos.y },
+                        pressed: true,
+                        just_released: false,
+                    };
 
-                // match state {
-                //     ElementState::Pressed => {
-                //         mouse_pressed = true;
-                //         if let Some(pos) = cursor_pos {
-                //             let x = pos.x as usize;
-                //             let y = pos.y as usize;
-                //             test_button.component_state = ComponentState::Pressed;
-                //             if test_button.contains(x, y) {
-                //                 println!("test_button pressed!");
-                //             }
-                //         }
-                //     }
-                //     ElementState::Released => {
-                //         if let Some(pos) = cursor_pos {
-                //             test_button.component_state = ComponentState::Active;
-                //             let x = pos.x as usize;
-                //             let y = pos.y as usize;
-                //             if test_button.contains(x, y) {
-                //                 println!("test_button released!");
-                //                 test_button.component_state = ComponentState::Hovered;
-                //             }
-                //         }
-                //         mouse_pressed = false;
-                //     }
-                // }
+                    // TODO: This could be a lot more compact... `mouse_input.pressed = ...`
+                    match state {
+                        ElementState::Pressed => {
+                            mouse_input.pressed = true;
+                        }
+                        ElementState::Released => {
+                            mouse_input.pressed = false;
+                        }
+                    }
+                    for comp in &mut self.root.children {
+                        comp.update(mouse_input);
+                    }
+                }
                 window.request_redraw();
             }
 

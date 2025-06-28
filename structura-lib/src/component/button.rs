@@ -260,6 +260,24 @@ impl Button {
 
         (r << 16) | (g << 8) | b
     }
+
+    fn handle_event(&self) {
+        match self.component_state {
+            ComponentState::Active => {}
+            ComponentState::Hovered => {}
+            ComponentState::Pressed => {
+                self.event_button_pressed();
+            }
+            ComponentState::Disabled => {}
+        }
+    }
+
+    fn event_button_pressed(&self) {
+        println!("Button Pressed {}", self.text);
+    }
+    fn event_button_released(&self) {
+        println!("Button Released {}", self.text);
+    }
 }
 
 impl Widget for Button {
@@ -274,6 +292,9 @@ impl Widget for Button {
             } else {
                 ComponentState::Hovered
             };
+            if input.pressed {
+                self.handle_event();
+            }
             return;
         }
         self.component_state = ComponentState::Active;
