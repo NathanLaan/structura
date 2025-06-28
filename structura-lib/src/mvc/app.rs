@@ -2,10 +2,13 @@
 //!
 //!
 
+use crate::component;
 use crate::component::Container;
+use crate::geometry::Size;
 use crate::view::ViewContext;
 use softbuffer::{Context, Surface};
 use std::marker::PhantomData;
+use std::num::NonZeroU32;
 use std::rc::Rc;
 use tokio::task::{JoinHandle, consume_budget};
 use winit::application::ApplicationHandler;
@@ -65,8 +68,8 @@ impl Application {
         )
         .with_event_handler(Application::handle_events);
 
-        //let event_loop = EventLoop::new().unwrap();
-        //event_loop.run_app(&mut app).unwrap();
+        let event_loop = EventLoop::new().unwrap();
+        event_loop.run_app(&mut app).unwrap();
     }
 
     ///
@@ -105,10 +108,156 @@ impl Application {
         state: &mut (Rc<Window>, Context<Rc<Window>>),
         surface: Option<&mut Surface<Rc<Window>, Rc<Window>>>,
         event: Event<()>,
-        elwt: &ActiveEventLoop,
+        active_event_loop: &ActiveEventLoop,
     ) {
+        let window = &state.0;
 
-        //
+        match event {
+            Event::WindowEvent {
+                window_id,
+                event: WindowEvent::RedrawRequested,
+            } if window_id == window.id() => {
+                let Some(surface) = surface else {
+                    eprintln!("RedrawRequested fired before Resumed or after Suspended");
+                    return;
+                };
+                let size = {
+                    let window_size = window.inner_size();
+                    Size {
+                        width: window_size.width,
+                        height: window_size.height,
+                    }
+                };
+                // let (width, height) = {
+                //     let size = window.inner_size();
+                //     (size.width, size.height)
+                // };
+                surface
+                    .resize(
+                        NonZeroU32::new(size.width).unwrap(),
+                        NonZeroU32::new(size.height).unwrap(),
+                    )
+                    .unwrap();
+
+                let mut buffer = surface.buffer_mut().unwrap();
+                for y in 0..size.height {
+                    // Vertical blue fade from 0 to 255
+                    //let blue = (255 * y / height) as u8;
+                    //let color = (blue as u32) & 0x0000FF;
+
+                    for x in 0..size.width {
+                        // Diagonal fade from black to white
+                        let factor =
+                            ((x + y) as f32 / (size.width + size.height) as f32).clamp(0.0, 1.0);
+                        let gray = (factor * 255.0) as u8;
+                        let color = ((gray as u32) << 16) | ((gray as u32) << 8) | gray as u32;
+                        let idx = y * size.width + x;
+                        buffer[idx as usize] = color;
+                    }
+                }
+
+                // Fill background
+                // for pixel in buffer.iter_mut() {
+                //     *pixel = 0x111111;
+                // }
+
+                //
+                // Draw the button
+                //
+                // test_button1.draw(
+                //     &mut buffer,
+                //     size.width as usize,
+                //     size.clone(),
+                //     &component::load_font(),
+                //     32.0,
+                // );
+                // test_button2.draw(
+                //     &mut buffer,
+                //     size.width as usize,
+                //     size.clone(),
+                //     &component::load_font(),
+                //     32.0,
+                // );
+
+                buffer.present().unwrap();
+            }
+
+            Event::WindowEvent {
+                event: WindowEvent::CloseRequested,
+                window_id,
+            } if window_id == window.id() => {
+                active_event_loop.exit();
+            }
+
+            Event::WindowEvent {
+                event:
+                    WindowEvent::CursorMoved {
+                        device_id,
+                        position,
+                    },
+                window_id,
+            } if window_id == window.id() => {
+                // cursor_pos = Some(position);
+                // if let Some(pos) = cursor_pos {
+                //     //
+                //     // TODO: This is where we would crawl the component tree
+                //     //
+                //     test_button1.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
+                //     test_button2.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
+                //     window.request_redraw();
+                // }
+            }
+
+            Event::WindowEvent {
+                event:
+                    WindowEvent::MouseInput {
+                        state,
+                        button: MouseButton::Left,
+                        ..
+                    },
+                window_id,
+            } if window_id == window.id() => {
+                // if let Some(pos) = cursor_pos {
+                //     let x = pos.x as usize;
+                //     let y = pos.y as usize;
+                //     test_button1.handle_mouse_event(x, y, state == ElementState::Pressed);
+                //     test_button2.handle_mouse_event(x, y, state == ElementState::Pressed);
+                //     // Handle click
+                //     // if test_button.was_clicked {
+                //     //     println!("Button clicked!");
+                //     // }
+                // }
+
+                // match state {
+                //     ElementState::Pressed => {
+                //         mouse_pressed = true;
+                //         if let Some(pos) = cursor_pos {
+                //             let x = pos.x as usize;
+                //             let y = pos.y as usize;
+                //             test_button.component_state = ComponentState::Pressed;
+                //             if test_button.contains(x, y) {
+                //                 println!("test_button pressed!");
+                //             }
+                //         }
+                //     }
+                //     ElementState::Released => {
+                //         if let Some(pos) = cursor_pos {
+                //             test_button.component_state = ComponentState::Active;
+                //             let x = pos.x as usize;
+                //             let y = pos.y as usize;
+                //             if test_button.contains(x, y) {
+                //                 println!("test_button released!");
+                //                 test_button.component_state = ComponentState::Hovered;
+                //             }
+                //         }
+                //         mouse_pressed = false;
+                //     }
+                // }
+                window.request_redraw();
+            }
+
+            _ => {}
+        }
     }
 }
 
