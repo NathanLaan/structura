@@ -2,13 +2,14 @@
 //! Rust MVC-UI
 //!
 
+use crate::geometry::Point;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 /// Mouse state passed to widgets each frame
 #[derive(Clone, Copy, Debug)]
 pub struct MouseInput {
-    pub position: Option<(usize, usize)>,
+    pub position: Point,
     pub pressed: bool,
     pub just_released: bool,
 }

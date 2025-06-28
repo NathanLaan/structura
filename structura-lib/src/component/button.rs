@@ -265,18 +265,16 @@ impl Button {
 impl Widget for Button {
     fn update(&mut self, input: MouseInput) {
         //self.was_clicked = false;
-        if let Some((mx, my)) = input.position {
-            if self.contains(mx, my) {
-                if input.just_released {
-                    //self.was_clicked = true;
-                }
-                self.component_state = if input.pressed {
-                    ComponentState::Pressed
-                } else {
-                    ComponentState::Hovered
-                };
-                return;
+        if self.contains(input.position.x as usize, input.position.y as usize) {
+            if input.just_released {
+                //self.was_clicked = true;
             }
+            self.component_state = if input.pressed {
+                ComponentState::Pressed
+            } else {
+                ComponentState::Hovered
+            };
+            return;
         }
         self.component_state = ComponentState::Active;
     }

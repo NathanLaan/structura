@@ -4,7 +4,7 @@
 
 use crate::component;
 use crate::component::Container;
-use crate::geometry::Size;
+use crate::geometry::{Point, Size};
 use crate::view::{BufferContext, ViewContext};
 use softbuffer::{Buffer, Context, Surface};
 use std::marker::PhantomData;
@@ -173,27 +173,12 @@ impl Application {
                     font_size: 32.0,
                 };
 
+                //
+                // Draw all components
+                //
                 for comp in &self.root.children {
                     comp.draw(&mut buffer_context);
                 }
-
-                //
-                // Draw the button
-                //
-                // test_button1.draw(
-                //     &mut buffer,
-                //     size.width as usize,
-                //     size.clone(),
-                //     &component::load_font(),
-                //     32.0,
-                // );
-                // test_button2.draw(
-                //     &mut buffer,
-                //     size.width as usize,
-                //     size.clone(),
-                //     &component::load_font(),
-                //     32.0,
-                // );
 
                 buffer_context.buffer.present().unwrap();
             }
@@ -216,9 +201,17 @@ impl Application {
                 //
                 // TODO: Crawl the component tree
                 //
+                let mouse_input = crate::event::MouseInput {
+                    position: Point {
+                        x: position.x,
+                        y: position.y,
+                    },
+                    pressed: false,
+                    just_released: false,
+                };
 
-                for comp in &self.root.children {
-                    //comp.draw(&mut buffer_context);
+                for comp in &mut self.root.children {
+                    comp.update(mouse_input);
                 }
 
                 // cursor_pos = Some(position);
