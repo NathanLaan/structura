@@ -2,9 +2,10 @@
 //! Rust MVC-UI
 //!
 
-use crate::component::{ComponentState, ComponentStyle};
-use crate::event::Callback;
+use crate::component::{ComponentState, ComponentStyle, Widget};
+use crate::event::{Callback, MouseInput};
 use crate::geometry::Size;
+use crate::view::BufferContext;
 use rusttype::{Font, Scale, point};
 use std::ops::DerefMut;
 use winit::event::ElementState;
@@ -128,15 +129,16 @@ impl Button {
     /// TODO: Font and font_size should come from theme/settings.
     ///
     ///
-    pub fn draw(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
-        self.fill_background(buffer, &screen_size);
-        self.draw_border(buffer, &screen_size);
+    fn draw_button(&self, context: &mut BufferContext) {
+        //fn draw_button(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
+        self.fill_background(context);
+        self.draw_border(context);
 
         // Text rendering parameters
-        let font_scale = Scale::uniform(font_size);
-        let v_metrics = font.v_metrics(font_scale);
+        let font_scale = Scale::uniform(context.font_size);
+        let v_metrics = context.font.v_metrics(font_scale);
 
-        let screen_width = screen_size.width as usize;
+        let screen_width = context.screen_size.width as usize;
 
         let start_x = self.x as i32 + 10;
         let start_y = self.y as i32 + (self.height as i32 / 2) + (v_metrics.ascent / 2.0) as i32;
@@ -144,7 +146,8 @@ impl Button {
         //
         // TODO: Move to text rendering component
         //
-        let glyphs: Vec<_> = font
+        let glyphs: Vec<_> = context
+            .font
             .layout(
                 &self.text[..],
                 font_scale,
@@ -158,12 +161,12 @@ impl Button {
                     let x = gx as i32 + bb.min.x;
                     let y = gy as i32 + bb.min.y;
                     if x >= 0
-                        && x < screen_size.width as i32
+                        && x < context.screen_size.width as i32
                         && y >= 0
-                        && (y as usize) < buffer.len() / screen_width
+                        && (y as usize) < context.buffer.len() / screen_width
                     {
                         let idx = y as usize * screen_width + x as usize;
-                        buffer[idx] = Self::basic_aa(buffer[idx], 0xFFFFFF, v);
+                        context.buffer[idx] = Self::basic_aa(context.buffer[idx], 0xFFFFFF, v);
                     }
                 });
             }
@@ -173,9 +176,9 @@ impl Button {
     ///
     /// Fill in the background of the Button.
     ///
-    fn fill_background(&self, buffer: &mut [u32], screen_size: &Size) {
-        let screen_width = screen_size.width as usize;
-        let screen_height = screen_size.height as usize;
+    fn fill_background(&self, context: &mut BufferContext) {
+        let screen_width = context.screen_size.width as usize;
+        let screen_height = context.screen_size.height as usize;
         let bw = self.border_width;
         let x0 = self.x;
         let y0 = self.y;
@@ -194,8 +197,8 @@ impl Button {
         for y in fill_y0..fill_y1 {
             for x in fill_x0..fill_x1 {
                 let idx = y * screen_width + x;
-                if idx < buffer.len() {
-                    buffer[idx] = background_color;
+                if idx < context.buffer.len() {
+                    context.buffer[idx] = background_color;
                 }
             }
         }
@@ -204,14 +207,14 @@ impl Button {
     ///
     /// Draw the Button border.
     ///
-    fn draw_border(&self, buffer: &mut [u32], screen_size: &Size) {
+    fn draw_border(&self, context: &mut BufferContext) {
         let bw = self.border_width;
         let x0 = self.x;
         let y0 = self.y;
         let x1 = self.x + self.width;
         let y1 = self.y + self.height;
-        let screen_width = screen_size.width as usize;
-        let screen_height = screen_size.height as usize;
+        let screen_width = context.screen_size.width as usize;
+        let screen_height = context.screen_size.height as usize;
         let clipped_x0 = x0.min(screen_width);
         let clipped_y0 = y0.min(screen_height);
         let clipped_x1 = x1.min(screen_width);
@@ -225,8 +228,8 @@ impl Button {
 
                 if is_top || is_bottom || is_left || is_right {
                     let idx = y * screen_width + x;
-                    if idx < buffer.len() {
-                        buffer[idx] = self.border_color;
+                    if idx < context.buffer.len() {
+                        context.buffer[idx] = self.border_color;
                     }
                 }
             }
@@ -256,5 +259,57 @@ impl Button {
         let b = (bb * inv + fb * alpha).round() as u32;
 
         (r << 16) | (g << 8) | b
+    }
+}
+
+impl Widget for Button {
+    fn update(&mut self, input: MouseInput) {
+        //self.was_clicked = false;
+        if let Some((mx, my)) = input.position {
+            if self.contains(mx, my) {
+                if input.just_released {
+                    //self.was_clicked = true;
+                }
+                self.component_state = if input.pressed {
+                    ComponentState::Pressed
+                } else {
+                    ComponentState::Hovered
+                };
+                return;
+            }
+        }
+        self.component_state = ComponentState::Active;
+    }
+
+    fn draw(&self, context: &mut BufferContext) {
+        //pub fn draw(&self, buffer: &mut [u32], screen_size: Size, font: &Font<'_>, font_size: f32) {
+        self.draw_button(context);
+
+        // let w = context.screen_size.width as usize;
+        // let h = context.screen_size.height as usize;
+        //
+        // let bw = self.border_width;
+        // let x0 = self.x.min(w);
+        // let y0 = self.y.min(h);
+        // let x1 = (self.x + self.width).min(w);
+        // let y1 = (self.y + self.height).min(h);
+        //
+        // let fill = self.background_color;
+        //
+        // for y in y0..y1 {
+        //     for x in x0..x1 {
+        //         let idx = y * w + x;
+        //         if x < x0 + bw || x >= x1 - bw || y < y0 + bw || y >= y1 - bw {
+        //             context.buffer[idx] = self.border_color;
+        //         } else {
+        //             context.buffer[idx] = self.background_color;
+        //         }
+        //     }
+        // }
+    }
+
+    fn was_clicked(&self) -> bool {
+        //self.was_clicked
+        false
     }
 }

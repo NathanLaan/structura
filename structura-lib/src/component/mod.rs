@@ -83,53 +83,6 @@ pub struct Column<Message> {
     pub children: Vec<Box<dyn Component<Message>>>,
 }
 
-impl Widget for Button {
-    fn update(&mut self, input: MouseInput) {
-        //self.was_clicked = false;
-        if let Some((mx, my)) = input.position {
-            if self.contains(mx, my) {
-                if input.just_released {
-                    //self.was_clicked = true;
-                }
-                self.component_state = if input.pressed {
-                    ComponentState::Pressed
-                } else {
-                    ComponentState::Hovered
-                };
-                return;
-            }
-        }
-        self.component_state = ComponentState::Active;
-    }
-
-    fn draw(&self, context: &mut BufferContext) {
-        let bw = self.border_width;
-        let x0 = self.x.min(context.screen_width);
-        let y0 = self.y.min(context.screen_height);
-        let x1 = (self.x + self.width).min(context.screen_width);
-        let y1 = (self.y + self.height).min(context.screen_height);
-
-        let fill = self.background_color;
-
-        for y in y0..y1 {
-            for x in x0..x1 {
-                let idx = y * context.screen_width + x;
-                if x < x0 + bw || x >= x1 - bw || y < y0 + bw || y >= y1 - bw {
-                    context.buffer[idx] = self.border_color;
-                } else {
-                    context.buffer[idx] = self.background_color;
-                }
-            }
-        }
-        // Text drawing omitted for brevity
-    }
-
-    fn was_clicked(&self) -> bool {
-        //self.was_clicked
-        false
-    }
-}
-
 /// Container node for building widget trees
 pub struct Container {
     pub children: Vec<Box<dyn Widget>>,

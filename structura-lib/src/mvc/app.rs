@@ -168,8 +168,7 @@ impl Application {
 
                 let mut buffer_context = BufferContext {
                     buffer: buffer,
-                    screen_width: size.width as usize,
-                    screen_height: size.height as usize,
+                    screen_size: size,
                     font: &component::load_font(),
                     font_size: 32.0,
                 };
@@ -214,6 +213,14 @@ impl Application {
                     },
                 window_id,
             } if window_id == window.id() => {
+                //
+                // TODO: Crawl the component tree
+                //
+
+                for comp in &self.root.children {
+                    //comp.draw(&mut buffer_context);
+                }
+
                 // cursor_pos = Some(position);
                 // if let Some(pos) = cursor_pos {
                 //     //
