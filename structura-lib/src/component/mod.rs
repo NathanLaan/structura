@@ -3,12 +3,14 @@
 //!
 
 pub mod button;
-mod layout;
+pub mod layout;
 pub mod text;
 pub mod window;
 
 use crate::component::button::Button;
 use crate::event::{Event, MouseInput};
+use crate::geometry::Point;
+use crate::geometry::Size;
 use crate::view::{BufferContext, ViewContext};
 use rusttype::Font;
 
@@ -33,6 +35,16 @@ pub struct ComponentStyle {
     pub border_color: u32,
 }
 
+impl Default for ComponentStyle {
+    fn default() -> Self {
+        Self {
+            background_color: 0x0033CC,
+            border_color: 0x000000,
+            text_color: 0x000000,
+        }
+    }
+}
+
 /// Widget trait for all UI components
 pub trait Widget {
     /// Called each frame to update state (e.g. hover, press)
@@ -41,9 +53,13 @@ pub trait Widget {
     /// Called each frame to render the widget to the pixel buffer
     fn draw(&self, context: &mut BufferContext);
 
-    fn set_position(&mut self, x: usize, y: usize) {}
+    fn set_position(&mut self, x: f64, y: f64);
 
-    fn set_size(&mut self, width: usize, height: usize) {}
+    fn get_position(&self) -> Point;
+
+    fn set_size(&mut self, width: usize, height: usize);
+
+    fn get_size(&self) -> Size;
 }
 
 ///
@@ -108,6 +124,58 @@ impl Widget for Container {
     fn draw(&self, context: &mut BufferContext) {
         for child in self.children.iter() {
             child.draw(context);
+        }
+    }
+
+    fn set_position(&mut self, x: f64, y: f64) {
+        todo!()
+    }
+
+    fn get_position(&self) -> Point {
+        //
+        // TODO: Should be minimum position?
+        //
+        if self.children.is_empty() {
+            Point { x: 0.0, y: 0.0 }
+        } else {
+            Point {
+                x: self.children[0].get_position().x,
+                y: self.children[0].get_position().y,
+            }
+        }
+    }
+
+    fn set_size(&mut self, width: usize, height: usize) {
+        todo!()
+    }
+
+    ///
+    /// Returns the size of the `Container`.
+    ///
+    /// The size is defined as the bounding box of all child controls.
+    ///
+    fn get_size(&self) -> Size {
+        if self.children.is_empty() {
+            return Size {
+                width: 0,
+                height: 0,
+            };
+        }
+        let mut min_x = self.children[0].get_position().x;
+        let mut min_y = self.children[0].get_position().y;
+        let mut max_x = min_x + self.children[0].get_size().width as f64;
+        let mut max_y = min_y + self.children[0].get_size().height as f64;
+        for component in self.children.iter().skip(1) {
+            min_x = min_x.min(component.get_position().x);
+            min_y = min_y.min(component.get_position().y);
+            max_x = max_x.max(component.get_position().x + component.get_size().width as f64);
+            max_y = max_y.max(component.get_position().y + component.get_size().height as f64);
+        }
+        let max_w = (max_x - min_x).ceil() as u32;
+        let max_h = (max_y - min_y).ceil() as u32;
+        Size {
+            width: max_w,
+            height: max_h,
         }
     }
 }

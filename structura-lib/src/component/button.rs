@@ -6,9 +6,9 @@
 
 use crate::component::{ComponentState, ComponentStyle, Widget};
 use crate::event::{Callback, MouseInput};
+use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Scale, point};
-
 // pub struct ButtonStyle {
 //     pub idle: ButtonStateStyle,
 //     pub hovered: ButtonStateStyle,
@@ -29,6 +29,8 @@ use rusttype::{Scale, point};
 /// A basic Button component with text.
 ///
 pub struct Button {
+    pub position: Point,
+    pub size: Size,
     pub x: usize,
     pub y: usize,
     pub width: usize,
@@ -47,6 +49,11 @@ pub struct Button {
 impl Default for Button {
     fn default() -> Self {
         Self {
+            position: Point { x: 0.0, y: 0.0 },
+            size: Size {
+                width: 200,
+                height: 60,
+            },
             x: 0,
             y: 0,
             width: 200,
@@ -68,6 +75,31 @@ impl Default for Button {
 }
 
 impl Button {
+    pub fn new(x: usize, y: usize, width: usize, height: usize, text: String) -> Self {
+        Self {
+            position: Point {
+                x: x as f64,
+                y: y as f64,
+            },
+            size: Size {
+                width: width as u32,
+                height: height as u32,
+            },
+            x,
+            y,
+            width,
+            height,
+            background_color: 0x0077CC, // blue
+            border_color: 0x000000,
+            border_width: 2,
+            text,
+            component_state: ComponentState::Active,
+            component_style: ComponentStyle::default(),
+            on_click: None,
+            on_clicked: None,
+        }
+    }
+
     pub fn contains(&self, px: usize, py: usize) -> bool {
         px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
     }
@@ -272,7 +304,6 @@ impl Button {
 
 impl Widget for Button {
     fn update(&mut self, input: MouseInput) {
-        //self.was_clicked = false;
         if self.contains(input.position.x as usize, input.position.y as usize) {
             self.component_state = if input.pressed {
                 ComponentState::Pressed
@@ -289,5 +320,21 @@ impl Widget for Button {
 
     fn draw(&self, context: &mut BufferContext) {
         self.draw_button(context);
+    }
+
+    fn set_position(&mut self, x: f64, y: f64) {
+        self.position = Point { x, y };
+    }
+
+    fn get_position(&self) -> Point {
+        self.position
+    }
+
+    fn set_size(&mut self, width: usize, height: usize) {
+        todo!()
+    }
+
+    fn get_size(&self) -> Size {
+        self.size.clone()
     }
 }
