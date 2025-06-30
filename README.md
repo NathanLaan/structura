@@ -1,6 +1,6 @@
 # Structura Rust GUI Framework
 
-Structura is a basic GUI framework created entirely to learn how to create a GUI framework in RUst. Maybe one day it will be "OK enough" to actually use for something, but you really should not use this.
+Structura is a basic GUI framework created to learn how to create a GUI framework in Rust. Maybe one day it will be "OK enough" to actually use for something, but you really should not use this.
 
 ## Dependencies
 
@@ -17,16 +17,16 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 
 ### Traits
 
-- Component
+- Component: Displays output to users and/or allows users to interact. Interaction may be via mouse and/or keyboard.
 - Container: Can hold a list of child items.
-- Layout
 
 ### Structs
 
-- Row: Container, Layout
-- Column
-- Button
-- TextField
+- Row: Container
+- Column: Container
+- BorderLayout: Container
+- Button: Component
+- TextField: Component
 
 ## TODO
 
