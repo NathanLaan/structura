@@ -15,7 +15,20 @@ Structura is based on the following:
 
 Structura is being loosely designed around a Model-View-Controller (MVC) architecture.
 
-## Plan
+### Traits
+
+- Component
+- Container: Can hold a list of child items.
+- Layout
+
+### Structs
+
+- Row: Container, Layout
+- Column
+- Button
+- TextField
+
+## TODO
 
 - [ ] Buttons.
 - [x] Button on_click event handler.
