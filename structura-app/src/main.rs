@@ -13,11 +13,6 @@ const HEIGHT: u32 = 480;
 const BOX_SIZE: u32 = 100; // Size of the square box
 
 fn main() {
-    let mut row = Row::new(20.0, 20.0, 10, 40);
-
-    row.push(Button::new(0, 0, 100, 40, "A".to_string()));
-    row.push(Button::new(0, 0, 100, 40, "B".to_string()));
-    row.push(Button::new(0, 0, 100, 40, "C".to_string()));
 
     let mut test_button1 = Button::default().on_click(|| {
         println!("test_button1.on_click()");
@@ -32,14 +27,19 @@ fn main() {
     test_button2.set_text("Button 2!".to_string());
     test_button2.position.x = test_button1.position.x + test_button1.size.width as f64;
 
+    let mut row = Row::new(20.0, 20.0, 1, 60);
+    row.push(Button::new(0, 0, 200, 60, "A".to_string()));
+    row.push(Button::new(0, 0, 200, 60, "B".to_string()));
+    row.push(Button::new(0, 0, 200, 60, "C".to_string()));
+    row.push(test_button1);
+    row.push(test_button2);
+
     //
     // TODO: Working, without controls, but causes the code below to panic().
     //
     // TODO: Setup UI "tree".
     //
     let mut container = Container::new();
-    container.push(test_button1);
-    container.push(test_button2);
     container.push(row);
     let mut application = Application::new(container);
     //
