@@ -47,7 +47,6 @@ impl Default for ComponentStyle {
 /// Base trait for all UI components
 ///
 pub trait Component {
-
     ///
     /// Called whenever the user makes an input (e.g. mouse moved, mouse pressed).
     ///
@@ -77,5 +76,4 @@ pub trait Component {
     /// Gets the size of the `Component` as a `structura_lib::geometry::Size`.
     ///
     fn get_size(&self) -> Size;
-
 }

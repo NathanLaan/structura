@@ -173,7 +173,7 @@ impl Application {
                     font: &component::load_font(),
                     font_size: 32.0,
                 };
-                &self.root.draw(&mut buffer_context);
+                self.root.draw(&mut buffer_context);
                 buffer_context.buffer.present().unwrap();
             }
 
@@ -207,11 +207,11 @@ impl Application {
 
             Event::WindowEvent {
                 event:
-                WindowEvent::KeyboardInput {
-                    device_id, 
-                    event, 
-                    is_synthetic
-                },
+                    WindowEvent::KeyboardInput {
+                        device_id,
+                        event,
+                        is_synthetic,
+                    },
                 window_id,
             } if window_id == window.id() => {
                 println!("{:?} {:?}", event, window_id);

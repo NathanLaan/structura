@@ -311,7 +311,10 @@ impl Component for Button {
     }
 
     fn set_size(&mut self, width: usize, height: usize) {
-        self.size = Size { width: width as u32, height: height as u32 };
+        self.size = Size {
+            width: width as u32,
+            height: height as u32,
+        };
     }
 
     fn get_size(&self) -> Size {

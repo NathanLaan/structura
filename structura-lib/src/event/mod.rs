@@ -4,7 +4,7 @@
 
 use crate::geometry::Point;
 use std::cell::RefCell;
-use std::rc::{Rc};
+use std::rc::Rc;
 
 #[derive(Clone)]
 pub struct Callback<Handler> {
@@ -19,6 +19,4 @@ pub struct MouseInput {
     pub just_released: bool,
 }
 
-pub struct KeyboardInput {
-
-}
+pub struct KeyboardInput {}

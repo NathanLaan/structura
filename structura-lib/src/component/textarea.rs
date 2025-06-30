@@ -2,11 +2,11 @@
 //!
 //!
 
-use softbuffer::Buffer;
-use crate::view::BufferContext;
 use crate::component::Component;
-use crate::geometry::{Point, Size};
 use crate::event::MouseInput;
+use crate::geometry::{Point, Size};
+use crate::view::BufferContext;
+use softbuffer::Buffer;
 
 pub struct TextArea {
     pub text: String,
@@ -22,7 +22,10 @@ impl TextArea {
             text: String::new(),
             cursor_index: 0,
             position: Point { x: 0.0, y: 0.0 },
-            size: Size { width: 200, height: 50 },
+            size: Size {
+                width: 200,
+                height: 50,
+            },
             focused: false,
         }
     }
@@ -92,7 +95,7 @@ impl Component for TextArea {
                 }
             }
         }
-        
+
         //
         // TODO: Replace with font rendering
         //
@@ -110,7 +113,7 @@ impl Component for TextArea {
             let cx = px + self.cursor_index * 6;
             let cy = py + 10;
             if cx < screen_w && cy < screen_h {
-                context.buffer[cy * screen_w+ cx] = 0xFFFF0000; // red cursor
+                context.buffer[cy * screen_w + cx] = 0xFFFF0000; // red cursor
             }
         }
     }
@@ -124,7 +127,10 @@ impl Component for TextArea {
     }
 
     fn set_size(&mut self, width: usize, height: usize) {
-        self.size = Size { width: width as u32, height: height as u32 };
+        self.size = Size {
+            width: width as u32,
+            height: height as u32,
+        };
     }
 
     fn get_size(&self) -> Size {
