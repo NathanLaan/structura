@@ -17,7 +17,7 @@ pub trait Container {
     ///
     /// Force the `Container` to update the position of controls within the `Container`.
     ///
-    fn layout(&mut self);
+    fn update_layout(&mut self);
 }
 
 pub trait ContainerComponent: Container + Component {}
@@ -108,6 +108,10 @@ pub struct Row {
 }
 
 impl Row {
+    
+    ///
+    /// Constructor
+    /// 
     pub fn new(x: f64, y: f64, spacing: usize, height: usize) -> Self {
         Self {
             children: vec![],
@@ -117,17 +121,13 @@ impl Row {
             height,
         }
     }
-
-    // pub fn push<W: Component + 'static>(&mut self, widget: W) {
-    //     self.children.push(Box::new(widget));
-    //     self.layout();
-    // }
+    
 }
 
 impl Container for Row {
     fn push(&mut self, component: Box<dyn Component>) {
         self.children.push(component);
-        self.layout();
+        self.update_layout();
     }
 
     ///
@@ -135,10 +135,11 @@ impl Container for Row {
     ///
     /// Layout (position) the controls within the `Row`.
     ///
-    fn layout(&mut self) {
+    fn update_layout(&mut self) {
         let mut current_x = self.x as f64;
+        let current_y = self.y as f64;
         for child in self.children.iter_mut() {
-            child.set_position(current_x, child.get_position().y);
+            child.set_position(current_x, current_y);
             current_x += child.get_size().width as f64 + self.spacing as f64;
         }
     }
@@ -160,7 +161,7 @@ impl Component for Row {
     fn set_position(&mut self, x: f64, y: f64) {
         self.x = x;
         self.y = y;
-        self.layout();
+        self.update_layout();
     }
 
     fn get_position(&self) -> Point {
@@ -179,7 +180,7 @@ impl Component for Row {
 
     fn set_size(&mut self, _width: usize, height: usize) {
         self.height = height;
-        self.layout();
+        self.update_layout();
     }
 
     ///
@@ -188,6 +189,9 @@ impl Component for Row {
     /// The size is defined as the bounding box of all child controls.
     ///
     fn get_size(&self) -> Size {
+        //
+        // TODO: Add margin
+        //
         if self.children.is_empty() {
             return Size {
                 width: 0,
