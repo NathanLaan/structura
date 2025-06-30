@@ -3,10 +3,11 @@
 //!
 
 use crate::component::Component;
-use crate::event::MouseInput;
+use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use softbuffer::Buffer;
+use winit::keyboard::Key;
 
 pub struct TextArea {
     pub text: String,
@@ -30,49 +31,59 @@ impl TextArea {
         }
     }
 
-    fn is_inside(&self, x: f64, y: f64) -> bool {
-        let px = self.position.x;
-        let py = self.position.y;
-        let sw = self.size.width as f64;
-        let sh = self.size.height as f64;
-        x >= px && x <= px + sw && y >= py && y <= py + sh
+    pub fn contains(&self, px: f64, py: f64) -> bool {
+        px >= self.position.x
+            && px < self.position.x + self.size.width as f64
+            && py >= self.position.y
+            && py < self.position.y + self.size.height as f64
     }
 }
 
 impl Component for TextArea {
-    fn update(&mut self, input: MouseInput) {
-        match input {
-            // MouseInput::Click { x, y } => {
-            //     self.focused = self.is_inside(x, y);
-            // }
-            // MouseInput::TextInput(s) => {
-            //     if self.focused {
-            //         self.text.insert_str(self.cursor_index, &s);
-            //         self.cursor_index += s.len();
-            //     }
-            // }
-            // MouseInput::KeyPress(c) => {
-            //     if self.focused {
-            //         match c {
-            //             '\u{8}' => { // backspace
-            //                 if self.cursor_index > 0 {
-            //                     self.text.remove(self.cursor_index - 1);
-            //                     self.cursor_index -= 1;
-            //                 }
-            //             }
-            //             '\n' => {
-            //                 self.text.insert(self.cursor_index, '\n');
-            //                 self.cursor_index += 1;
-            //             }
-            //             _ => {
-            //                 self.text.insert(self.cursor_index, c);
-            //                 self.cursor_index += 1;
-            //             }
-            //         }
-            //     }
-            // }
-            _ => {}
+    fn handle_mouse_event(&mut self, input: MouseInput) {
+        if input.pressed {
+            self.focused = self.contains(input.position.x, input.position.y);
         }
+    }
+
+    fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {
+        if self.focused {
+            match &event.logical_key {
+                Key::Character(s) => {
+                    self.text.push_str(s);
+                    println!("Val: {:?}", self.text);
+                }
+                Key::Named(_) => {}
+                Key::Unidentified(_) => {}
+                Key::Dead(_) => {}
+            }
+        }
+        // MouseInput::TextInput(s) => {
+        //     if self.focused {
+        //         self.text.insert_str(self.cursor_index, &s);
+        //         self.cursor_index += s.len();
+        //     }
+        // }
+        // MouseInput::KeyPress(c) => {
+        //     if self.focused {
+        //         match c {
+        //             '\u{8}' => { // backspace
+        //                 if self.cursor_index > 0 {
+        //                     self.text.remove(self.cursor_index - 1);
+        //                     self.cursor_index -= 1;
+        //                 }
+        //             }
+        //             '\n' => {
+        //                 self.text.insert(self.cursor_index, '\n');
+        //                 self.cursor_index += 1;
+        //             }
+        //             _ => {
+        //                 self.text.insert(self.cursor_index, c);
+        //                 self.cursor_index += 1;
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     fn draw(&self, context: &mut BufferContext) {

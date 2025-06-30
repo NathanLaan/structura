@@ -8,6 +8,7 @@ use crate::component::Component;
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
+use winit::event::KeyEvent;
 
 /// Container node for building widget trees
 pub trait Container {
@@ -74,9 +75,15 @@ impl Container for Row {
 }
 
 impl Component for Row {
-    fn update(&mut self, input: MouseInput) {
+    fn handle_mouse_event(&mut self, input: MouseInput) {
         for child in self.children.iter_mut() {
-            child.update(input);
+            child.handle_mouse_event(input);
+        }
+    }
+
+    fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {
+        for child in self.children.iter_mut() {
+            child.handle_keyboard_event(event);
         }
     }
 
@@ -194,9 +201,15 @@ impl Container for Column {
 }
 
 impl Component for Column {
-    fn update(&mut self, input: MouseInput) {
+    fn handle_mouse_event(&mut self, input: MouseInput) {
         for child in self.children.iter_mut() {
-            child.update(input);
+            child.handle_mouse_event(input);
+        }
+    }
+
+    fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {
+        for child in self.children.iter_mut() {
+            child.handle_keyboard_event(event);
         }
     }
 

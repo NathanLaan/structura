@@ -201,7 +201,7 @@ impl Application {
                     just_released: false,
                 };
                 self.cursor_pos = Some(mouse_input.position);
-                self.root.update(mouse_input);
+                self.root.handle_mouse_event(mouse_input);
                 window.request_redraw();
             }
 
@@ -214,7 +214,8 @@ impl Application {
                     },
                 window_id,
             } if window_id == window.id() => {
-                println!("{:?} {:?}", event, window_id);
+                //println!("{:?} {:?}", event, window_id);
+                self.root.handle_keyboard_event(&event);
             }
 
             Event::WindowEvent {
@@ -242,7 +243,7 @@ impl Application {
                             mouse_input.pressed = false;
                         }
                     }
-                    self.root.update(mouse_input);
+                    self.root.handle_mouse_event(mouse_input);
                 }
                 window.request_redraw();
             }

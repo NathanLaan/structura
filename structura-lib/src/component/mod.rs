@@ -6,7 +6,7 @@ pub mod button;
 pub mod text;
 pub mod textarea;
 
-use crate::event::MouseInput;
+use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::Point;
 use crate::geometry::Size;
 use crate::view::BufferContext;
@@ -50,7 +50,9 @@ pub trait Component {
     ///
     /// Called whenever the user makes an input (e.g. mouse moved, mouse pressed).
     ///
-    fn update(&mut self, input: MouseInput);
+    fn handle_mouse_event(&mut self, input: MouseInput);
+
+    fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent);
 
     ///
     /// Called whenever the application updates it's state, or a redraw is requested in response to an event.

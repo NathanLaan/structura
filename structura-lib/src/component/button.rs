@@ -9,6 +9,7 @@ use crate::event::{Callback, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Scale, point};
+use winit::event::KeyEvent;
 
 ///
 /// A basic Button component with text.
@@ -283,7 +284,7 @@ impl Button {
 }
 
 impl Component for Button {
-    fn update(&mut self, input: MouseInput) {
+    fn handle_mouse_event(&mut self, input: MouseInput) {
         if self.contains(input.position.x, input.position.y) {
             self.component_state = if input.pressed {
                 ComponentState::Pressed
@@ -296,6 +297,12 @@ impl Component for Button {
             return;
         }
         self.component_state = ComponentState::Active;
+    }
+
+    fn handle_keyboard_event(&mut self, _event: &winit::event::KeyEvent) {
+        //
+        // Button does nothing on keyboard events.
+        //
     }
 
     fn draw(&self, context: &mut BufferContext) {
