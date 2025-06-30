@@ -6,6 +6,11 @@ use crate::geometry::Point;
 use std::cell::RefCell;
 use std::rc::{Rc};
 
+#[derive(Clone)]
+pub struct Callback<Handler> {
+    callback: Rc<RefCell<Option<Box<dyn 'static + FnMut(Handler)>>>>,
+}
+
 /// Mouse state passed to widgets each frame
 #[derive(Clone, Copy, Debug)]
 pub struct MouseInput {
@@ -14,13 +19,6 @@ pub struct MouseInput {
     pub just_released: bool,
 }
 
-#[derive(Debug)]
-pub enum Event {
-    MouseClick { x: i32, y: i32 },
-    KeyPress(char),
-}
+pub struct KeyboardInput {
 
-#[derive(Clone)]
-pub struct Callback<Handler> {
-    callback: Rc<RefCell<Option<Box<dyn 'static + FnMut(Handler)>>>>,
 }

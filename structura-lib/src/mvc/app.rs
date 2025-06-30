@@ -207,6 +207,18 @@ impl Application {
 
             Event::WindowEvent {
                 event:
+                WindowEvent::KeyboardInput {
+                    device_id, 
+                    event, 
+                    is_synthetic
+                },
+                window_id,
+            } if window_id == window.id() => {
+                println!("{:?} {:?}", event, window_id);
+            }
+
+            Event::WindowEvent {
+                event:
                     WindowEvent::MouseInput {
                         state,
                         button: MouseButton::Left,

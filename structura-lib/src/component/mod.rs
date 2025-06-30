@@ -4,6 +4,7 @@
 
 pub mod button;
 pub mod text;
+pub mod textarea;
 
 use crate::event::MouseInput;
 use crate::geometry::Point;
@@ -46,20 +47,20 @@ impl Default for ComponentStyle {
 /// Base trait for all UI components
 ///
 pub trait Component {
-    
-    /// 
+
+    ///
     /// Called whenever the user makes an input (e.g. mouse moved, mouse pressed).
-    /// 
+    ///
     fn update(&mut self, input: MouseInput);
 
-    /// 
+    ///
     /// Called whenever the application updates it's state, or a redraw is requested in response to an event.
-    /// 
+    ///
     fn draw(&self, context: &mut BufferContext);
 
     ///
     /// Set the position of the `Component` relative to it's parent `Container`.
-    /// 
+    ///
     fn set_position(&mut self, x: f64, y: f64);
 
     ///
@@ -69,12 +70,12 @@ pub trait Component {
 
     ///
     /// Set the size of the `Component`. Converts to a `structura_lib::geometry::Size`.
-    /// 
+    ///
     fn set_size(&mut self, width: usize, height: usize);
 
-    /// 
+    ///
     /// Gets the size of the `Component` as a `structura_lib::geometry::Size`.
-    /// 
+    ///
     fn get_size(&self) -> Size;
-    
+
 }
