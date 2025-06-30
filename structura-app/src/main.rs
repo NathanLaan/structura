@@ -27,20 +27,20 @@ fn main() {
     test_button2.position.x = test_button1.position.x + test_button1.size.width as f64;
 
     let mut row = Row::new(20.0, 20.0, 1, 60);
-    row.push(Button::new(0, 0, 200, 60, "A".to_string()));
-    row.push(Button::new(0, 0, 200, 60, "B".to_string()));
-    row.push(Button::new(0, 0, 200, 60, "C".to_string()));
-    row.push(test_button1);
-    row.push(test_button2);
+    row.push(Box::new(Button::new(0, 0, 200, 60, "A".to_string())));
+    row.push(Box::new(Button::new(0, 0, 200, 60, "B".to_string())));
+    row.push(Box::new(Button::new(0, 0, 200, 60, "C".to_string())));
+    row.push(Box::new(test_button1));
+    row.push(Box::new(test_button2));
 
     //
     // TODO: Working, without controls, but causes the code below to panic().
     //
     // TODO: Setup UI "tree".
     //
-    let mut container = Container::new();
-    container.push(row);
-    let mut application = Application::new(container);
+    // let mut container = Container::new();
+    // container.push(row);
+    let mut application = Application::new(Box::new(row));
     //
     // TODO: Setup message-handle functionality
     //

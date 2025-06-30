@@ -1,3 +1,0 @@
-//!
-//! Structura: GUI Layout components.
-//!

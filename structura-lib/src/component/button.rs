@@ -4,7 +4,7 @@
 //! A basic button with text.
 //!
 
-use crate::component::{ComponentState, ComponentStyle, Widget};
+use crate::component::{ComponentState, ComponentStyle, Component};
 use crate::event::{Callback, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -294,7 +294,7 @@ impl Button {
     }
 }
 
-impl Widget for Button {
+impl Component for Button {
     fn update(&mut self, input: MouseInput) {
         if self.contains(input.position.x, input.position.y) {
             self.component_state = if input.pressed {

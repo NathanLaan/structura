@@ -3,7 +3,6 @@
 //!
 
 pub mod button;
-pub mod layout;
 pub mod text;
 pub mod window;
 
@@ -45,7 +44,7 @@ impl Default for ComponentStyle {
 }
 
 /// Widget trait for all UI components
-pub trait Widget {
+pub trait Component {
     /// Called each frame to update state (e.g. hover, press)
     fn update(&mut self, input: MouseInput);
 

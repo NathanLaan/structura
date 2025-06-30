@@ -22,7 +22,7 @@ use winit::window::{Window, WindowAttributes, WindowId};
 /// Structure Application wrapper.
 ///
 pub struct Application {
-    pub root: Container,
+    pub root: Box<dyn Container>,
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
     active_event_loop: Option<ActiveEventLoop>,
@@ -42,7 +42,7 @@ impl Application {
     ///
     /// Constructor.
     ///
-    pub fn new(root: Container) -> Self {
+    pub fn new(root: Box<dyn Container>) -> Self {
         Self {
             root,
             cursor_pos: None,
@@ -175,9 +175,9 @@ impl Application {
                 //
                 // Draw all components
                 //
-                for comp in &self.root.children {
-                    comp.draw(&mut buffer_context);
-                }
+                // for comp in &self.root.children {
+                //     comp.draw(&mut buffer_context);
+                // }
 
                 buffer_context.buffer.present().unwrap();
             }
@@ -211,9 +211,13 @@ impl Application {
 
                 self.cursor_pos = Some(mouse_input.position);
 
-                for comp in &mut self.root.children {
-                    comp.update(mouse_input);
-                }
+                //
+                // TODO: container.draw(...)
+                //
+
+                // for comp in &mut self.root.children {
+                //     comp.update(mouse_input);
+                // }
                 window.request_redraw();
 
                 // cursor_pos = Some(position);
@@ -252,9 +256,9 @@ impl Application {
                             mouse_input.pressed = false;
                         }
                     }
-                    for comp in &mut self.root.children {
-                        comp.update(mouse_input);
-                    }
+                    // for comp in &mut self.root.children {
+                    //     comp.update(mouse_input);
+                    // }
                 }
                 window.request_redraw();
             }
