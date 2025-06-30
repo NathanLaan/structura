@@ -22,23 +22,19 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 
 ### Structs
 
-- Row: Container
-- Column: Container
-- BorderLayout: Container
-- Button: Component
-- TextField: Component
+- [x] Row: ContainerComponent
+- [ ] Column: ContainerComponent
+- [ ] BorderLayout: ContainerComponent
+- [ ] Tabs: ContainerComponent
+- [x] Button: Component
+- [ ] TextField: Component
 
-## TODO
+### Core API
 
-- [ ] Buttons.
-- [x] Button on_click event handler.
-- [ ] Text fields.
-- [ ] Layouts.
-- [ ] Theme.
-- [ ] Style support.
 - [ ] Model.
 - [ ] View.
 - [ ] Controller.
+- [ ] Theme.
+- [ ] Style support.
 - [ ] Application.
 - [ ] Event or Message system.
-- [ ] Trait-based API for creating Structura-based apps.
