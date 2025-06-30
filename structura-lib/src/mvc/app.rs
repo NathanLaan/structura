@@ -3,20 +3,19 @@
 //!
 
 use crate::component;
-use crate::component::Container;
+use crate::container::Container;
 use crate::geometry::{Point, Size};
-use crate::view::{BufferContext, ViewContext};
+use crate::view::BufferContext;
 use softbuffer::{Buffer, Context, Surface};
 use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use tokio::task::{JoinHandle, consume_budget};
+use tokio::task::JoinHandle;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
-use winit::dpi::PhysicalPosition;
 use winit::event::{ElementState, Event, MouseButton, WindowEvent};
 use winit::event_loop::ActiveEventLoop;
-use winit::event_loop::{ControlFlow, EventLoop};
+use winit::event_loop::EventLoop;
 use winit::window::{Window, WindowAttributes, WindowId};
 
 ///

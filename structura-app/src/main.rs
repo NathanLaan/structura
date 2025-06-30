@@ -2,10 +2,10 @@
 //!
 //!
 
-use structura_lib::app::{Application, WinitApp};
+use structura_lib::app::Application;
 use structura_lib::component::button::Button;
-use structura_lib::component::layout::Row;
-use structura_lib::component::{ComponentState, Container};
+use structura_lib::container::Container;
+use structura_lib::container::Row;
 use winit::dpi::PhysicalPosition;
 
 const WIDTH: u32 = 640;
@@ -13,7 +13,6 @@ const HEIGHT: u32 = 480;
 const BOX_SIZE: u32 = 100; // Size of the square box
 
 fn main() {
-
     let mut test_button1 = Button::default().on_click(|| {
         println!("test_button1.on_click()");
     });

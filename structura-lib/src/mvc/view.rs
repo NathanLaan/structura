@@ -2,9 +2,7 @@
 //! Rust MVC-UI
 //!
 
-use crate::component::Component;
 use crate::geometry::Size;
-use crate::message::Message;
 use rusttype::Font;
 use softbuffer::Buffer;
 use std::rc::Rc;
@@ -20,14 +18,14 @@ pub struct BufferContext<'context> {
     pub font_size: f32,
 }
 
-pub trait ViewContext {
-    fn draw_text(&mut self, text: &str, x: i32, y: i32);
-    fn draw_button(&mut self, label: &str, x: i32, y: i32, hovered: bool);
-}
+// pub trait ViewContext {
+//     fn draw_text(&mut self, text: &str, x: i32, y: i32);
+//     fn draw_button(&mut self, label: &str, x: i32, y: i32, hovered: bool);
+// }
 
-///
-/// The View
-///
-pub trait View {
-    fn view(&self) -> dyn Component<dyn Message>;
-}
+// ///
+// /// The View
+// ///
+// pub trait View {
+//     fn view(&self) -> dyn Component;
+// }
