@@ -4,7 +4,7 @@
 //! A basic button with text.
 //!
 
-use crate::component::{ComponentState, ComponentStyle, Component};
+use crate::component::{Component, ComponentState, ComponentStyle};
 use crate::event::{Callback, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;

@@ -3,7 +3,9 @@
 //!
 
 use crate::component;
+use crate::component::Component;
 use crate::container::Container;
+use crate::container::ContainerComponent;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use softbuffer::{Buffer, Context, Surface};
@@ -22,7 +24,8 @@ use winit::window::{Window, WindowAttributes, WindowId};
 /// Structure Application wrapper.
 ///
 pub struct Application {
-    pub root: Box<dyn Container>,
+    pub root: Box<dyn ContainerComponent>,
+    //pub root: Box<dyn Container>,
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
     active_event_loop: Option<ActiveEventLoop>,
@@ -42,7 +45,7 @@ impl Application {
     ///
     /// Constructor.
     ///
-    pub fn new(root: Box<dyn Container>) -> Self {
+    pub fn new(root: Box<dyn ContainerComponent>) -> Self {
         Self {
             root,
             cursor_pos: None,
@@ -175,6 +178,7 @@ impl Application {
                 //
                 // Draw all components
                 //
+                &self.root.draw(&mut buffer_context);
                 // for comp in &self.root.children {
                 //     comp.draw(&mut buffer_context);
                 // }
@@ -211,10 +215,7 @@ impl Application {
 
                 self.cursor_pos = Some(mouse_input.position);
 
-                //
-                // TODO: container.draw(...)
-                //
-
+                self.root.update(mouse_input);
                 // for comp in &mut self.root.children {
                 //     comp.update(mouse_input);
                 // }
@@ -256,9 +257,7 @@ impl Application {
                             mouse_input.pressed = false;
                         }
                     }
-                    // for comp in &mut self.root.children {
-                    //     comp.update(mouse_input);
-                    // }
+                    self.root.update(mouse_input);
                 }
                 window.request_redraw();
             }

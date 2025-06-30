@@ -10,8 +10,7 @@ use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 
 /// Container node for building widget trees
-pub trait  Container {
-
+pub trait Container {
     //fn push<C: Component + 'static>(&mut self, component: C);
     fn push(&mut self, component: Box<dyn Component>);
 
@@ -19,8 +18,10 @@ pub trait  Container {
     /// Force the `Container` to update the position of controls within the `Container`.
     ///
     fn layout(&mut self);
-
 }
+
+pub trait ContainerComponent: Container + Component {}
+impl<T> ContainerComponent for T where T: Container + Component {}
 
 // impl Container {
 //     pub fn new() -> Self {
@@ -124,7 +125,6 @@ impl Row {
 }
 
 impl Container for Row {
-    
     fn push(&mut self, component: Box<dyn Component>) {
         self.children.push(component);
         self.layout();
@@ -142,7 +142,6 @@ impl Container for Row {
             current_x += child.get_size().width as f64 + self.spacing as f64;
         }
     }
-
 }
 
 impl Component for Row {
