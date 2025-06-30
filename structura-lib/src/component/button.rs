@@ -31,10 +31,6 @@ use rusttype::{Scale, point};
 pub struct Button {
     pub position: Point,
     pub size: Size,
-    pub x: usize,
-    pub y: usize,
-    pub width: usize,
-    pub height: usize,
     pub background_color: u32,
     pub border_color: u32,
     pub border_width: usize,
@@ -54,10 +50,6 @@ impl Default for Button {
                 width: 200,
                 height: 60,
             },
-            x: 0,
-            y: 0,
-            width: 200,
-            height: 60,
             background_color: 0x0077CC, // blue
             border_color: 0x000000,
             border_width: 2,
@@ -85,10 +77,6 @@ impl Button {
                 width: width as u32,
                 height: height as u32,
             },
-            x,
-            y,
-            width,
-            height,
             background_color: 0x0077CC, // blue
             border_color: 0x000000,
             border_width: 2,
@@ -100,15 +88,18 @@ impl Button {
         }
     }
 
-    pub fn contains(&self, px: usize, py: usize) -> bool {
-        px >= self.x && px < self.x + self.width && py >= self.y && py < self.y + self.height
+    pub fn contains(&self, px: f64, py: f64) -> bool {
+        px >= self.position.x
+            && px < self.position.x + self.size.width as f64
+            && py >= self.position.y
+            && py < self.position.y + self.size.height as f64
     }
 
     pub fn set_text(&mut self, text: String) {
         self.text = text;
     }
 
-    pub fn update_state(&mut self, cursor_x: usize, cursor_y: usize, mouse_pressed: bool) {
+    pub fn update_state(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
         if self.contains(cursor_x, cursor_y) {
             self.component_state = if mouse_pressed {
                 ComponentState::Pressed
@@ -123,7 +114,7 @@ impl Button {
     ///
     /// Update `ComponentState` based on mouse position and state.
     ///
-    pub fn handle_mouse_event(&mut self, cursor_x: usize, cursor_y: usize, mouse_pressed: bool) {
+    pub fn handle_mouse_event(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
         if self.contains(cursor_x, cursor_y) {
             if mouse_pressed {
                 println!("Button Pressed: {}", self.text);
@@ -151,8 +142,9 @@ impl Button {
 
         let screen_width = context.screen_size.width as usize;
 
-        let start_x = self.x as i32 + 10;
-        let start_y = self.y as i32 + (self.height as i32 / 2) + (v_metrics.ascent / 2.0) as i32;
+        let start_x = self.position.x + 10.0;
+        let start_y =
+            self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
 
         //
         // TODO: Move to text rendering component
@@ -191,10 +183,10 @@ impl Button {
         let screen_width = context.screen_size.width as usize;
         let screen_height = context.screen_size.height as usize;
         let bw = self.border_width;
-        let x0 = self.x;
-        let y0 = self.y;
-        let x1 = self.x + self.width;
-        let y1 = self.y + self.height;
+        let x0 = self.position.x as usize;
+        let y0 = self.position.y as usize;
+        let x1 = self.position.x as usize + self.size.width as usize;
+        let y1 = self.position.y as usize + self.size.height as usize;
         let fill_x0 = (x0 + bw).min(screen_width);
         let fill_y0 = (y0 + bw).min(screen_height);
         let fill_x1 = x1.saturating_sub(bw).min(screen_width);
@@ -220,10 +212,10 @@ impl Button {
     ///
     fn draw_border(&self, context: &mut BufferContext) {
         let bw = self.border_width;
-        let x0 = self.x;
-        let y0 = self.y;
-        let x1 = self.x + self.width;
-        let y1 = self.y + self.height;
+        let x0 = self.position.x as usize;
+        let y0 = self.position.y as usize;
+        let x1 = self.position.x as usize + self.size.width as usize;
+        let y1 = self.position.y as usize + self.size.height as usize;
         let screen_width = context.screen_size.width as usize;
         let screen_height = context.screen_size.height as usize;
         let clipped_x0 = x0.min(screen_width);
@@ -304,7 +296,7 @@ impl Button {
 
 impl Widget for Button {
     fn update(&mut self, input: MouseInput) {
-        if self.contains(input.position.x as usize, input.position.y as usize) {
+        if self.contains(input.position.x, input.position.y) {
             self.component_state = if input.pressed {
                 ComponentState::Pressed
             } else {

@@ -30,7 +30,7 @@ fn main() {
         // }
     });
     test_button2.set_text("Button 2!".to_string());
-    test_button2.x = test_button1.x + test_button1.width;
+    test_button2.position.x = test_button1.position.x + test_button1.size.width as f64;
 
     //
     // TODO: Working, without controls, but causes the code below to panic().
