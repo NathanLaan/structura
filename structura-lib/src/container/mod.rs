@@ -212,3 +212,8 @@ impl Component for Row {
         }
     }
 }
+
+///
+/// A Column of elements
+///
+pub struct Column {}

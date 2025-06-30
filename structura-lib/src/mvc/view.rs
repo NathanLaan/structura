@@ -1,5 +1,5 @@
 //!
-//! Rust MVC-UI
+//! Structura. View structures.
 //!
 
 use crate::geometry::Size;
@@ -8,24 +8,12 @@ use softbuffer::Buffer;
 use std::rc::Rc;
 use winit::window::Window;
 
+///
+/// A buffer, provided as a context, with associated properties.
+///
 pub struct BufferContext<'context> {
-    // pub buffer: &'context mut [u32],
     pub buffer: Buffer<'context, Rc<Window>, Rc<Window>>,
     pub screen_size: Size,
-    // pub screen_width: usize,
-    // pub screen_height: usize,
     pub font: &'context Font<'context>,
     pub font_size: f32,
 }
-
-// pub trait ViewContext {
-//     fn draw_text(&mut self, text: &str, x: i32, y: i32);
-//     fn draw_button(&mut self, label: &str, x: i32, y: i32, hovered: bool);
-// }
-
-// ///
-// /// The View
-// ///
-// pub trait View {
-//     fn view(&self) -> dyn Component;
-// }

@@ -4,7 +4,6 @@
 
 use crate::component;
 use crate::component::Component;
-use crate::container::Container;
 use crate::container::ContainerComponent;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -25,10 +24,9 @@ use winit::window::{Window, WindowAttributes, WindowId};
 ///
 pub struct Application {
     pub root: Box<dyn ContainerComponent>,
-    //pub root: Box<dyn Container>,
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
-    active_event_loop: Option<ActiveEventLoop>,
+    //active_event_loop: Option<ActiveEventLoop>,
     message_join_handle: Option<JoinHandle<()>>,
     //view_context: dyn ViewContext,
     //
@@ -50,7 +48,7 @@ impl Application {
             root,
             cursor_pos: None,
             mouse_pressed: false,
-            active_event_loop: None,
+            //active_event_loop: None,
             message_join_handle: None,
             //view_context: (),
         }
@@ -110,6 +108,9 @@ impl Application {
         Surface::new(context, window.clone()).unwrap()
     }
 
+    ///
+    /// Handle application events.
+    ///
     fn handle_events(
         self: &mut Self,
         state: &mut (Rc<Window>, Context<Rc<Window>>),
@@ -125,7 +126,7 @@ impl Application {
                 event: WindowEvent::RedrawRequested,
             } if window_id == window.id() => {
                 let Some(surface) = surface else {
-                    eprintln!("RedrawRequested fired before Resumed or after Suspended");
+                    eprintln!("Error: RedrawRequested fired before Resumed or after Suspended");
                     return;
                 };
                 let size = {
@@ -135,10 +136,6 @@ impl Application {
                         height: window_size.height,
                     }
                 };
-                // let (width, height) = {
-                //     let size = window.inner_size();
-                //     (size.width, size.height)
-                // };
                 surface
                     .resize(
                         NonZeroU32::new(size.width).unwrap(),
@@ -148,12 +145,15 @@ impl Application {
 
                 let mut buffer: Buffer<Rc<Window>, Rc<Window>> = surface.buffer_mut().unwrap();
                 for y in 0..size.height {
+                    //
                     // Vertical blue fade from 0 to 255
+                    //
                     //let blue = (255 * y / height) as u8;
                     //let color = (blue as u32) & 0x0000FF;
-
+                    //
+                    // Diagonal fade from black to white
+                    //
                     for x in 0..size.width {
-                        // Diagonal fade from black to white
                         let factor =
                             ((x + y) as f32 / (size.width + size.height) as f32).clamp(0.0, 1.0);
                         let gray = (factor * 255.0) as u8;
@@ -162,27 +162,18 @@ impl Application {
                         buffer[idx as usize] = color;
                     }
                 }
-
-                // Fill background
-                // for pixel in buffer.iter_mut() {
-                //     *pixel = 0x111111;
-                // }
-
+                //
+                // (1) Prepare the BufferContext
+                // (2) Draw all Components/ContainerComponents
+                // (3) Present/Render the buffer to the screen
+                //
                 let mut buffer_context = BufferContext {
                     buffer: buffer,
                     screen_size: size,
                     font: &component::load_font(),
                     font_size: 32.0,
                 };
-
-                //
-                // Draw all components
-                //
                 &self.root.draw(&mut buffer_context);
-                // for comp in &self.root.children {
-                //     comp.draw(&mut buffer_context);
-                // }
-
                 buffer_context.buffer.present().unwrap();
             }
 
@@ -201,9 +192,6 @@ impl Application {
                     },
                 window_id,
             } if window_id == window.id() => {
-                //
-                // TODO: Crawl the component tree
-                //
                 let mouse_input = crate::event::MouseInput {
                     position: Point {
                         x: position.x,
@@ -212,24 +200,9 @@ impl Application {
                     pressed: false,
                     just_released: false,
                 };
-
                 self.cursor_pos = Some(mouse_input.position);
-
                 self.root.update(mouse_input);
-                // for comp in &mut self.root.children {
-                //     comp.update(mouse_input);
-                // }
                 window.request_redraw();
-
-                // cursor_pos = Some(position);
-                // if let Some(pos) = cursor_pos {
-                //     //
-                //     // TODO: This is where we would crawl the component tree
-                //     //
-                //     test_button1.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
-                //     test_button2.update_state(pos.x as usize, pos.y as usize, mouse_pressed);
-                //     window.request_redraw();
-                // }
             }
 
             Event::WindowEvent {

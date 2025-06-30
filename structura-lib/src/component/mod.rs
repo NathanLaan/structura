@@ -1,10 +1,9 @@
 //!
-//! Rust MVC-UI
+//! Structura Components.
 //!
 
 pub mod button;
 pub mod text;
-pub mod window;
 
 use crate::event::MouseInput;
 use crate::geometry::Point;
@@ -43,7 +42,9 @@ impl Default for ComponentStyle {
     }
 }
 
-/// Widget trait for all UI components
+///
+/// Base trait for all UI components
+///
 pub trait Component {
     /// Called each frame to update state (e.g. hover, press)
     fn update(&mut self, input: MouseInput);
@@ -59,35 +60,3 @@ pub trait Component {
 
     fn get_size(&self) -> Size;
 }
-
-// ///
-// /// Root GUI Component.
-// ///
-// pub trait Component { //<Message> {
-//     // ///
-//     // /// Parent control.
-//     // ///
-//     // fn parent() -> Self where Self: Sized;
-//     //
-//     // ///
-//     // /// Child controls.
-//     // ///
-//     // fn children() -> Vec<Self> where Self: Sized;
-//
-//     fn update(&mut self, input: MouseInput);
-//
-//     ///
-//     /// Draw the component to the screen.
-//     ///
-//     fn draw(&self, context: &mut BufferContext);
-//
-//     ///
-//     /// Handle an event. Returns a message if triggered.
-//     ///
-//     fn handle_event(&mut self, event: &Event);
-// }
-
-///
-/// A Column of elements
-///
-pub struct Column {}

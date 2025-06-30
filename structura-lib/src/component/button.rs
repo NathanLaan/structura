@@ -9,21 +9,6 @@ use crate::event::{Callback, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Scale, point};
-// pub struct ButtonStyle {
-//     pub idle: ButtonStateStyle,
-//     pub hovered: ButtonStateStyle,
-//     pub pressed: ButtonStateStyle,
-// }
-//
-// impl ButtonStyle {
-//     pub fn for_state(&self, state: ButtonState) -> &ButtonStateStyle {
-//         match state {
-//             ButtonState::Idle => &self.idle,
-//             ButtonState::Hovered => &self.hovered,
-//             ButtonState::Pressed => &self.pressed,
-//         }
-//     }
-// }
 
 ///
 /// A basic Button component with text.
@@ -43,6 +28,9 @@ pub struct Button {
 }
 
 impl Default for Button {
+    ///
+    /// Create a default `Button`.
+    ///
     fn default() -> Self {
         Self {
             position: Point { x: 0.0, y: 0.0 },
@@ -67,6 +55,9 @@ impl Default for Button {
 }
 
 impl Button {
+    ///
+    /// Constructor.
+    ///
     pub fn new(x: usize, y: usize, width: usize, height: usize, text: String) -> Self {
         Self {
             position: Point {
@@ -95,6 +86,11 @@ impl Button {
             && py < self.position.y + self.size.height as f64
     }
 
+    ///
+    /// Set the `text` displayed on the button.
+    ///
+    /// TODO: Button contents should be separate from the Button definition, with TextButton and ImageButton/IconButton options.
+    ///
     pub fn set_text(&mut self, text: String) {
         self.text = text;
     }
@@ -129,8 +125,7 @@ impl Button {
     }
 
     ///
-    /// TODO: Font and font_size should come from theme/settings.
-    ///
+    /// Internal function to draw the button. Called by `draw()`.
     ///
     fn draw_button(&self, context: &mut BufferContext) {
         self.fill_background(context);
@@ -269,20 +264,13 @@ impl Button {
             ComponentState::Active => {}
             ComponentState::Hovered => {}
             ComponentState::Pressed => {
-                self.event_button_pressed();
+                println!("Button Pressed {}", self.text);
+                if let Some(handler) = self.on_click.as_mut() {
+                    handler(); // 🔥 callback fired
+                }
             }
             ComponentState::Disabled => {}
         }
-    }
-
-    fn event_button_pressed(&mut self) {
-        println!("Button Pressed {}", self.text);
-        if let Some(handler) = self.on_click.as_mut() {
-            handler(); // 🔥 callback fired
-        }
-    }
-    fn event_button_released(&self) {
-        println!("Button Released {}", self.text);
     }
 
     ///
