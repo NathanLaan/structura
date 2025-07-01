@@ -177,6 +177,9 @@ impl Button {
         let fill_y0 = (y0 + bw).min(screen_height);
         let fill_x1 = x1.saturating_sub(bw).min(screen_width);
         let fill_y1 = y1.saturating_sub(bw).min(screen_height);
+        //
+        // TODO: Separate ComponentStyles per ComponentState
+        //
         let background_color = match self.component_state {
             ComponentState::Active => self.component_style.back_color,
             ComponentState::Hovered => 0x0077CC,
