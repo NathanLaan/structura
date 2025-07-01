@@ -216,6 +216,7 @@ impl Application {
             } if window_id == window.id() => {
                 //println!("{:?} {:?}", event, window_id);
                 self.root.handle_keyboard_event(&event);
+                window.request_redraw();
             }
 
             Event::WindowEvent {

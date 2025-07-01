@@ -235,13 +235,6 @@ impl Button {
         }
     }
 
-    fn blend_pixel(bg: u32, brightness: u8) -> u32 {
-        let r = brightness as u32;
-        let g = brightness as u32;
-        let b = brightness as u32;
-        (r << 16) | (g << 8) | b
-    }
-
     fn basic_aa(bg: u32, fg: u32, alpha: f32) -> u32 {
         let inv = 1.0 - alpha;
 

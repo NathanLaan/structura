@@ -50,7 +50,9 @@ impl TextArea {
             self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
 
         //
-        // TODO: Move to text rendering component
+        // TODO: We need to wrap text...
+        //
+        // TODO: Once we can wrap text, we need to wrap on word boundaries...
         //
         let glyphs: Vec<_> = context
             .font
@@ -96,7 +98,7 @@ impl TextArea {
 
         (r << 16) | (g << 8) | b
     }
-    
+
 }
 
 impl Component for TextArea {
@@ -107,11 +109,10 @@ impl Component for TextArea {
     }
 
     fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {
-        if self.focused {
+        if self.focused && event.state == winit::event::ElementState::Pressed {
             match &event.logical_key {
                 Key::Character(s) => {
                     self.text.push_str(s);
-                    println!("Val: {:?}", self.text);
                 }
                 Key::Named(_) => {}
                 Key::Unidentified(_) => {}
@@ -164,7 +165,7 @@ impl Component for TextArea {
             }
         }
     }
-    
+
 
     fn set_position(&mut self, x: f64, y: f64) {
         self.position = Point { x, y };
