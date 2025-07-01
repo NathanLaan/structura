@@ -45,9 +45,11 @@ impl Default for Button {
             text: "button".to_string(),
             component_state: ComponentState::Active,
             component_style: ComponentStyle {
-                background_color: 0x0033CC,
+                back_color: 0x0077CC,
                 border_color: 0x000000,
+                cursor_color: 0x000000,
                 text_color: 0x000000,
+                border_width: 2,
             },
             on_click: None,
             on_clicked: None,
@@ -188,7 +190,7 @@ impl Button {
         let fill_x1 = x1.saturating_sub(bw).min(screen_width);
         let fill_y1 = y1.saturating_sub(bw).min(screen_height);
         let background_color = match self.component_state {
-            ComponentState::Active => self.component_style.background_color,
+            ComponentState::Active => self.component_style.back_color,
             ComponentState::Hovered => 0x0077CC,
             ComponentState::Pressed => 0x0099CC,
             ComponentState::Disabled => 0xCCCCCC,

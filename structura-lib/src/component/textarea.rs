@@ -3,7 +3,7 @@
 //!
 
 use rusttype::{point, Scale};
-use crate::component::Component;
+use crate::component::{Component, ComponentStyle};
 use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -16,6 +16,8 @@ pub struct TextArea {
     pub position: Point,
     pub size: Size,
     pub focused: bool,
+    component_style: ComponentStyle,
+    component_style_focused: ComponentStyle,
 }
 
 impl TextArea {
@@ -29,6 +31,20 @@ impl TextArea {
                 height: 50,
             },
             focused: false,
+            component_style: ComponentStyle {
+                back_color: 0x0033CC,
+                text_color: 0x000000,
+                cursor_color: 0x000000,
+                border_color: 0x000000,
+                border_width: 1,
+            },
+            component_style_focused: ComponentStyle {
+                back_color: 0x0033CC,
+                text_color: 0xCCCCCC,
+                cursor_color: 0xCCCCCC,
+                border_color: 0xFF3333,
+                border_width: 3,
+            },
         }
     }
 
@@ -99,6 +115,47 @@ impl TextArea {
         (r << 16) | (g << 8) | b
     }
 
+    ///
+    /// Draw the Button border.
+    ///
+    fn draw_border(&self, context: &mut BufferContext) {
+        let border_color = if self.focused {
+            self.component_style_focused.border_color
+        } else {
+            self.component_style.border_color
+        };
+        let bw = if self.focused {
+            self.component_style_focused.border_width
+        } else {
+            self.component_style.border_width
+        };
+        let x0 = self.position.x as usize;
+        let y0 = self.position.y as usize;
+        let x1 = self.position.x as usize + self.size.width as usize;
+        let y1 = self.position.y as usize + self.size.height as usize;
+        let screen_width = context.screen_size.width as usize;
+        let screen_height = context.screen_size.height as usize;
+        let clipped_x0 = x0.min(screen_width);
+        let clipped_y0 = y0.min(screen_height);
+        let clipped_x1 = x1.min(screen_width);
+        let clipped_y1 = y1.min(screen_height);
+        for y in clipped_y0..clipped_y1 {
+            for x in clipped_x0..clipped_x1 {
+                let is_top = y < y0 + bw;
+                let is_bottom = y >= y1.saturating_sub(bw);
+                let is_left = x < x0 + bw;
+                let is_right = x >= x1.saturating_sub(bw);
+
+                if is_top || is_bottom || is_left || is_right {
+                    let idx = y * screen_width + x;
+                    if idx < context.buffer.len() {
+                        context.buffer[idx] = border_color;
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 impl Component for TextArea {
@@ -142,6 +199,8 @@ impl Component for TextArea {
                 }
             }
         }
+        
+        self.draw_border(context);
 
         //
         // TODO: Replace with font rendering

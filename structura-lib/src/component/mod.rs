@@ -29,16 +29,20 @@ pub enum ComponentState {
 #[derive(Debug, Clone)]
 pub struct ComponentStyle {
     pub text_color: u32,
-    pub background_color: u32,
+    pub back_color: u32,
+    pub cursor_color: u32,
     pub border_color: u32,
+    pub border_width: usize,
 }
 
 impl Default for ComponentStyle {
     fn default() -> Self {
         Self {
-            background_color: 0x0033CC,
-            border_color: 0x000000,
             text_color: 0x000000,
+            back_color: 0x0033CC,
+            cursor_color: 0x000000,
+            border_color: 0x000000,
+            border_width: 2,
         }
     }
 }
