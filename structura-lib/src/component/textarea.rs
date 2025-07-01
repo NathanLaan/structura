@@ -6,7 +6,7 @@ use crate::component::{Component, ComponentStyle};
 use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
-use rusttype::{Scale, point};
+use rusttype::{Font, PositionedGlyph, Scale, point};
 use softbuffer::Buffer;
 use winit::keyboard::Key;
 
@@ -58,6 +58,103 @@ impl TextArea {
     fn draw_text(&self, context: &mut BufferContext) {
         let font_scale = Scale::uniform(context.font_size);
         let v_metrics = context.font.v_metrics(font_scale);
+        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
+        let space_width = context
+            .font
+            .glyph(' ')
+            .scaled(font_scale)
+            .h_metrics()
+            .advance_width;
+
+        let max_width = self.size.width;
+
+        let font_scale = Scale::uniform(context.font_size);
+        let v_metrics = context.font.v_metrics(font_scale);
+
+        let screen_width = context.screen_size.width as usize;
+
+        let start_x = self.position.x + 10.0;
+        let start_y =
+            self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
+
+        let v_metrics = context.font.v_metrics(font_scale);
+        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
+        let space_width = context
+            .font
+            .glyph(' ')
+            .scaled(font_scale)
+            .h_metrics()
+            .advance_width;
+
+        let mut lines = Vec::new();
+        let mut current_line = String::new();
+        let mut current_width = 0.0;
+
+        for word in self.text.split_whitespace() {
+            let word_width: f32 = word
+                .chars()
+                .map(|c| {
+                    context
+                        .font
+                        .glyph(c)
+                        .scaled(font_scale)
+                        .h_metrics()
+                        .advance_width
+                })
+                .sum();
+
+            if current_width + word_width > max_width as f32 {
+                lines.push(current_line.trim_end().to_string());
+                current_line = format!("{} ", word);
+                current_width = word_width + space_width;
+            } else {
+                current_line.push_str(word);
+                current_line.push(' ');
+                current_width += word_width + space_width;
+            }
+        }
+
+        if !current_line.trim().is_empty() {
+            lines.push(current_line.trim_end().to_string());
+        }
+
+        for (i, line) in lines.iter().enumerate() {
+            let glyphs: Vec<PositionedGlyph> = context
+                .font
+                .layout(
+                    line,
+                    font_scale,
+                    point(
+                        start_x as f32,
+                        start_y as f32 + line_height as f32 * i as f32,
+                    ),
+                )
+                .collect();
+
+            for glyph in glyphs {
+                if let Some(bb) = glyph.pixel_bounding_box() {
+                    glyph.draw(|gx, gy, v| {
+                        let x = gx as i32 + bb.min.x;
+                        let y = gy as i32 + bb.min.y;
+                        if x >= 0
+                            && x < context.screen_size.width as i32
+                            && y >= 0
+                            && y < context.screen_size.height as i32
+                        {
+                            let idx = y as usize * context.screen_size.width as usize + x as usize;
+                            if idx < context.buffer.len() {
+                                context.buffer[idx] =
+                                    TextArea::basic_aa(context.buffer[idx], 0x000000, v);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        /*
+        let font_scale = Scale::uniform(context.font_size);
+        let v_metrics = context.font.v_metrics(font_scale);
 
         let screen_width = context.screen_size.width as usize;
 
@@ -95,6 +192,7 @@ impl TextArea {
                 });
             }
         }
+        */
     }
 
     fn basic_aa(bg: u32, fg: u32, alpha: f32) -> u32 {
