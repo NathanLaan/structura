@@ -2,11 +2,11 @@
 //!
 //!
 
-use rusttype::{point, Scale};
 use crate::component::{Component, ComponentStyle};
 use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
+use rusttype::{Scale, point};
 use softbuffer::Buffer;
 use winit::keyboard::Key;
 
@@ -155,7 +155,6 @@ impl TextArea {
             }
         }
     }
-
 }
 
 impl Component for TextArea {
@@ -199,7 +198,7 @@ impl Component for TextArea {
                 }
             }
         }
-        
+
         self.draw_border(context);
 
         //
@@ -224,7 +223,6 @@ impl Component for TextArea {
             }
         }
     }
-
 
     fn set_position(&mut self, x: f64, y: f64) {
         self.position = Point { x, y };

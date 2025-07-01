@@ -17,9 +17,6 @@ use winit::event::KeyEvent;
 pub struct Button {
     pub position: Point,
     pub size: Size,
-    pub background_color: u32,
-    pub border_color: u32,
-    pub border_width: usize,
     pub text: String,
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
@@ -39,18 +36,9 @@ impl Default for Button {
                 width: 200,
                 height: 60,
             },
-            background_color: 0x0077CC, // blue
-            border_color: 0x000000,
-            border_width: 2,
             text: "button".to_string(),
             component_state: ComponentState::Active,
-            component_style: ComponentStyle {
-                back_color: 0x0077CC,
-                border_color: 0x000000,
-                cursor_color: 0x000000,
-                text_color: 0x000000,
-                border_width: 2,
-            },
+            component_style: ComponentStyle::default(),
             on_click: None,
             on_clicked: None,
         }
@@ -71,9 +59,9 @@ impl Button {
                 width: width as u32,
                 height: height as u32,
             },
-            background_color: 0x0077CC, // blue
-            border_color: 0x000000,
-            border_width: 2,
+            // background_color: 0x0077CC, // blue
+            // border_color: 0x000000,
+            // border_width: 2,
             text,
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
@@ -180,7 +168,7 @@ impl Button {
     fn fill_background(&self, context: &mut BufferContext) {
         let screen_width = context.screen_size.width as usize;
         let screen_height = context.screen_size.height as usize;
-        let bw = self.border_width;
+        let bw = self.component_style.border_width;
         let x0 = self.position.x as usize;
         let y0 = self.position.y as usize;
         let x1 = self.position.x as usize + self.size.width as usize;
@@ -209,7 +197,7 @@ impl Button {
     /// Draw the Button border.
     ///
     fn draw_border(&self, context: &mut BufferContext) {
-        let bw = self.border_width;
+        let bw = self.component_style.border_width;
         let x0 = self.position.x as usize;
         let y0 = self.position.y as usize;
         let x1 = self.position.x as usize + self.size.width as usize;
@@ -230,7 +218,7 @@ impl Button {
                 if is_top || is_bottom || is_left || is_right {
                     let idx = y * screen_width + x;
                     if idx < context.buffer.len() {
-                        context.buffer[idx] = self.border_color;
+                        context.buffer[idx] = self.component_style.border_color;
                     }
                 }
             }
