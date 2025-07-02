@@ -11,6 +11,7 @@ use crate::geometry::Point;
 use crate::geometry::Size;
 use crate::view::BufferContext;
 use rusttype::Font;
+use winit::event::MouseScrollDelta;
 
 pub fn load_font() -> Font<'static> {
     let font_data = include_bytes!("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
@@ -55,6 +56,15 @@ pub trait Component {
     /// Called whenever the user makes an input (e.g. mouse moved, mouse pressed).
     ///
     fn handle_mouse_event(&mut self, input: MouseInput);
+
+    ///
+    /// Called whenever the user make a MouseWheel input.
+    ///
+    fn handle_mouse_wheel_event(
+        &mut self,
+        event: &winit::event::MouseScrollDelta,
+        phase: &winit::event::TouchPhase,
+    );
 
     fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent);
 

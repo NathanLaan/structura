@@ -7,7 +7,6 @@ use crate::event::{KeyboardInput, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Font, PositionedGlyph, Scale, point};
-use softbuffer::Buffer;
 use winit::keyboard::{Key, NamedKey};
 
 pub struct TextArea {
@@ -18,6 +17,7 @@ pub struct TextArea {
     pub focused: bool,
     component_style: ComponentStyle,
     component_style_focused: ComponentStyle,
+    visible_scrolling_offset: f32,
 }
 
 impl TextArea {
@@ -45,6 +45,7 @@ impl TextArea {
                 border_color: 0xFF3333,
                 border_width: 3,
             },
+            visible_scrolling_offset: 0.0,
         }
     }
 
@@ -83,7 +84,9 @@ impl TextArea {
         let start_y =
             self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
 
-        let base_y = self.position.y as f32 + padding_y + v_metrics.ascent;
+        //let base_y = self.position.y as f32 + padding_y + v_metrics.ascent;
+        let base_y =
+            self.position.y as f32 + padding_y + v_metrics.ascent - self.visible_scrolling_offset;
 
         let mut lines = Vec::new();
         let mut current_line = String::new();
@@ -104,7 +107,6 @@ impl TextArea {
 
             if current_width + word_width + (padding_x * 2.0) > max_width as f32 {
                 let l = current_line.trim_end().to_string();
-                println!("New Line: {:?}", l);
                 lines.push(l);
                 current_line = format!("{} ", word);
                 current_width = word_width + space_width;
@@ -119,9 +121,18 @@ impl TextArea {
             lines.push(current_line.trim_end().to_string());
         }
 
-        println!("Lines: {:?}", lines);
+        let area_top = self.position.y as f32;
+        let area_bottom = area_top + self.size.height as f32;
 
         for (i, line) in lines.iter().enumerate() {
+            //
+            // Trim lines...
+            //
+            let line_y = base_y + line_height * i as f32;
+            if line_y + line_height < area_top || line_y > area_bottom {
+                continue; // skip this line
+            }
+
             let glyphs: Vec<PositionedGlyph> = context
                 .font
                 .layout(
@@ -270,6 +281,22 @@ impl Component for TextArea {
     fn handle_mouse_event(&mut self, input: MouseInput) {
         if input.pressed {
             self.focused = self.contains(input.position.x, input.position.y);
+        }
+    }
+
+    fn handle_mouse_wheel_event(
+        &mut self,
+        delta: &winit::event::MouseScrollDelta,
+        phase: &winit::event::TouchPhase,
+    ) {
+        match delta {
+            winit::event::MouseScrollDelta::LineDelta(x, y) => {
+                self.visible_scrolling_offset = (self.visible_scrolling_offset - y).max(0.0);
+            }
+            winit::event::MouseScrollDelta::PixelDelta(p) => {
+                self.visible_scrolling_offset =
+                    (self.visible_scrolling_offset - p.x as f32).max(0.0);
+            }
         }
     }
 

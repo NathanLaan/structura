@@ -5,6 +5,7 @@
 use crate::geometry::Point;
 use std::cell::RefCell;
 use std::rc::Rc;
+use winit::event::MouseScrollDelta;
 
 #[derive(Clone)]
 pub struct Callback<Handler> {
@@ -17,6 +18,7 @@ pub struct MouseInput {
     pub position: Point,
     pub pressed: bool,
     pub just_released: bool,
+    pub mouse_scroll: Option<MouseScrollDelta>,
 }
 
 pub struct KeyboardInput {}

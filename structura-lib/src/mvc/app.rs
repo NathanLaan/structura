@@ -199,6 +199,7 @@ impl Application {
                     },
                     pressed: false,
                     just_released: false,
+                    mouse_scroll: None,
                 };
                 self.cursor_pos = Some(mouse_input.position);
                 self.root.handle_mouse_event(mouse_input);
@@ -233,6 +234,7 @@ impl Application {
                         position: Point { x: pos.x, y: pos.y },
                         pressed: true,
                         just_released: false,
+                        mouse_scroll: None,
                     };
 
                     // TODO: This could be a lot more compact... `mouse_input.pressed = ...`
@@ -246,6 +248,20 @@ impl Application {
                     }
                     self.root.handle_mouse_event(mouse_input);
                 }
+                window.request_redraw();
+            }
+
+            Event::WindowEvent {
+                event:
+                    WindowEvent::MouseWheel {
+                        device_id,
+                        delta,
+                        phase,
+                    },
+                window_id,
+            } if window_id == window.id() => {
+                println!("delta: {:?}, phase: {:?}", delta, phase);
+                self.root.handle_mouse_wheel_event(&delta, &phase);
                 window.request_redraw();
             }
 

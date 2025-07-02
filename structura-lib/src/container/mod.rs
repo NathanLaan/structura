@@ -81,6 +81,13 @@ impl Component for Row {
         }
     }
 
+    fn handle_mouse_wheel_event(
+        &mut self,
+        delta: &winit::event::MouseScrollDelta,
+        phase: &winit::event::TouchPhase,
+    ) {
+    }
+
     fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {
         for child in self.children.iter_mut() {
             child.handle_keyboard_event(event);
@@ -205,6 +212,13 @@ impl Component for Column {
         for child in self.children.iter_mut() {
             child.handle_mouse_event(input);
         }
+    }
+
+    fn handle_mouse_wheel_event(
+        &mut self,
+        delta: &winit::event::MouseScrollDelta,
+        phase: &winit::event::TouchPhase,
+    ) {
     }
 
     fn handle_keyboard_event(&mut self, event: &winit::event::KeyEvent) {

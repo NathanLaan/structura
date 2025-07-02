@@ -285,6 +285,13 @@ impl Component for Button {
         self.component_state = ComponentState::Active;
     }
 
+    fn handle_mouse_wheel_event(
+        &mut self,
+        delta: &winit::event::MouseScrollDelta,
+        phase: &winit::event::TouchPhase,
+    ) {
+    }
+
     fn handle_keyboard_event(&mut self, _event: &winit::event::KeyEvent) {
         //
         // Button does nothing on keyboard events.
