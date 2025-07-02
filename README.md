@@ -25,7 +25,7 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 
 - [x] Row: ContainerComponent
 - [ ] Column: ContainerComponent
-- [ ] BorderLayout: ContainerComponent
+- [ ] BorderLayout: ContainerComponent (Top, Bottom, Left, Right, Center)
 - [ ] Tabs: ContainerComponent
 - [x] Button: Component
 - [ ] TextArea: Component
