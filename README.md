@@ -17,8 +17,9 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 
 ### Traits
 
-- Component: Displays output to users and/or allows users to interact. Interaction may be via mouse and/or keyboard.
-- Container: Can hold a list of child items.
+- `Component`: Displays output to users and/or allows users to interact. Interaction may be via mouse and/or keyboard.
+- `Container`: Can hold a list of child items.
+- `ContainerComponent`: Composition trait of `Container` and `Component`.
 
 ### Structs
 
@@ -27,7 +28,9 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 - [ ] BorderLayout: ContainerComponent
 - [ ] Tabs: ContainerComponent
 - [x] Button: Component
-- [ ] TextField: Component
+- [ ] TextArea: Component
+- [ ] TextField: Component (subset of `TextArea`?)
+- [ ] SplitPane: ContainerComponent. Vertical or Horizontal. Contains two children.
 
 ### Core API
 
@@ -38,3 +41,5 @@ Structura is being loosely designed around a Model-View-Controller (MVC) archite
 - [ ] Style support.
 - [ ] Application.
 - [ ] Event or Message system.
+- [ ] Consolidate text rendering.
+- [ ] Consolidate draw functions, such as `draw_border()`.
