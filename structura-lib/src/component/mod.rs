@@ -3,6 +3,7 @@
 //!
 
 pub mod button;
+mod label;
 pub mod text;
 pub mod textarea;
 

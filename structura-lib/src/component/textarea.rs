@@ -147,8 +147,9 @@ impl TextArea {
             lines.push(current_line.trim_end().to_string());
         }
 
-        let area_top = self.position.y as f32;
-        let area_bottom = area_top + self.size.height as f32;
+        let area_top = self.position.y as f32 + line_height + padding_y;
+        let area_bottom =
+            self.position.y as f32 + self.size.height as f32 - line_height - padding_y;
 
         for (i, line) in lines.iter().enumerate() {
             //
