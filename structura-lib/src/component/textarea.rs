@@ -8,7 +8,7 @@ use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Font, PositionedGlyph, Scale, point};
 use softbuffer::Buffer;
-use winit::keyboard::Key;
+use winit::keyboard::{Key, NamedKey};
 
 pub struct TextArea {
     pub text: String,
@@ -68,23 +68,22 @@ impl TextArea {
 
         let max_width = self.size.width;
 
-        let font_scale = Scale::uniform(context.font_size);
-        let v_metrics = context.font.v_metrics(font_scale);
+        let padding_x = if self.focused {
+            self.component_style_focused.border_width as f32 + 5.0
+        } else {
+            self.component_style_focused.border_width as f32 + 5.0
+        };
+        let padding_y = if self.focused {
+            self.component_style_focused.border_width as f32 + 5.0
+        } else {
+            self.component_style_focused.border_width as f32 + 5.0
+        };
 
-        let screen_width = context.screen_size.width as usize;
-
-        let start_x = self.position.x + 10.0;
+        let start_x = self.position.x as f32 + padding_x;
         let start_y =
             self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
 
-        let v_metrics = context.font.v_metrics(font_scale);
-        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
-        let space_width = context
-            .font
-            .glyph(' ')
-            .scaled(font_scale)
-            .h_metrics()
-            .advance_width;
+        let base_y = self.position.y as f32 + padding_y + v_metrics.ascent;
 
         let mut lines = Vec::new();
         let mut current_line = String::new();
@@ -103,8 +102,10 @@ impl TextArea {
                 })
                 .sum();
 
-            if current_width + word_width > max_width as f32 {
-                lines.push(current_line.trim_end().to_string());
+            if current_width + word_width + (padding_x * 2.0) > max_width as f32 {
+                let l = current_line.trim_end().to_string();
+                println!("New Line: {:?}", l);
+                lines.push(l);
                 current_line = format!("{} ", word);
                 current_width = word_width + space_width;
             } else {
@@ -118,18 +119,28 @@ impl TextArea {
             lines.push(current_line.trim_end().to_string());
         }
 
+        println!("Lines: {:?}", lines);
+
         for (i, line) in lines.iter().enumerate() {
             let glyphs: Vec<PositionedGlyph> = context
                 .font
                 .layout(
                     line,
                     font_scale,
-                    point(
-                        start_x as f32,
-                        start_y as f32 + line_height as f32 * i as f32,
-                    ),
+                    point(start_x as f32, base_y + line_height * i as f32),
                 )
                 .collect();
+            // let glyphs: Vec<PositionedGlyph> = context
+            //     .font
+            //     .layout(
+            //         line,
+            //         font_scale,
+            //         point(
+            //             start_x as f32,
+            //             start_y as f32 + line_height as f32 * i as f32,
+            //         ),
+            //     )
+            //     .collect();
 
             for glyph in glyphs {
                 if let Some(bb) = glyph.pixel_bounding_box() {
@@ -268,7 +279,22 @@ impl Component for TextArea {
                 Key::Character(s) => {
                     self.text.push_str(s);
                 }
-                Key::Named(_) => {}
+                Key::Named(named_key) => {
+                    match named_key {
+                        NamedKey::Space => {
+                            self.text.push_str(" ");
+                        }
+                        NamedKey::Enter => {
+                            // TODO: Platform specific newline
+                        }
+                        //
+                        // TODO: Home, End, Up, Down, Left, Right
+                        //
+                        // TODO: SHIFT + ...
+                        //
+                        _ => {}
+                    }
+                }
                 Key::Unidentified(_) => {}
                 Key::Dead(_) => {}
             }
