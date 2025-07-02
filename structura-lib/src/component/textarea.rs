@@ -141,17 +141,6 @@ impl TextArea {
                     point(start_x as f32, base_y + line_height * i as f32),
                 )
                 .collect();
-            // let glyphs: Vec<PositionedGlyph> = context
-            //     .font
-            //     .layout(
-            //         line,
-            //         font_scale,
-            //         point(
-            //             start_x as f32,
-            //             start_y as f32 + line_height as f32 * i as f32,
-            //         ),
-            //     )
-            //     .collect();
 
             for glyph in glyphs {
                 if let Some(bb) = glyph.pixel_bounding_box() {
@@ -173,48 +162,6 @@ impl TextArea {
                 }
             }
         }
-
-        /*
-        let font_scale = Scale::uniform(context.font_size);
-        let v_metrics = context.font.v_metrics(font_scale);
-
-        let screen_width = context.screen_size.width as usize;
-
-        let start_x = self.position.x + 10.0;
-        let start_y =
-            self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
-
-        //
-        // TODO: We need to wrap text...
-        //
-        // TODO: Once we can wrap text, we need to wrap on word boundaries...
-        //
-        let glyphs: Vec<_> = context
-            .font
-            .layout(
-                &self.text[..],
-                font_scale,
-                point(start_x as f32, start_y as f32),
-            )
-            .collect();
-
-        for glyph in glyphs {
-            if let Some(bb) = glyph.pixel_bounding_box() {
-                glyph.draw(|gx, gy, v| {
-                    let x = gx as i32 + bb.min.x;
-                    let y = gy as i32 + bb.min.y;
-                    if x >= 0
-                        && x < context.screen_size.width as i32
-                        && y >= 0
-                        && (y as usize) < context.buffer.len() / screen_width
-                    {
-                        let idx = y as usize * screen_width + x as usize;
-                        context.buffer[idx] = Self::basic_aa(context.buffer[idx], 0x000000, v);
-                    }
-                });
-            }
-        }
-        */
     }
 
     fn basic_aa(bg: u32, fg: u32, alpha: f32) -> u32 {
