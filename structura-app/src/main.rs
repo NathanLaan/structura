@@ -5,8 +5,9 @@
 use structura_lib::app::Application;
 use structura_lib::component::button::Button;
 use structura_lib::component::textarea::TextArea;
-use structura_lib::container::Row;
-use structura_lib::container::{Column, Container};
+use structura_lib::container::Container;
+use structura_lib::container::column::Column;
+use structura_lib::container::row::Row;
 use structura_lib::geometry::{Point, Size};
 
 fn main() {

@@ -260,7 +260,6 @@ impl Application {
                     },
                 window_id,
             } if window_id == window.id() => {
-                println!("delta: {:?}, phase: {:?}", delta, phase);
                 self.root.handle_mouse_wheel_event(&delta, &phase);
                 window.request_redraw();
             }

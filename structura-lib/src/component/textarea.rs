@@ -238,11 +238,12 @@ impl Component for TextArea {
     ) {
         match delta {
             winit::event::MouseScrollDelta::LineDelta(x, y) => {
-                self.visible_scrolling_offset = (self.visible_scrolling_offset - y).max(0.0);
+                //self.visible_scrolling_offset = (self.visible_scrolling_offset - y).max(10.0);
+                self.visible_scrolling_offset = (self.visible_scrolling_offset - y);
             }
             winit::event::MouseScrollDelta::PixelDelta(p) => {
                 self.visible_scrolling_offset =
-                    (self.visible_scrolling_offset - p.x as f32).max(0.0);
+                    (self.visible_scrolling_offset - p.x as f32).max(10.0);
             }
         }
     }
