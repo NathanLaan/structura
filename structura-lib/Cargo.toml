@@ -2,10 +2,11 @@
 name = "structura-lib"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 authors = ["Nathan Laan"]
 homepage = "https://github.com/NathanLaan/structura/"
 repository = "https://github.com/NathanLaan/structura/"
-description = "A Rust GUI Framework ."
+description = "A Rust GUI Framework."
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
