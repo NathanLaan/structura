@@ -3,10 +3,10 @@
 //!
 
 use crate::component::{Component, ComponentStyle};
-use crate::event::{KeyboardInput, MouseInput};
+use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
-use rusttype::{Font, PositionedGlyph, Scale, point};
+use rusttype::{PositionedGlyph, Scale, point};
 use winit::keyboard::{Key, NamedKey};
 
 pub struct TextArea {
@@ -54,6 +54,32 @@ impl TextArea {
             && px < self.position.x + self.size.width as f64
             && py >= self.position.y
             && py < self.position.y + self.size.height as f64
+    }
+
+    fn draw_background(&self, context: &mut BufferContext) {
+        let px = self.position.x as usize;
+        let py = self.position.y as usize;
+        let w = self.size.width;
+        let h = self.size.height;
+        let screen_w = context.screen_size.width as usize;
+        let screen_h = context.screen_size.height as usize;
+
+        // Background
+        for y in 0..h {
+            for x in 0..w {
+                let offset = (py + y as usize) * screen_w + (px + x as usize);
+                if offset < context.buffer.len() {
+                    //
+                    // TODO: Move to dedicated style variables
+                    //
+                    context.buffer[offset] = if self.focused {
+                        0xFFEEEEFF // background when focused
+                    } else {
+                        0xFFFFFFFF // background when not focused
+                    };
+                }
+            }
+        }
     }
 
     fn draw_text(&self, context: &mut BufferContext) {
@@ -130,7 +156,7 @@ impl TextArea {
             //
             let line_y = base_y + line_height * i as f32;
             if line_y + line_height < area_top || line_y > area_bottom {
-                continue; // skip this line
+                continue;
             }
 
             let glyphs: Vec<PositionedGlyph> = context
@@ -238,12 +264,10 @@ impl Component for TextArea {
     ) {
         match delta {
             winit::event::MouseScrollDelta::LineDelta(x, y) => {
-                //self.visible_scrolling_offset = (self.visible_scrolling_offset - y).max(10.0);
                 self.visible_scrolling_offset = (self.visible_scrolling_offset - y);
             }
             winit::event::MouseScrollDelta::PixelDelta(p) => {
-                self.visible_scrolling_offset =
-                    (self.visible_scrolling_offset - p.x as f32).max(10.0);
+                self.visible_scrolling_offset = (self.visible_scrolling_offset - p.x as f32);
             }
         }
     }
@@ -265,7 +289,7 @@ impl Component for TextArea {
                         //
                         // TODO: Home, End, Up, Down, Left, Right
                         //
-                        // TODO: SHIFT + ...
+                        // TODO: SHIFT + Home, End, ...
                         //
                         _ => {}
                     }
@@ -284,36 +308,13 @@ impl Component for TextArea {
         let screen_w = context.screen_size.width as usize;
         let screen_h = context.screen_size.height as usize;
 
-        // Background
-        for y in 0..h {
-            for x in 0..w {
-                let offset = (py + y as usize) * screen_w + (px + x as usize);
-                if offset < context.buffer.len() {
-                    context.buffer[offset] = if self.focused {
-                        0xFFEEEEFF // background when focused
-                    } else {
-                        0xFFFFFFFF // background when not focused
-                    };
-                }
-            }
-        }
-
+        self.draw_background(context);
         self.draw_border(context);
-
-        //
-        // TODO: Replace with font rendering
-        //
-        // for (i, _) in self.text.chars().enumerate() {
-        //     let tx = px + i * 6;
-        //     let ty = py + 10;
-        //     if tx < screen_w && ty < screen_h {
-        //         let offset = ty * screen_w + tx;
-        //         context.buffer[offset] = 0xFF000000;
-        //     }
-        // }
         self.draw_text(context);
 
-        // Draw cursor
+        //
+        // TODO: Draw cursor...
+        //
         if self.focused {
             let cx = px + self.cursor_index * 6;
             let cy = py + 10;
