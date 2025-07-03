@@ -18,6 +18,10 @@ use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::EventLoop;
 use winit::window::{Window, WindowAttributes, WindowId};
 
+//
+// TODO: Track the component that currently has focus?
+//
+
 ///
 /// Structure Application wrapper.
 ///

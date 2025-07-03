@@ -4,7 +4,7 @@
 
 ///
 /// Represents an `{x,y}` point in 2D space.
-/// 
+///
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
     pub x: f64,
@@ -13,7 +13,7 @@ pub struct Point {
 
 ///
 /// Represents an object in 2D space with size `{width,height}`.
-/// 
+///
 #[derive(Debug, Clone)]
 pub struct Size {
     pub width: u32,
@@ -22,7 +22,7 @@ pub struct Size {
 
 ///
 /// A rectangular shape defined by a `Point` and `Size` in 2D space.
-/// 
+///
 #[derive(Debug, Clone)]
 pub struct Rectangle {
     pub point: Point,

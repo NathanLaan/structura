@@ -32,6 +32,7 @@ pub struct TextArea {
     visible_scrolling_offset: f32,
     pub dragging_scrollbar: bool,
     pub last_mouse_y: f64,
+    scroll_amount_y: f32,
 }
 
 impl TextArea {
@@ -63,6 +64,7 @@ impl TextArea {
             visible_scrolling_offset: 0.0,
             dragging_scrollbar: false,
             last_mouse_y: 0.0,
+            scroll_amount_y: 10.0,
         }
     }
 
@@ -292,12 +294,15 @@ impl Component for TextArea {
         delta: &winit::event::MouseScrollDelta,
         _phase: &winit::event::TouchPhase,
     ) {
-        match delta {
-            winit::event::MouseScrollDelta::LineDelta(x, y) => {
-                self.visible_scrolling_offset = self.visible_scrolling_offset - y;
-            }
-            winit::event::MouseScrollDelta::PixelDelta(p) => {
-                self.visible_scrolling_offset = self.visible_scrolling_offset - p.x as f32
+        if self.focused {
+            match delta {
+                winit::event::MouseScrollDelta::LineDelta(x, y) => {
+                    self.visible_scrolling_offset =
+                        self.visible_scrolling_offset - (y * self.scroll_amount_y);
+                }
+                winit::event::MouseScrollDelta::PixelDelta(p) => {
+                    self.visible_scrolling_offset = self.visible_scrolling_offset - p.x as f32
+                }
             }
         }
     }
