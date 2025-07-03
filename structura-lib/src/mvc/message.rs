@@ -1,5 +1,5 @@
 //!
-//!
+//! Structura
 //!
 
 pub trait Message {}

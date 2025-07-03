@@ -1,5 +1,5 @@
 //!
-//!
+//! Structura: Application wrapper/helper struct.
 //!
 
 use crate::component;

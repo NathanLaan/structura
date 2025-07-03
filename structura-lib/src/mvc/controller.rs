@@ -1,5 +1,5 @@
 //!
-//!
+//! Structura
 //!
 use crate::message::Message;
 

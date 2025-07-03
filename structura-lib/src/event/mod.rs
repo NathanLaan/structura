@@ -1,5 +1,5 @@
 //!
-//! Rust MVC-UI
+//! Structura
 //!
 
 use crate::geometry::Point;
