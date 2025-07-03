@@ -287,6 +287,19 @@ impl Component for TextArea {
                         NamedKey::Enter => {
                             // TODO: Platform specific newline
                         }
+                        NamedKey::Backspace => {
+                            //
+                            // TODO: Delete at the cursor!
+                            //
+                            // TODO: Event to support undo/redo
+                            //
+                            let _char = self.text.pop();
+                        }
+                        NamedKey::Delete => {
+                            //
+                            // TODO: Delete characters after the cursor
+                            //
+                        }
                         //
                         // TODO: Home, End, Up, Down, Left, Right
                         //
