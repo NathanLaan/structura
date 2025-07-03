@@ -9,7 +9,6 @@ use crate::event::{Callback, MouseInput};
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Scale, point};
-use winit::event::KeyEvent;
 
 ///
 /// A basic Button component with text.
@@ -253,7 +252,7 @@ impl Button {
             ComponentState::Pressed => {
                 println!("Button Pressed {}", self.text);
                 if let Some(handler) = self.on_click.as_mut() {
-                    handler(); // 🔥 callback fired
+                    handler();
                 }
             }
             ComponentState::Disabled => {}
@@ -287,8 +286,8 @@ impl Component for Button {
 
     fn handle_mouse_wheel_event(
         &mut self,
-        delta: &winit::event::MouseScrollDelta,
-        phase: &winit::event::TouchPhase,
+        _delta: &winit::event::MouseScrollDelta,
+        _phase: &winit::event::TouchPhase,
     ) {
     }
 

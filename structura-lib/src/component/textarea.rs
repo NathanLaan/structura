@@ -75,7 +75,7 @@ impl TextArea {
             && py < self.position.y + self.size.height as f64
     }
 
-    fn is_scrollbar_hit(&self, x: f64, y: f64) -> bool {
+    fn is_scrollbar_contains(&self, x: f64, y: f64) -> bool {
         let scroll_x = self.position.x + (self.size.width - 6) as f64;
         x >= scroll_x
             && x <= scroll_x + 6.0
@@ -89,7 +89,6 @@ impl TextArea {
         let w = self.size.width;
         let h = self.size.height;
         let screen_w = context.screen_size.width as usize;
-        let screen_h = context.screen_size.height as usize;
 
         // Background
         for y in 0..h {
@@ -137,10 +136,6 @@ impl TextArea {
         };
 
         let start_x = self.position.x as f32 + padding_x;
-        let start_y =
-            self.position.y + (self.size.height as f64 / 2.0) + (v_metrics.ascent / 2.0) as f64;
-
-        //let base_y = self.position.y as f32 + padding_y + v_metrics.ascent;
         let base_y =
             self.position.y as f32 + padding_y + v_metrics.ascent - self.visible_scrolling_offset;
 
@@ -293,14 +288,14 @@ impl Component for TextArea {
     fn handle_mouse_wheel_event(
         &mut self,
         delta: &winit::event::MouseScrollDelta,
-        phase: &winit::event::TouchPhase,
+        _phase: &winit::event::TouchPhase,
     ) {
         match delta {
             winit::event::MouseScrollDelta::LineDelta(x, y) => {
-                self.visible_scrolling_offset = (self.visible_scrolling_offset - y);
+                self.visible_scrolling_offset = self.visible_scrolling_offset - y;
             }
             winit::event::MouseScrollDelta::PixelDelta(p) => {
-                self.visible_scrolling_offset = (self.visible_scrolling_offset - p.x as f32);
+                self.visible_scrolling_offset = self.visible_scrolling_offset - p.x as f32
             }
         }
     }
@@ -349,8 +344,6 @@ impl Component for TextArea {
     fn draw(&self, context: &mut BufferContext) {
         let px = self.position.x as usize;
         let py = self.position.y as usize;
-        let w = self.size.width;
-        let h = self.size.height;
         let screen_w = context.screen_size.width as usize;
         let screen_h = context.screen_size.height as usize;
 
@@ -361,8 +354,6 @@ impl Component for TextArea {
         // Scrollbars
         let font_scale = Scale::uniform(context.font_size);
         let v_metrics = context.font.v_metrics(font_scale);
-        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
-        let content_height = line_height * total_lines as f32;
 
         let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
         let content_height = line_height * total_lines as f32;
@@ -382,7 +373,7 @@ impl Component for TextArea {
         let thumb_y_offset =
             (self.visible_scrolling_offset / max_scroll) * (track_h as f32 - thumb_height);
 
-        // draw track
+        // draw scrollbar track
         for y in 0..track_h {
             for x in 0..scrollbar_width {
                 let idx = (area_y + y) * context.screen_size.width as usize + (track_x + x);
@@ -392,7 +383,7 @@ impl Component for TextArea {
             }
         }
 
-        // draw thumb
+        // draw scrollbar thumb
         let thumb_top = thumb_y_offset.round() as usize;
         for y in 0..(thumb_height as usize) {
             let ty = thumb_top + y;

@@ -8,14 +8,9 @@ pub mod column;
 pub mod row;
 
 use crate::component::Component;
-use crate::event::MouseInput;
-use crate::geometry::{Point, Size};
-use crate::view::BufferContext;
-use winit::event::KeyEvent;
 
 /// Container node for building widget trees
 pub trait Container {
-    //fn push<C: Component + 'static>(&mut self, component: C);
     fn push(&mut self, component: Box<dyn Component>);
 
     ///

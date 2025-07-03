@@ -11,7 +11,6 @@ use softbuffer::{Buffer, Context, Surface};
 use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
-use tokio::task::JoinHandle;
 use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
 use winit::event::{ElementState, Event, MouseButton, WindowEvent};
@@ -26,12 +25,11 @@ pub struct Application {
     pub root: Box<dyn ContainerComponent>,
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
-    //active_event_loop: Option<ActiveEventLoop>,
-    message_join_handle: Option<JoinHandle<()>>,
-    //view_context: dyn ViewContext,
     //
     // TODO: Separate UI rendering handle?
     //
+    //active_event_loop: Option<ActiveEventLoop>,
+    //message_join_handle: Option<JoinHandle<()>>,
     //winit_app:
 }
 
@@ -48,9 +46,7 @@ impl Application {
             root,
             cursor_pos: None,
             mouse_pressed: false,
-            //active_event_loop: None,
-            message_join_handle: None,
-            //view_context: (),
+            //message_join_handle: None,
         }
     }
 

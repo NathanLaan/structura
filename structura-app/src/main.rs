@@ -20,7 +20,7 @@ fn main() {
         width: 480,
         height: 300,
     };
-    let mut textarea1_clone = textarea1.clone();
+    let textarea1_clone = textarea1.clone();
     let textarea_component_wrapper = ComponentHandle::new(textarea1.clone());
 
     let mut test_button1 = Button::default().on_click(|| {
