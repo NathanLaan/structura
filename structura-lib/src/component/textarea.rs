@@ -1,5 +1,7 @@
 //!
+//! # Structura Component: TextArea.
 //!
+//! A basic editable, multiline text `Component`.
 //!
 
 use crate::component::{Component, ComponentStyle};
@@ -9,6 +11,15 @@ use crate::view::BufferContext;
 use rusttype::{PositionedGlyph, Scale, point};
 use winit::keyboard::{Key, NamedKey};
 
+///
+/// TextArea control for displaying editable multi-line, scrollable text.
+///
+/// - TODO: Horizontal scrolling.
+/// - TODO: Named field to toggle multiline.
+/// - TODO: Named field to disable scrolling.
+/// - TODO: Named field to disable editing.
+///
+#[derive(Debug, Clone)]
 pub struct TextArea {
     pub text: String,
     pub cursor_index: usize,
@@ -18,6 +29,8 @@ pub struct TextArea {
     component_style: ComponentStyle,
     component_style_focused: ComponentStyle,
     visible_scrolling_offset: f32,
+    pub dragging_scrollbar: bool,
+    pub last_mouse_y: f64,
 }
 
 impl TextArea {
@@ -46,7 +59,13 @@ impl TextArea {
                 border_width: 3,
             },
             visible_scrolling_offset: 0.0,
+            dragging_scrollbar: false,
+            last_mouse_y: 0.0,
         }
+    }
+
+    pub fn set_text(&mut self, text: String) {
+        self.text = text;
     }
 
     pub fn contains(&self, px: f64, py: f64) -> bool {
@@ -54,6 +73,14 @@ impl TextArea {
             && px < self.position.x + self.size.width as f64
             && py >= self.position.y
             && py < self.position.y + self.size.height as f64
+    }
+
+    fn is_scrollbar_hit(&self, x: f64, y: f64) -> bool {
+        let scroll_x = self.position.x + (self.size.width - 6) as f64;
+        x >= scroll_x
+            && x <= scroll_x + 6.0
+            && y >= self.position.y
+            && y <= self.position.y + self.size.height as f64
     }
 
     fn draw_background(&self, context: &mut BufferContext) {
@@ -82,7 +109,10 @@ impl TextArea {
         }
     }
 
-    fn draw_text(&self, context: &mut BufferContext) {
+    ///
+    /// Draws the `text` and returns the number of lines of text.
+    ///
+    fn draw_text(&self, context: &mut BufferContext) -> usize {
         let font_scale = Scale::uniform(context.font_size);
         let v_metrics = context.font.v_metrics(font_scale);
         let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
@@ -189,6 +219,8 @@ impl TextArea {
                 }
             }
         }
+
+        lines.iter().count()
     }
 
     fn basic_aa(bg: u32, fg: u32, alpha: f32) -> u32 {
@@ -324,7 +356,56 @@ impl Component for TextArea {
 
         self.draw_background(context);
         self.draw_border(context);
-        self.draw_text(context);
+        let total_lines = self.draw_text(context);
+
+        // Scrollbars
+        let font_scale = Scale::uniform(context.font_size);
+        let v_metrics = context.font.v_metrics(font_scale);
+        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
+        let content_height = line_height * total_lines as f32;
+
+        let line_height = (v_metrics.ascent - v_metrics.descent + v_metrics.line_gap).ceil();
+        let content_height = line_height * total_lines as f32;
+
+        let area_x = self.position.x as usize;
+        let area_y = self.position.y as usize;
+        let area_w = self.size.width as usize;
+        let area_h = self.size.height as usize;
+
+        let scrollbar_width = 20;
+        let track_x = area_x + area_w - scrollbar_width;
+        let track_h = area_h;
+
+        let visible_ratio = area_h as f32 / content_height;
+        let thumb_height = (visible_ratio * area_h as f32).clamp(10.0, area_h as f32);
+        let max_scroll = (content_height - area_h as f32).max(1.0);
+        let thumb_y_offset =
+            (self.visible_scrolling_offset / max_scroll) * (track_h as f32 - thumb_height);
+
+        // draw track
+        for y in 0..track_h {
+            for x in 0..scrollbar_width {
+                let idx = (area_y + y) * context.screen_size.width as usize + (track_x + x);
+                if idx < context.buffer.len() {
+                    context.buffer[idx] = 0xFFE0E0E0;
+                }
+            }
+        }
+
+        // draw thumb
+        let thumb_top = thumb_y_offset.round() as usize;
+        for y in 0..(thumb_height as usize) {
+            let ty = thumb_top + y;
+            if ty >= track_h {
+                break;
+            }
+            for x in 0..scrollbar_width {
+                let idx = (area_y + ty) * context.screen_size.width as usize + (track_x + x);
+                if idx < context.buffer.len() {
+                    context.buffer[idx] = 0x00FF0000;
+                }
+            }
+        }
 
         //
         // TODO: Draw cursor...

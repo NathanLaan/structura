@@ -7,12 +7,15 @@ mod label;
 pub mod text;
 pub mod textarea;
 
-use crate::event::{KeyboardInput, MouseInput};
+use crate::event::MouseInput;
 use crate::geometry::Point;
 use crate::geometry::Size;
 use crate::view::BufferContext;
 use rusttype::Font;
+use std::cell::RefCell;
+use std::rc::Rc;
 use winit::event::MouseScrollDelta;
+use winit::event::{KeyEvent, TouchPhase};
 
 pub fn load_font() -> Font<'static> {
     let font_data = include_bytes!("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
@@ -93,4 +96,57 @@ pub trait Component {
     /// Gets the size of the `Component` as a `structura_lib::geometry::Size`.
     ///
     fn get_size(&self) -> Size;
+}
+
+///
+/// `Rc<RefCell<T>>` wrapper for structs that implement the `Component` trait.
+///
+pub struct ComponentHandle<T: Component> {
+    inner: Rc<RefCell<T>>,
+}
+
+impl<T: Component> ComponentHandle<T> {
+    pub fn new(inner: Rc<RefCell<T>>) -> Self {
+        Self { inner }
+    }
+
+    pub fn inner(&self) -> Rc<RefCell<T>> {
+        self.inner.clone()
+    }
+}
+
+impl<T: Component> Component for ComponentHandle<T> {
+    fn handle_mouse_event(&mut self, input: MouseInput) {
+        self.inner.borrow_mut().handle_mouse_event(input);
+    }
+
+    fn handle_mouse_wheel_event(&mut self, event: &MouseScrollDelta, phase: &TouchPhase) {
+        self.inner
+            .borrow_mut()
+            .handle_mouse_wheel_event(event, phase);
+    }
+
+    fn handle_keyboard_event(&mut self, event: &KeyEvent) {
+        self.inner.borrow_mut().handle_keyboard_event(event);
+    }
+
+    fn draw(&self, context: &mut BufferContext) {
+        self.inner.borrow().draw(context);
+    }
+
+    fn set_position(&mut self, x: f64, y: f64) {
+        self.inner.borrow_mut().set_position(x, y);
+    }
+
+    fn get_position(&self) -> Point {
+        self.inner.borrow().get_position()
+    }
+
+    fn set_size(&mut self, width: usize, height: usize) {
+        self.inner.borrow_mut().set_size(width, height);
+    }
+
+    fn get_size(&self) -> Size {
+        self.inner.borrow().get_size()
+    }
 }
