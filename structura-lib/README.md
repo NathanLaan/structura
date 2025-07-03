@@ -45,3 +45,4 @@ The **Structura** GUI framework is based on cross-platform components, but has o
 - [ ] Event or Message system.
 - [ ] Consolidate text rendering.
 - [ ] Consolidate draw functions, such as `draw_border()`.
+- [ ] Resizeable containers that change size with the window size and automatically resize child components.

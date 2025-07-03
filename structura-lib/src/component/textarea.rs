@@ -4,7 +4,7 @@
 //! A basic editable, multiline text `Component`.
 //!
 
-use crate::component::{Component, ComponentStyle};
+use crate::component::{Component, ComponentState, ComponentStyle};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -26,6 +26,7 @@ pub struct TextArea {
     pub position: Point,
     pub size: Size,
     pub focused: bool,
+    component_state: ComponentState,
     component_style: ComponentStyle,
     component_style_focused: ComponentStyle,
     visible_scrolling_offset: f32,
@@ -44,6 +45,7 @@ impl TextArea {
                 height: 50,
             },
             focused: false,
+            component_state: ComponentState::Active,
             component_style: ComponentStyle {
                 back_color: 0x0033CC,
                 text_color: 0x000000,

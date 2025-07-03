@@ -179,12 +179,7 @@ impl Button {
         //
         // TODO: Separate ComponentStyles per ComponentState
         //
-        let background_color = match self.component_state {
-            ComponentState::Active => self.component_style.back_color,
-            ComponentState::Hovered => 0x0077CC,
-            ComponentState::Pressed => 0x0099CC,
-            ComponentState::Disabled => 0xCCCCCC,
-        };
+        let background_color = ComponentStyle::default_for(&self.component_state).back_color;
         for y in fill_y0..fill_y1 {
             for x in fill_x0..fill_x1 {
                 let idx = y * screen_width + x;
@@ -255,6 +250,7 @@ impl Button {
                     handler();
                 }
             }
+            ComponentState::Focused => {}
             ComponentState::Disabled => {}
         }
     }
