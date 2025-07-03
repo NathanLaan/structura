@@ -81,8 +81,9 @@ impl Button {
     ///
     /// TODO: Button contents should be separate from the Button definition, with TextButton and ImageButton/IconButton options.
     ///
-    pub fn set_text(&mut self, text: String) {
+    pub fn set_text(mut self, text: String) -> Self {
         self.text = text;
+        self
     }
 
     pub fn update_state(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
