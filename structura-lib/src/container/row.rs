@@ -35,6 +35,9 @@ impl Row {
 }
 
 impl Container for Row {
+    ///
+    /// Add the specified `Component` as a child to the `Container`.
+    ///
     fn push(&mut self, component: Box<dyn Component>) {
         self.children.push(component);
         self.update_layout();

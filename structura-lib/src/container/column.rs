@@ -7,6 +7,7 @@ use crate::container::Container;
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
+use std::ops::Deref;
 
 ///
 /// A Column of elements
@@ -36,6 +37,9 @@ impl Column {
 }
 
 impl Container for Column {
+    ///
+    /// Add the specified `Component` as a child to the `Container`.
+    ///
     fn push(&mut self, component: Box<dyn Component>) {
         self.children.push(component);
         self.update_layout();

@@ -9,8 +9,13 @@ pub mod row;
 
 use crate::component::Component;
 
-/// Container node for building widget trees
+///
+/// Container node for building UI component trees.
+///
 pub trait Container {
+    ///
+    /// Add the specified `Component` as a child to the `Container`.
+    ///
     fn push(&mut self, component: Box<dyn Component>);
 
     ///
