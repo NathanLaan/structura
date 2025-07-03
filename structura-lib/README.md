@@ -17,6 +17,15 @@ The **Structura** GUI framework is based on cross-platform components, but has o
 
 **Structura** is being loosely designed around a Model-View-Controller (MVC) architecture.
 
+The **Structura** UI components are designed around a fluent API where possible. For example:
+```rust
+let button1 = Button::default()
+    .set_text("Button 1!".to_string())
+    .on_click(|| {
+        println!("button1.on_click()");
+    });
+```
+
 ### Traits
 
 - `Component`: Displays output to users and/or allows users to interact. Interaction may be via mouse and/or keyboard.
