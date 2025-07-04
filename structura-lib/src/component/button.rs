@@ -5,7 +5,7 @@
 //!
 
 use crate::component::{Component, ComponentState, ComponentStyle};
-use crate::event::{Callback, MouseInput};
+use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{Scale, point};
@@ -19,8 +19,6 @@ pub struct Button {
     pub text: String,
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
-    pub on_clicked: Option<Callback<()>>,
-    /// Optional event handler
     on_click: Option<Box<dyn FnMut()>>,
 }
 
@@ -39,7 +37,6 @@ impl Default for Button {
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
             on_click: None,
-            on_clicked: None,
         }
     }
 }
@@ -65,7 +62,6 @@ impl Button {
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
             on_click: None,
-            on_clicked: None,
         }
     }
 

@@ -7,7 +7,6 @@ use crate::container::Container;
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
-use std::ops::Deref;
 
 ///
 /// A Column of elements

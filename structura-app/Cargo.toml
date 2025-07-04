@@ -1,14 +1,12 @@
 [package]
 name = "structura-app"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 license = "MIT"
 authors = ["Nathan Laan"]
 homepage = "https://github.com/NathanLaan/structura/"
 repository = "https://github.com/NathanLaan/structura/"
-description = "A Rust GUI Framework."
+description = "A test app for the Structura Rust GUI Framework."
 
 [dependencies]
 structura-lib = { path = "../structura-lib" }
-winit = { version="0.30" }
-softbuffer = "0.4.6"

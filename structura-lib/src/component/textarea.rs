@@ -19,7 +19,6 @@ use winit::keyboard::{Key, NamedKey};
 /// - TODO: Named field to disable scrolling.
 /// - TODO: Named field to disable editing.
 ///
-#[derive(Debug, Clone)]
 pub struct TextArea {
     pub text: String,
     pub cursor_index: usize,
@@ -33,6 +32,27 @@ pub struct TextArea {
     pub dragging_scrollbar: bool,
     pub last_mouse_y: f64,
     scroll_amount_y: f32,
+    on_text_change: Option<Box<dyn FnMut()>>,
+}
+
+impl Clone for TextArea {
+    fn clone(&self) -> Self {
+        Self {
+            text: self.text.clone(),
+            cursor_index: self.cursor_index.clone(),
+            position: self.position.clone(),
+            size: self.size.clone(),
+            focused: self.focused.clone(),
+            component_state: self.component_state.clone(),
+            component_style: self.component_style.clone(),
+            component_style_focused: self.component_style_focused.clone(),
+            visible_scrolling_offset: self.visible_scrolling_offset.clone(),
+            dragging_scrollbar: self.dragging_scrollbar.clone(),
+            last_mouse_y: self.last_mouse_y.clone(),
+            scroll_amount_y: self.scroll_amount_y.clone(),
+            on_text_change: None, // Cannot clone!
+        }
+    }
 }
 
 impl TextArea {
@@ -65,7 +85,16 @@ impl TextArea {
             dragging_scrollbar: false,
             last_mouse_y: 0.0,
             scroll_amount_y: 10.0,
+            on_text_change: None,
         }
+    }
+
+    ///
+    /// Add event handler.
+    ///
+    pub fn on_text_change<F: FnMut() + 'static>(mut self, f: F) -> Self {
+        self.on_text_change = Some(Box::new(f));
+        self
     }
 
     pub fn set_text(&mut self, text: String) {
@@ -109,6 +138,22 @@ impl TextArea {
                     };
                 }
             }
+        }
+    }
+
+    ///
+    /// Internal: Call `self.on_text_change` event handler.
+    ///
+    fn handle_event(&mut self) {
+        match self.component_state {
+            ComponentState::Active | ComponentState::Focused => {
+                if let Some(handler) = self.on_text_change.as_mut() {
+                    handler();
+                }
+            }
+            ComponentState::Disabled => {}
+            ComponentState::Hovered => {}
+            ComponentState::Pressed => {}
         }
     }
 
@@ -312,11 +357,13 @@ impl Component for TextArea {
             match &event.logical_key {
                 Key::Character(s) => {
                     self.text.push_str(s);
+                    self.handle_event();
                 }
                 Key::Named(named_key) => {
                     match named_key {
                         NamedKey::Space => {
                             self.text.push_str(" ");
+                            self.handle_event();
                         }
                         NamedKey::Enter => {
                             // TODO: Platform specific newline
@@ -328,6 +375,7 @@ impl Component for TextArea {
                             // TODO: Event to support undo/redo
                             //
                             let _char = self.text.pop();
+                            self.handle_event();
                         }
                         NamedKey::Delete => {
                             //
