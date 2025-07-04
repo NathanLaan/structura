@@ -21,7 +21,6 @@ fn main() {
         height: 300,
     };
     let textarea1_clone = textarea1.clone();
-    let textarea_component_wrapper = ComponentHandle::new(textarea1.clone());
 
     let test_button1 = Button::default()
         .set_text("Button 1!".to_string())
@@ -46,7 +45,7 @@ fn main() {
     row1.push(Box::new(button_set_text));
 
     let mut row2 = Row::new(20.0, 20.0, 1, 200);
-    row2.push(Box::new(textarea_component_wrapper));
+    row2.push(Box::new(ComponentHandle::new(textarea1)));
 
     let mut col = Column::new(0.0, 0.0, 10, 1000, 1000);
     col.push(Box::new(row1));
