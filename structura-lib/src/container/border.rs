@@ -84,19 +84,19 @@ impl Component for BorderLayout {
     }
 
     fn draw(&self, context: &mut BufferContext) {
-        if let Some(comp) = self.east.as_mut() {
+        if let Some(comp) = self.east.as_deref() {
             comp.draw(context);
         }
-        if let Some(comp) = self.west.as_mut() {
+        if let Some(comp) = self.west.as_deref() {
             comp.draw(context);
         };
-        if let Some(comp) = self.north.as_mut() {
+        if let Some(comp) = self.north.as_deref() {
             comp.draw(context);
         }
-        if let Some(comp) = self.south.as_mut() {
+        if let Some(comp) = self.south.as_deref() {
             comp.draw(context);
         }
-        if let Some(comp) = self.center.as_mut() {
+        if let Some(comp) = self.center.as_deref() {
             comp.draw(context);
         }
     }
