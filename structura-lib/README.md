@@ -35,7 +35,7 @@ let button1 = Button::default()
 ### Structs
 
 - [x] Row: ContainerComponent
-- [ ] Column: ContainerComponent
+- [x] Column: ContainerComponent
 - [ ] BorderLayout: ContainerComponent (Top, Bottom, Left, Right, Center)
 - [ ] Tabs: ContainerComponent
 - [x] Button: Component
@@ -55,3 +55,4 @@ let button1 = Button::default()
 - [ ] Consolidate text rendering.
 - [ ] Consolidate draw functions, such as `draw_border()`.
 - [ ] Resizeable containers that change size with the window size and automatically resize child components.
+- [ ] Add "parent" field to Containers. Resizeable containers can listen for parent container resizing.

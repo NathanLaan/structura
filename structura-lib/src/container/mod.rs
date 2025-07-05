@@ -4,7 +4,9 @@
 //! Container types
 //!
 
+mod border;
 pub mod column;
+mod panel;
 pub mod row;
 
 use crate::component::Component;
