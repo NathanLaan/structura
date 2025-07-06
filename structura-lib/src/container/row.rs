@@ -42,6 +42,20 @@ impl Container for Row {
         self.children.push(component);
         self.update_layout();
     }
+    fn fills_parent_container(&self) -> bool {
+        false
+    }
+
+    ///
+    /// Called when the parent `Container` resizes.
+    ///
+    /// Passes in the parent container `width` and `height`.
+    ///
+    fn resize(&mut self, width: usize, height: usize) {
+        // for child in self.children.iter_mut() {
+        //     child.resize(width, height);
+        // }
+    }
 
     ///
     /// Force the `Layout` to update the position of controls within the `Layout`.
@@ -137,8 +151,8 @@ impl Component for Row {
             max_x = max_x.max(component.get_position().x + component.get_size().width as f64);
             max_y = max_y.max(component.get_position().y + component.get_size().height as f64);
         }
-        let max_w = (max_x - min_x).ceil() as u32;
-        let max_h = (max_y - min_y).ceil() as u32;
+        let max_w = (max_x - min_x).ceil() as u32 + (self.spacing * 2) as u32;
+        let max_h = (max_y - min_y).ceil() as u32 + (self.spacing * 2) as u32;
         Size {
             width: max_w,
             height: max_h,

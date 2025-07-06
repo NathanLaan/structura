@@ -12,7 +12,7 @@ use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
 use winit::application::ApplicationHandler;
-use winit::dpi::LogicalSize;
+use winit::dpi::{LogicalSize, PhysicalSize};
 use winit::event::{ElementState, Event, MouseButton, WindowEvent};
 use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::EventLoop;
@@ -261,6 +261,18 @@ impl Application {
                 window_id,
             } if window_id == window.id() => {
                 self.root.handle_mouse_wheel_event(&delta, &phase);
+                window.request_redraw();
+            }
+
+            Event::WindowEvent {
+                event: WindowEvent::Resized(size),
+                window_id,
+            } if window_id == window.id() => {
+                if self.root.fills_parent_container() {
+                    self.root
+                        .set_size(size.width as usize, size.height as usize);
+                }
+                self.root.resize(size.width as usize, size.height as usize);
                 window.request_redraw();
             }
 

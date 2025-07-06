@@ -43,6 +43,16 @@ impl Container for Column {
         self.children.push(component);
         self.update_layout();
     }
+    fn fills_parent_container(&self) -> bool {
+        false
+    }
+
+    ///
+    /// Called when the parent `Container` resizes.
+    ///
+    /// Passes in the parent container `width` and `height`.
+    ///
+    fn resize(&mut self, width: usize, height: usize) {}
 
     ///
     /// Force the `Layout` to update the position of controls within the `Layout`.

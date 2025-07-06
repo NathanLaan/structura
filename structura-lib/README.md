@@ -36,7 +36,8 @@ let button1 = Button::default()
 
 - [x] Row: ContainerComponent
 - [x] Column: ContainerComponent
-- [ ] BorderLayout: ContainerComponent (Top, Bottom, Left, Right, Center)
+- [x] **(Work in Progress)**: BorderLayout: ContainerComponent (Top, Bottom, Left, Right, Center)
+- [x] **(Work in Progress)**: Panel: `ContainerComponent` that holds a single `Component`.
 - [ ] Tabs: ContainerComponent
 - [x] Button: Component
 - [ ] TextArea: Component

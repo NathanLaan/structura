@@ -9,7 +9,9 @@ use structura_lib::component::ComponentHandle;
 use structura_lib::component::button::Button;
 use structura_lib::component::textarea::TextArea;
 use structura_lib::container::Container;
+use structura_lib::container::border::BorderLayout;
 use structura_lib::container::column::Column;
+use structura_lib::container::panel::Panel;
 use structura_lib::container::row::Row;
 use structura_lib::geometry::{Point, Size};
 
@@ -44,13 +46,19 @@ fn main() {
     row1.push(Box::new(test_button2));
     row1.push(Box::new(button_set_text));
 
-    let mut row2 = Row::new(20.0, 20.0, 1, 200);
-    row2.push(Box::new(ComponentHandle::new(textarea1)));
+    let mut panel = Panel::new();
+    panel.push(Box::new(ComponentHandle::new(textarea1)));
 
-    let mut col = Column::new(0.0, 0.0, 10, 1000, 1000);
-    col.push(Box::new(row1));
-    col.push(Box::new(row2));
+    let mut main_container = BorderLayout::new();
+    main_container.set_north(Box::new(row1));
+    main_container.set_center(Box::new(panel));
 
-    let mut application = Application::new(Box::new(col));
+    // let mut row2 = Row::new(20.0, 20.0, 1, 200);
+    // row2.push(Box::new(ComponentHandle::new(textarea1)));
+    // let mut col = Column::new(0.0, 0.0, 10, 1000, 1000);
+    // col.push(Box::new(row1));
+    // col.push(Box::new(row2));
+    // let mut application = Application::new(Box::new(col));
+    let mut application = Application::new(Box::new(main_container));
     application.run();
 }
