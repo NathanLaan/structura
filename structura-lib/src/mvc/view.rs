@@ -1,5 +1,5 @@
 //!
-//! Structura. View structures.
+//! Structura. View types.
 //!
 
 use crate::geometry::Size;
@@ -9,7 +9,7 @@ use std::rc::Rc;
 use winit::window::Window;
 
 ///
-/// A buffer, provided as a context, with associated properties.
+/// A drawing buffer, provided as a context, with associated fields.
 ///
 pub struct BufferContext<'context> {
     pub buffer: Buffer<'context, Rc<Window>, Rc<Window>>,

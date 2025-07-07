@@ -29,20 +29,22 @@ let button1 = Button::default()
 ### Traits
 
 - `Component`: Displays output to users and/or allows users to interact. Interaction may be via mouse and/or keyboard.
-- `Container`: Can hold a list of child items.
+- `Container`: Can hold a list of child containers or components.
 - `ContainerComponent`: Composition trait of `Container` and `Component`.
 
 ### Structs
 
-- [x] Row: ContainerComponent
-- [x] Column: ContainerComponent
-- [x] **(Work in Progress)**: BorderLayout: ContainerComponent (Top, Bottom, Left, Right, Center)
-- [x] **(Work in Progress)**: Panel: `ContainerComponent` that holds a single `Component`.
-- [ ] Tabs: ContainerComponent
-- [x] Button: Component
-- [ ] TextArea: Component
-- [ ] TextField: Component (subset of `TextArea`?)
-- [ ] SplitPane: ContainerComponent. Vertical or Horizontal. Contains two children.
+- [x] ContainerComponent: Row
+- [x] ContainerComponent: Column
+- [x] ContainerComponent: BorderLayout (Top, Bottom, Left, Right, Center)
+- [x] ContainerComponent: Panel: Holds a single `Component`.
+- [ ] ContainerComponent: SplitPane: Vertical or Horizontal. Contains two children.
+- [ ] ContainerComponent: Tabs
+- [x] Component: Button
+- [ ] Component: ImageButton (Generalize the Button to display Text or Image?)
+- [ ] Component: Image
+- [ ] Component: TextArea
+- [ ] Component: TextField (subset of `TextArea`?)
 
 ### Core API
 
@@ -57,3 +59,5 @@ let button1 = Button::default()
 - [ ] Consolidate draw functions, such as `draw_border()`.
 - [ ] Resizeable containers that change size with the window size and automatically resize child components.
 - [ ] Add "parent" field to Containers. Resizeable containers can listen for parent container resizing.
+- [ ] Add font field to TextArea.
+- [ ] Modify TextArea to make scrollbars clickable and draggable.
