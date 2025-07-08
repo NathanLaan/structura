@@ -44,7 +44,7 @@ pub trait Container {
 }
 
 ///
-/// Combination `Container` + `Component` trait.
+/// Composite `Container` + `Component` trait.
 ///
 pub trait ContainerComponent: Container + Component {}
 impl<T> ContainerComponent for T where T: Container + Component {}
