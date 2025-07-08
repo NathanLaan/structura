@@ -244,6 +244,7 @@ impl Application {
                         }
                         ElementState::Released => {
                             mouse_input.pressed = false;
+                            mouse_input.just_released = true;
                         }
                     }
                     self.root.handle_mouse_event(mouse_input);

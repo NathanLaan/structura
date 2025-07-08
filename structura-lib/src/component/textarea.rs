@@ -30,9 +30,10 @@ pub struct TextArea {
     component_style_focused: ComponentStyle,
     visible_scrolling_offset: f32,
     pub dragging_scrollbar: bool,
-    pub last_mouse_y: f64,
+    pub last_mouse_y: Option<f64>,
     scroll_amount_y: f32,
     on_text_change: Option<Box<dyn FnMut()>>,
+    scrollbar_width: usize,
 }
 
 impl Clone for TextArea {
@@ -51,6 +52,7 @@ impl Clone for TextArea {
             last_mouse_y: self.last_mouse_y.clone(),
             scroll_amount_y: self.scroll_amount_y.clone(),
             on_text_change: None, // Cannot clone!
+            scrollbar_width: self.scrollbar_width.clone(),
         }
     }
 }
@@ -83,9 +85,10 @@ impl TextArea {
             },
             visible_scrolling_offset: 0.0,
             dragging_scrollbar: false,
-            last_mouse_y: 0.0,
+            last_mouse_y: None,
             scroll_amount_y: 10.0,
             on_text_change: None,
+            scrollbar_width: 20,
         }
     }
 
@@ -108,10 +111,10 @@ impl TextArea {
             && py < self.position.y + self.size.height as f64
     }
 
-    fn is_scrollbar_contains(&self, x: f64, y: f64) -> bool {
-        let scroll_x = self.position.x + (self.size.width - 6) as f64;
+    fn scrollbar_contains(&self, x: f64, y: f64) -> bool {
+        let scroll_x = self.position.x + (self.size.width - self.scrollbar_width as u32) as f64;
         x >= scroll_x
-            && x <= scroll_x + 6.0
+            && x <= scroll_x + self.scrollbar_width as f64
             && y >= self.position.y
             && y <= self.position.y + self.size.height as f64
     }
@@ -331,7 +334,20 @@ impl Component for TextArea {
     fn handle_mouse_event(&mut self, input: MouseInput) {
         if input.pressed {
             self.focused = self.contains(input.position.x, input.position.y);
+            self.dragging_scrollbar = self.scrollbar_contains(input.position.x, input.position.y);
         }
+        if self.dragging_scrollbar {
+            if let Some(last_y) = self.last_mouse_y {
+                self.visible_scrolling_offset = (last_y - self.position.y) as f32;
+            }
+            self.last_mouse_y = Some(input.position.y);
+        }
+        if input.just_released {
+            self.focused = self.contains(input.position.x, input.position.y);
+            self.dragging_scrollbar = false;
+            self.last_mouse_y = None;
+        }
+        println!("self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}", input, self.dragging_scrollbar, self.visible_scrolling_offset, input.position.y, self.last_mouse_y);
     }
 
     fn handle_mouse_wheel_event(
@@ -418,8 +434,7 @@ impl Component for TextArea {
         let area_w = self.size.width as usize;
         let area_h = self.size.height as usize;
 
-        let scrollbar_width = 20;
-        let track_x = area_x + area_w - scrollbar_width;
+        let track_x = area_x + area_w - self.scrollbar_width;
         let track_h = area_h;
 
         let visible_ratio = area_h as f32 / content_height;
@@ -430,7 +445,7 @@ impl Component for TextArea {
 
         // draw scrollbar track
         for y in 0..track_h {
-            for x in 0..scrollbar_width {
+            for x in 0..self.scrollbar_width {
                 let idx = (area_y + y) * context.screen_size.width as usize + (track_x + x);
                 if idx < context.buffer.len() {
                     context.buffer[idx] = 0xFFE0E0E0;
@@ -445,7 +460,7 @@ impl Component for TextArea {
             if ty >= track_h {
                 break;
             }
-            for x in 0..scrollbar_width {
+            for x in 0..self.scrollbar_width {
                 let idx = (area_y + ty) * context.screen_size.width as usize + (track_x + x);
                 if idx < context.buffer.len() {
                     context.buffer[idx] = 0x00FF0000;
