@@ -20,7 +20,7 @@ use winit::keyboard::{Key, NamedKey};
 /// - TODO: Named field to disable editing.
 ///
 pub struct TextArea {
-    pub text: String,
+    text: String,
     pub cursor_index: usize,
     pub position: Point,
     pub size: Size,
@@ -100,9 +100,41 @@ impl TextArea {
         self
     }
 
-    pub fn set_text(&mut self, text: String) {
-        self.text = text;
+    ///
+    /// Internal: Call `self.on_text_change` event handler.
+    ///
+    fn handle_event(&mut self) {
+        match self.component_state {
+            ComponentState::Active | ComponentState::Focused => {
+                if let Some(handler) = self.on_text_change.as_mut() {
+                    handler();
+                }
+            }
+            ComponentState::Disabled => {}
+            ComponentState::Hovered => {}
+            ComponentState::Pressed => {}
+        }
     }
+
+    ///
+    /// Insert the specified `String`, update the cursor position, and trigger
+    /// the TextArea `on_text_change()` event.
+    ///
+    pub fn insert_str(&mut self, str: &str) {
+        self.text.insert_str(self.cursor_index, str);
+        self.cursor_index += str.len();
+        self.handle_event();
+    }
+
+    // pub fn push_str(&mut self, str: &str) {
+    //     self.text.insert_str(self.cursor_index, str);
+    //     self.cursor_index += str.len();
+    //     self.handle_event();
+    // }
+
+    // pub fn set_text(&mut self, text: String) {
+    //     self.text = text;
+    // }
 
     pub fn contains(&self, px: f64, py: f64) -> bool {
         px >= self.position.x
@@ -141,22 +173,6 @@ impl TextArea {
                     };
                 }
             }
-        }
-    }
-
-    ///
-    /// Internal: Call `self.on_text_change` event handler.
-    ///
-    fn handle_event(&mut self) {
-        match self.component_state {
-            ComponentState::Active | ComponentState::Focused => {
-                if let Some(handler) = self.on_text_change.as_mut() {
-                    handler();
-                }
-            }
-            ComponentState::Disabled => {}
-            ComponentState::Hovered => {}
-            ComponentState::Pressed => {}
         }
     }
 
@@ -347,7 +363,7 @@ impl Component for TextArea {
             self.dragging_scrollbar = false;
             self.last_mouse_y = None;
         }
-        println!("self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}", input, self.dragging_scrollbar, self.visible_scrolling_offset, input.position.y, self.last_mouse_y);
+        //println!("self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}", input, self.dragging_scrollbar, self.visible_scrolling_offset, input.position.y, self.last_mouse_y);
     }
 
     fn handle_mouse_wheel_event(
@@ -372,25 +388,22 @@ impl Component for TextArea {
         if self.focused && event.state == winit::event::ElementState::Pressed {
             match &event.logical_key {
                 Key::Character(s) => {
-                    self.text.push_str(s);
-                    self.handle_event();
+                    self.insert_str(s);
                 }
                 Key::Named(named_key) => {
                     match named_key {
                         NamedKey::Space => {
-                            self.text.push_str(" ");
-                            self.handle_event();
+                            self.insert_str(" ");
                         }
                         NamedKey::Enter => {
                             // TODO: Platform specific newline
                         }
                         NamedKey::Backspace => {
                             //
-                            // TODO: Delete at the cursor!
-                            //
                             // TODO: Event to support undo/redo
                             //
                             let _char = self.text.pop();
+                            self.cursor_index -= 1;
                             self.handle_event();
                         }
                         NamedKey::Delete => {
@@ -475,8 +488,15 @@ impl Component for TextArea {
             let cx = px + self.cursor_index * 6;
             let cy = py + 10;
             if cx < screen_w && cy < screen_h {
-                context.buffer[cy * screen_w + cx] = 0xFFFF0000; // red cursor
+                context.buffer[cy * screen_w + cx] = 0x00FF0000; // red cursor
             }
+            if cx < screen_w && cy < screen_h {
+                context.buffer[cy * screen_w + cx + 1] = 0x00FF0000; // red cursor
+            }
+            if cx < screen_w && cy < screen_h {
+                context.buffer[cy * screen_w + cx + 2] = 0x00FF0000; // red cursor
+            }
+            println!("self.cursor_index = {} cx: {} cy: {} ", self.cursor_index, cx, cy);
         }
     }
 
