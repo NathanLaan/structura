@@ -2,6 +2,7 @@
 //! Structura. View types.
 //!
 
+use crate::component::style::{ComponentTheme, DefaultComponentTheme};
 use crate::geometry::Size;
 use rusttype::Font;
 use softbuffer::Buffer;
@@ -16,4 +17,5 @@ pub struct BufferContext<'context> {
     pub screen_size: Size,
     pub font: &'context Font<'context>,
     pub font_size: f32,
+    pub theme: &'context Box<dyn ComponentTheme>,
 }

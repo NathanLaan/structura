@@ -12,43 +12,90 @@ pub struct Color {
 }
 
 impl Color {
-
+    ///
+    /// Constructor.
+    ///
     pub fn new(value: u32) -> Self {
         Color { value }
     }
 
+    ///
+    /// Darken the color by extracting each channel, and adjusting each channel by an
+    /// internal fixed `delta` factor.
+    ///
     pub fn darken(&self) -> Color {
         Color::adjust_color_brightness(&self, -0.2)
     }
 
+    ///
+    /// Lighten the color by extracting each channel, and adjusting each channel by an
+    /// internal fixed `delta` factor.
+    ///
     pub fn lighten(&self) -> Color {
         Color::adjust_color_brightness(&self, 0.2)
     }
 
+    ///
+    /// Adjust the color by extracting each channel, and adjusting each channel by the
+    /// specified `delta` factor, which must be between -1.0 and +1.0.
+    ///
+    /// TODO: Bounds checking on `delta`.
+    ///
     fn adjust_color_brightness(color: &Color, delta: f32) -> Color {
         let adjusted_value = Color::adjust_color_value_brightness(color.value, delta);
-        Color { value: adjusted_value }
+        Color {
+            value: adjusted_value,
+        }
     }
 
+    ///
+    /// Adjust the color by extracting each channel, and adjusting each channel by the
+    /// specified `delta` factor, which must be between -1.0 and +1.0.
+    ///
+    /// TODO: Bounds checking on `delta`.
+    ///
     fn adjust_color_value_brightness(color: u32, delta: f32) -> u32 {
-        let alpha = (color >> 24) & 0xFF;
-        let red = ((color >> 16) & 0xFF) as f32;
-        let green = ((color >> 8) & 0xFF) as f32;
-        let blue = (color & 0xFF) as f32;
-
+        let a = (color >> 24) & 0xFF;
+        let r = ((color >> 16) & 0xFF) as f32;
+        let g = ((color >> 8) & 0xFF) as f32;
+        let b = (color & 0xFF) as f32;
         let scale = if delta < 0.0 {
             1.0 + delta // darken
         } else {
             1.0 - delta
         };
-
         let offset = if delta < 0.0 { 0.0 } else { 255.0 * delta };
+        let new_red = (r * scale + offset).clamp(0.0, 255.0) as u32;
+        let new_green = (g * scale + offset).clamp(0.0, 255.0) as u32;
+        let new_blue = (b * scale + offset).clamp(0.0, 255.0) as u32;
+        (a << 24) | (new_red << 16) | (new_green << 8) | new_blue
+    }
+}
 
-        let new_red = (red * scale + offset).clamp(0.0, 255.0) as u32;
-        let new_green = (green * scale + offset).clamp(0.0, 255.0) as u32;
-        let new_blue = (blue * scale + offset).clamp(0.0, 255.0) as u32;
+///
+/// A Theme consists of a mapping between each possible `ComponentState`
+///
+pub trait ComponentTheme {
+    fn style_for(&self, state: &ComponentState) -> ComponentStyle;
+}
 
-        (alpha << 24) | (new_red << 16) | (new_green << 8) | new_blue
+pub struct DefaultComponentTheme;
+
+impl Default for DefaultComponentTheme {
+    fn default() -> Self {
+        DefaultComponentTheme
+    }
+}
+
+impl ComponentTheme for DefaultComponentTheme {
+    fn style_for(&self, state: &ComponentState) -> ComponentStyle {
+        match state {
+            ComponentState::Active => ComponentStyle::STYLE_ACTIVE,
+            ComponentState::Hovered => ComponentStyle::STYLE_HOVERED,
+            ComponentState::Pressed => ComponentStyle::STYLE_PRESSED,
+            ComponentState::Focused => ComponentStyle::STYLE_FOCUSED,
+            ComponentState::Disabled => ComponentStyle::STYLE_DISABLED,
+        }
     }
 }
 

@@ -4,8 +4,8 @@
 //! A basic editable, multiline text `Component`.
 //!
 
-use crate::component::{Component, ComponentState};
 use crate::component::style::{Color, ComponentStyle};
+use crate::component::{Component, ComponentState};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -264,8 +264,12 @@ impl TextArea {
                     point(start_x as f32, base_y + line_height * i as f32),
                 )
                 .collect();
-            
-            let text_color = if self.focused {self.component_style_focused.text_color} else {self.component_style.text_color};
+
+            let text_color = if self.focused {
+                self.component_style_focused.text_color
+            } else {
+                self.component_style.text_color
+            };
 
             for glyph in glyphs {
                 if let Some(bb) = glyph.pixel_bounding_box() {
@@ -501,7 +505,10 @@ impl Component for TextArea {
             if cx < screen_w && cy < screen_h {
                 context.buffer[cy * screen_w + cx + 2] = 0x00FF0000; // red cursor
             }
-            println!("self.cursor_index = {} cx: {} cy: {} ", self.cursor_index, cx, cy);
+            println!(
+                "self.cursor_index = {} cx: {} cy: {} ",
+                self.cursor_index, cx, cy
+            );
         }
     }
 

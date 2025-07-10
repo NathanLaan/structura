@@ -1,12 +1,12 @@
 //!
-//! Structura Components.
+//! **Structura** GUI Components.
 //!
 
 pub mod button;
 pub mod label;
+pub mod style;
 pub mod text;
 pub mod textarea;
-pub mod style;
 
 use crate::event::MouseInput;
 use crate::geometry::Point;
@@ -18,6 +18,11 @@ use std::rc::Rc;
 use winit::event::MouseScrollDelta;
 use winit::event::{KeyEvent, TouchPhase};
 
+///
+/// Utility function to load a `rusttype::Font`.
+///
+/// TODO: Fonts needs to be a fundamental property of `Component`s that display text.
+///
 pub fn load_font() -> Font<'static> {
     let font_data = include_bytes!("/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf");
     let font = Font::try_from_bytes(font_data as &[u8]).unwrap();
@@ -32,7 +37,6 @@ pub enum ComponentState {
     Focused,
     Disabled,
 }
-
 
 ///
 /// Base trait for all UI components

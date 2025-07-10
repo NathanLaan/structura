@@ -4,6 +4,7 @@
 
 use crate::component;
 use crate::component::Component;
+use crate::component::style::{ComponentTheme, DefaultComponentTheme};
 use crate::container::ContainerComponent;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -17,7 +18,6 @@ use winit::event::{ElementState, Event, MouseButton, WindowEvent};
 use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::EventLoop;
 use winit::window::{Window, WindowAttributes, WindowId};
-
 //
 // TODO: Track the component that currently has focus?
 //
@@ -29,6 +29,7 @@ pub struct Application {
     pub root: Box<dyn ContainerComponent>,
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
+    pub theme: Box<dyn ComponentTheme>,
     //
     // TODO: Separate UI rendering handle?
     //
@@ -50,6 +51,7 @@ impl Application {
             root,
             cursor_pos: None,
             mouse_pressed: false,
+            theme: Box::new(DefaultComponentTheme::default()),
             //message_join_handle: None,
         }
     }
@@ -172,6 +174,7 @@ impl Application {
                     screen_size: size,
                     font: &component::load_font(),
                     font_size: 32.0,
+                    theme: &self.theme,
                 };
                 self.root.draw(&mut buffer_context);
                 buffer_context.buffer.present().unwrap();

@@ -14,7 +14,6 @@ pub mod view;
 #[path = "mvc/controller.rs"]
 pub mod controller;
 
-
 #[path = "draw/device.rs"]
 pub mod device;
 
