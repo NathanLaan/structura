@@ -5,7 +5,7 @@
 //!
 
 use crate::component::{Component, ComponentState};
-use crate::component::style::ComponentStyle;
+use crate::component::style::{Color, ComponentStyle};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
@@ -71,15 +71,17 @@ impl TextArea {
             focused: false,
             component_state: ComponentState::Active,
             component_style: ComponentStyle {
+                text: Color::new(0xFF333333),
                 back_color: 0x0033CC,
-                text_color: 0x000000,
+                text_color: 0xFF333333,
                 cursor_color: 0x000000,
                 border_color: 0x000000,
                 border_width: 1,
             },
             component_style_focused: ComponentStyle {
+                text: Color::new(0xFF000000),
                 back_color: 0x0033CC,
-                text_color: 0xCCCCCC,
+                text_color: 0xFF000000,
                 cursor_color: 0xCCCCCC,
                 border_color: 0xFF3333,
                 border_width: 3,
@@ -262,6 +264,8 @@ impl TextArea {
                     point(start_x as f32, base_y + line_height * i as f32),
                 )
                 .collect();
+            
+            let text_color = if self.focused {self.component_style_focused.text_color} else {self.component_style.text_color};
 
             for glyph in glyphs {
                 if let Some(bb) = glyph.pixel_bounding_box() {
@@ -276,7 +280,7 @@ impl TextArea {
                             let idx = y as usize * context.screen_size.width as usize + x as usize;
                             if idx < context.buffer.len() {
                                 context.buffer[idx] =
-                                    TextArea::basic_aa(context.buffer[idx], 0x000000, v);
+                                    TextArea::basic_aa(context.buffer[idx], text_color, v);
                             }
                         }
                     });
