@@ -21,6 +21,7 @@ pub struct Button {
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
     on_click: Option<Box<dyn FnMut()>>,
+    mouse_dragging: bool,
 }
 
 impl Default for Button {
@@ -38,6 +39,7 @@ impl Default for Button {
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
             on_click: None,
+            mouse_dragging: false,
         }
     }
 }
@@ -63,6 +65,7 @@ impl Button {
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
             on_click: None,
+            mouse_dragging: false,
         }
     }
 
@@ -99,12 +102,13 @@ impl Button {
     /// Update `ComponentState` based on mouse position and state.
     ///
     pub fn handle_mouse_event(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
+        println!("Button Event: {}", mouse_pressed);
         if self.contains(cursor_x, cursor_y) {
             if mouse_pressed {
-                println!("Button Pressed: {}", self.text);
+                //println!("Button Pressed: {}", self.text);
                 self.component_state = ComponentState::Pressed;
             } else {
-                println!("Button Released: {}", self.text);
+                //println!("Button Released: {}", self.text);
                 self.component_state = ComponentState::Hovered;
             }
         } else {
@@ -264,18 +268,32 @@ impl Button {
 
 impl Component for Button {
     fn handle_mouse_event(&mut self, input: MouseInput) {
+        //
+        // TODO: BUG: Need to be able to handle the case where the button is DISABLED.
+        //
         if self.contains(input.position.x, input.position.y) {
-            self.component_state = if input.pressed {
-                ComponentState::Pressed
-            } else {
-                ComponentState::Hovered
-            };
+            self.component_state = ComponentState::Hovered;
+            println!("Button {:?}", input);
             if input.pressed {
-                self.handle_event();
+                self.component_state = ComponentState::Pressed;
+                self.mouse_dragging = true;
             }
-            return;
+            if self.mouse_dragging {
+                self.component_state = ComponentState::Pressed;
+            }
+            if input.just_released {
+                //
+                // Handle the event before updating ComponentState...
+                //
+                self.handle_event();
+                self.component_state = ComponentState::Active;
+                self.mouse_dragging = false;
+            }
         }
-        self.component_state = ComponentState::Active;
+        if input.just_released {
+            self.component_state = ComponentState::Active;
+            self.mouse_dragging = false;
+        }
     }
 
     fn handle_mouse_wheel_event(

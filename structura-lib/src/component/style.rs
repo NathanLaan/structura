@@ -91,7 +91,7 @@ impl ComponentTheme for DefaultComponentTheme {
     fn style_for(&self, state: &ComponentState) -> ComponentStyle {
         match state {
             ComponentState::Active => ComponentStyle::STYLE_ACTIVE,
-            ComponentState::Hovered => ComponentStyle::STYLE_HOVERED,
+            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE,
             ComponentState::Pressed => ComponentStyle::STYLE_PRESSED,
             ComponentState::Focused => ComponentStyle::STYLE_FOCUSED,
             ComponentState::Disabled => ComponentStyle::STYLE_DISABLED,
@@ -102,7 +102,6 @@ impl ComponentTheme for DefaultComponentTheme {
 #[derive(Debug, Clone)]
 pub struct ComponentStyle {
     pub text: Color,
-    pub text_color: u32,
     pub back_color: u32,
     pub cursor_color: u32,
     pub border_color: u32,
@@ -122,7 +121,6 @@ impl ComponentStyle {
     ) -> Self {
         Self {
             text: Color { value: text_color },
-            text_color,
             back_color,
             cursor_color,
             border_color,
@@ -130,9 +128,29 @@ impl ComponentStyle {
         }
     }
 
+    pub fn darken(&self) -> ComponentStyle {
+        ComponentStyle {
+            text: self.text.darken(),
+            back_color: self.back_color,
+            cursor_color: self.cursor_color,
+            border_color: self.border_color,
+            border_width: self.border_width,
+        }
+    }
+
+    pub fn lighten(&self) -> ComponentStyle {
+        ComponentStyle {
+            text: self.text.lighten(),
+            back_color: self.back_color,
+            cursor_color: self.cursor_color,
+            border_color: self.border_color,
+            border_width: self.border_width,
+        }
+    }
+
     pub const STYLE_ACTIVE: ComponentStyle = ComponentStyle {
         text: Color { value: 0xFF222222 },
-        text_color: 0xFF000000,
+        //text_color: 0xFF000000,
         back_color: 0x0033CC,
         cursor_color: 0x000000,
         border_color: 0x000000,
@@ -141,7 +159,7 @@ impl ComponentStyle {
 
     pub const STYLE_HOVERED: ComponentStyle = ComponentStyle {
         text: Color { value: 0xFF000000 },
-        text_color: 0xFF000000,
+        //text_color: 0xFF000000,
         back_color: 0x0077CC,
         cursor_color: 0x000000,
         border_color: 0x000000,
@@ -150,7 +168,7 @@ impl ComponentStyle {
 
     pub const STYLE_PRESSED: ComponentStyle = ComponentStyle {
         text: Color { value: 0xFF000000 },
-        text_color: 0xFF000000,
+        //text_color: 0xFF000000,
         back_color: 0x0099CC,
         cursor_color: 0x000000,
         border_color: 0x000000,
@@ -159,7 +177,7 @@ impl ComponentStyle {
 
     pub const STYLE_FOCUSED: ComponentStyle = ComponentStyle {
         text: Color { value: 0xFF000000 },
-        text_color: 0xFF000000,
+        //text_color: 0xFF000000,
         back_color: 0x0099CC,
         cursor_color: 0x000000,
         border_color: 0x000000,
@@ -173,7 +191,7 @@ impl ComponentStyle {
 
     pub const STYLE_DISABLED: ComponentStyle = ComponentStyle {
         text: Color { value: 0xFF000000 },
-        text_color: 0xFF000000,
+        //text_color: 0xFF000000,
         back_color: 0xCCCCCC,
         cursor_color: 0x000000,
         border_color: 0x000000,
@@ -183,7 +201,7 @@ impl ComponentStyle {
     pub fn default_for(state: &ComponentState) -> Self {
         match state {
             ComponentState::Active => ComponentStyle::STYLE_ACTIVE,
-            ComponentState::Hovered => ComponentStyle::STYLE_HOVERED,
+            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE.darken(),
             ComponentState::Pressed => ComponentStyle::STYLE_PRESSED,
             ComponentState::Focused => ComponentStyle::STYLE_FOCUSED,
             ComponentState::Disabled => ComponentStyle::STYLE_DISABLED,

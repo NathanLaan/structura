@@ -73,7 +73,7 @@ impl TextArea {
             component_style: ComponentStyle {
                 text: Color::new(0xFF333333),
                 back_color: 0x0033CC,
-                text_color: 0xFF333333,
+                //text_color: 0xFF333333,
                 cursor_color: 0x000000,
                 border_color: 0x000000,
                 border_width: 1,
@@ -81,7 +81,7 @@ impl TextArea {
             component_style_focused: ComponentStyle {
                 text: Color::new(0xFF000000),
                 back_color: 0x0033CC,
-                text_color: 0xFF000000,
+                //text_color: 0xFF000000,
                 cursor_color: 0xCCCCCC,
                 border_color: 0xFF3333,
                 border_width: 3,
@@ -266,9 +266,9 @@ impl TextArea {
                 .collect();
 
             let text_color = if self.focused {
-                self.component_style_focused.text_color
+                self.component_style_focused.text.value
             } else {
-                self.component_style.text_color
+                self.component_style.text.value
             };
 
             for glyph in glyphs {
@@ -367,6 +367,9 @@ impl Component for TextArea {
             }
             self.last_mouse_y = Some(input.position.y);
         }
+        //
+        // TODO: BUG: If you click on another component but then release on TextArea it gets focus.
+        //
         if input.just_released {
             self.focused = self.contains(input.position.x, input.position.y);
             self.dragging_scrollbar = false;
