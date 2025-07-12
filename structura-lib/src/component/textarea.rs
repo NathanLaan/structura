@@ -71,17 +71,17 @@ impl TextArea {
             focused: false,
             component_state: ComponentState::Active,
             component_style: ComponentStyle {
-                text: Color::new(0xFF333333),
-                back_color: 0x0033CC,
-                //text_color: 0xFF333333,
+                text_color: Color::new(0xFF333333),
+                fore_color: Color::new(0xFF333333),
+                back_color: Color::new(0xFF033CC),
                 cursor_color: 0x000000,
                 border_color: 0x000000,
                 border_width: 1,
             },
             component_style_focused: ComponentStyle {
-                text: Color::new(0xFF000000),
-                back_color: 0x0033CC,
-                //text_color: 0xFF000000,
+                text_color: Color::new(0xFF000000),
+                fore_color: Color::new(0xFF333333),
+                back_color: Color::new(0xFF0033CC),
                 cursor_color: 0xCCCCCC,
                 border_color: 0xFF3333,
                 border_width: 3,
@@ -266,9 +266,9 @@ impl TextArea {
                 .collect();
 
             let text_color = if self.focused {
-                self.component_style_focused.text.value
+                self.component_style_focused.text_color.value
             } else {
-                self.component_style.text.value
+                self.component_style.text_color.value
             };
 
             for glyph in glyphs {

@@ -7,6 +7,7 @@ pub mod label;
 pub mod style;
 pub mod text;
 pub mod textarea;
+mod tooltip;
 
 use crate::event::MouseInput;
 use crate::geometry::Point;
@@ -29,7 +30,7 @@ pub fn load_font() -> Font<'static> {
     font
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum ComponentState {
     Active,
     Hovered,

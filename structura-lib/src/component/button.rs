@@ -20,7 +20,8 @@ pub struct Button {
     pub text: String,
     pub component_state: ComponentState,
     pub component_style: ComponentStyle,
-    on_click: Option<Box<dyn FnMut()>>,
+    on_mouse_over: Option<Box<dyn FnMut()>>,
+    on_mouse_click: Option<Box<dyn FnMut()>>,
     mouse_dragging: bool,
 }
 
@@ -38,7 +39,8 @@ impl Default for Button {
             text: "button".to_string(),
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
-            on_click: None,
+            on_mouse_over: None,
+            on_mouse_click: None,
             mouse_dragging: false,
         }
     }
@@ -64,7 +66,8 @@ impl Button {
             text,
             component_state: ComponentState::Active,
             component_style: ComponentStyle::default(),
-            on_click: None,
+            on_mouse_click: None,
+            on_mouse_over: None,
             mouse_dragging: false,
         }
     }
@@ -86,17 +89,17 @@ impl Button {
         self
     }
 
-    pub fn update_state(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
-        if self.contains(cursor_x, cursor_y) {
-            self.component_state = if mouse_pressed {
-                ComponentState::Pressed
-            } else {
-                ComponentState::Hovered
-            };
-            return;
-        }
-        self.component_state = ComponentState::Active;
-    }
+    // fn update_state(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
+    //     if self.contains(cursor_x, cursor_y) {
+    //         self.component_state = if mouse_pressed {
+    //             ComponentState::Pressed
+    //         } else {
+    //             ComponentState::Hovered
+    //         };
+    //         return;
+    //     }
+    //     self.component_state = ComponentState::Active;
+    // }
 
     ///
     /// Update `ComponentState` based on mouse position and state.
@@ -181,7 +184,11 @@ impl Button {
         //
         // TODO: Separate ComponentStyles per ComponentState
         //
-        let background_color = ComponentStyle::default_for(&self.component_state).back_color;
+        let background_color = context
+            .theme
+            .style_for(&self.component_state)
+            .back_color
+            .value;
         for y in fill_y0..fill_y1 {
             for x in fill_x0..fill_x1 {
                 let idx = y * screen_width + x;
@@ -242,13 +249,13 @@ impl Button {
         (r << 16) | (g << 8) | b
     }
 
-    fn handle_event(&mut self) {
+    fn handle_event_on_click(&mut self) {
         match self.component_state {
             ComponentState::Active => {}
             ComponentState::Hovered => {}
             ComponentState::Pressed => {
                 println!("Button Pressed {}", self.text);
-                if let Some(handler) = self.on_click.as_mut() {
+                if let Some(handler) = self.on_mouse_click.as_mut() {
                     handler();
                 }
             }
@@ -257,11 +264,17 @@ impl Button {
         }
     }
 
+    fn handle_event_on_mouse_over(&mut self) {
+        if let Some(handler) = self.on_mouse_over.as_mut() {
+            handler();
+        }
+    }
+
     ///
     /// Add event handler.
     ///
     pub fn on_click<F: FnMut() + 'static>(mut self, f: F) -> Self {
-        self.on_click = Some(Box::new(f));
+        self.on_mouse_click = Some(Box::new(f));
         self
     }
 }
@@ -271,9 +284,13 @@ impl Component for Button {
         //
         // TODO: BUG: Need to be able to handle the case where the button is DISABLED.
         //
+        if self.component_state == ComponentState::Disabled {
+            return;
+        }
+        self.component_state = ComponentState::Active;
+
         if self.contains(input.position.x, input.position.y) {
             self.component_state = ComponentState::Hovered;
-            println!("Button {:?}", input);
             if input.pressed {
                 self.component_state = ComponentState::Pressed;
                 self.mouse_dragging = true;
@@ -285,10 +302,11 @@ impl Component for Button {
                 //
                 // Handle the event before updating ComponentState...
                 //
-                self.handle_event();
+                self.handle_event_on_click();
                 self.component_state = ComponentState::Active;
                 self.mouse_dragging = false;
             }
+            self.handle_event_on_mouse_over();
         }
         if input.just_released {
             self.component_state = ComponentState::Active;

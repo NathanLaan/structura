@@ -91,8 +91,8 @@ impl ComponentTheme for DefaultComponentTheme {
     fn style_for(&self, state: &ComponentState) -> ComponentStyle {
         match state {
             ComponentState::Active => ComponentStyle::STYLE_ACTIVE,
-            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE,
-            ComponentState::Pressed => ComponentStyle::STYLE_PRESSED,
+            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE.lighten(),
+            ComponentState::Pressed => ComponentStyle::STYLE_PRESSED.darken(),
             ComponentState::Focused => ComponentStyle::STYLE_FOCUSED,
             ComponentState::Disabled => ComponentStyle::STYLE_DISABLED,
         }
@@ -101,8 +101,11 @@ impl ComponentTheme for DefaultComponentTheme {
 
 #[derive(Debug, Clone)]
 pub struct ComponentStyle {
-    pub text: Color,
-    pub back_color: u32,
+    pub text_color: Color,
+
+    /// Foreground color. Used for text on components, such as a `Button`.
+    pub fore_color: Color,
+    pub back_color: Color,
     pub cursor_color: u32,
     pub border_color: u32,
     pub border_width: usize,
@@ -114,14 +117,16 @@ impl ComponentStyle {
     ///
     pub const fn new(
         text_color: u32,
+        fore_color: u32,
         back_color: u32,
         cursor_color: u32,
         border_color: u32,
         border_width: usize,
     ) -> Self {
         Self {
-            text: Color { value: text_color },
-            back_color,
+            text_color: Color { value: text_color },
+            fore_color: Color { value: fore_color },
+            back_color: Color { value: back_color },
             cursor_color,
             border_color,
             border_width,
@@ -130,8 +135,9 @@ impl ComponentStyle {
 
     pub fn darken(&self) -> ComponentStyle {
         ComponentStyle {
-            text: self.text.darken(),
-            back_color: self.back_color,
+            text_color: self.text_color.darken(),
+            fore_color: self.fore_color.darken(),
+            back_color: self.back_color.darken(),
             cursor_color: self.cursor_color,
             border_color: self.border_color,
             border_width: self.border_width,
@@ -140,8 +146,9 @@ impl ComponentStyle {
 
     pub fn lighten(&self) -> ComponentStyle {
         ComponentStyle {
-            text: self.text.lighten(),
-            back_color: self.back_color,
+            text_color: self.text_color.lighten(),
+            fore_color: self.fore_color.lighten(),
+            back_color: self.back_color.lighten(),
             cursor_color: self.cursor_color,
             border_color: self.border_color,
             border_width: self.border_width,
@@ -149,50 +156,46 @@ impl ComponentStyle {
     }
 
     pub const STYLE_ACTIVE: ComponentStyle = ComponentStyle {
-        text: Color { value: 0xFF222222 },
+        text_color: Color { value: 0xFF222222 },
         //text_color: 0xFF000000,
-        back_color: 0x0033CC,
+        fore_color: Color { value: 0xFFFF3333 },
+        back_color: Color { value: 0xFF0033CC },
         cursor_color: 0x000000,
         border_color: 0x000000,
         border_width: 2,
     };
 
     pub const STYLE_HOVERED: ComponentStyle = ComponentStyle {
-        text: Color { value: 0xFF000000 },
-        //text_color: 0xFF000000,
-        back_color: 0x0077CC,
+        text_color: Color { value: 0xFF000000 },
+        fore_color: Color { value: 0xFFFF0000 },
+        back_color: Color { value: 0xFF0077CC },
         cursor_color: 0x000000,
         border_color: 0x000000,
         border_width: 2,
     };
 
     pub const STYLE_PRESSED: ComponentStyle = ComponentStyle {
-        text: Color { value: 0xFF000000 },
-        //text_color: 0xFF000000,
-        back_color: 0x0099CC,
+        text_color: Color { value: 0xFF000000 },
+        fore_color: Color { value: 0xFF000000 },
+        back_color: Color { value: 0xFF0099CC },
         cursor_color: 0x000000,
         border_color: 0x000000,
         border_width: 2,
     };
 
     pub const STYLE_FOCUSED: ComponentStyle = ComponentStyle {
-        text: Color { value: 0xFF000000 },
-        //text_color: 0xFF000000,
-        back_color: 0x0099CC,
+        text_color: Color { value: 0xFF000000 },
+        fore_color: Color { value: 0xFF000000 },
+        back_color: Color { value: 0xFF0099CC },
         cursor_color: 0x000000,
         border_color: 0x000000,
         border_width: 2,
-        // back_color: 0x0033CC,
-        // text_color: 0xCCCCCC,
-        // cursor_color: 0xCCCCCC,
-        // border_color: 0xFF3333,
-        // border_width: 3,
     };
 
     pub const STYLE_DISABLED: ComponentStyle = ComponentStyle {
-        text: Color { value: 0xFF000000 },
-        //text_color: 0xFF000000,
-        back_color: 0xCCCCCC,
+        text_color: Color { value: 0xFF000000 },
+        fore_color: Color { value: 0xFF000000 },
+        back_color: Color { value: 0xFFCCCCCC },
         cursor_color: 0x000000,
         border_color: 0x000000,
         border_width: 2,
@@ -200,9 +203,9 @@ impl ComponentStyle {
 
     pub fn default_for(state: &ComponentState) -> Self {
         match state {
-            ComponentState::Active => ComponentStyle::STYLE_ACTIVE,
-            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE.darken(),
-            ComponentState::Pressed => ComponentStyle::STYLE_PRESSED,
+            ComponentState::Active => ComponentStyle::STYLE_ACTIVE.darken(),
+            ComponentState::Hovered => ComponentStyle::STYLE_ACTIVE,
+            ComponentState::Pressed => ComponentStyle::STYLE_ACTIVE.lighten(),
             ComponentState::Focused => ComponentStyle::STYLE_FOCUSED,
             ComponentState::Disabled => ComponentStyle::STYLE_DISABLED,
         }
