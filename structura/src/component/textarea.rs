@@ -27,8 +27,6 @@ pub struct TextArea {
     pub size: Size,
     pub focused: bool,
     component_state: ComponentState,
-    component_style: ComponentStyle,
-    component_style_focused: ComponentStyle,
     visible_scrolling_offset: f32,
     pub dragging_scrollbar: bool,
     pub last_mouse_y: Option<f64>,
@@ -46,8 +44,6 @@ impl Clone for TextArea {
             size: self.size.clone(),
             focused: self.focused.clone(),
             component_state: self.component_state.clone(),
-            component_style: self.component_style.clone(),
-            component_style_focused: self.component_style_focused.clone(),
             visible_scrolling_offset: self.visible_scrolling_offset.clone(),
             dragging_scrollbar: self.dragging_scrollbar.clone(),
             last_mouse_y: self.last_mouse_y.clone(),
@@ -70,22 +66,6 @@ impl TextArea {
             },
             focused: false,
             component_state: ComponentState::Active,
-            component_style: ComponentStyle {
-                text_color: Color::new(0xFF333333),
-                fore_color: Color::new(0xFF333333),
-                back_color: Color::new(0xFF033CC),
-                cursor_color: 0x000000,
-                border_color: 0x000000,
-                border_width: 1,
-            },
-            component_style_focused: ComponentStyle {
-                text_color: Color::new(0xFF000000),
-                fore_color: Color::new(0xFF333333),
-                back_color: Color::new(0xFF0033CC),
-                cursor_color: 0xCCCCCC,
-                border_color: 0xFF3333,
-                border_width: 3,
-            },
             visible_scrolling_offset: 0.0,
             dragging_scrollbar: false,
             last_mouse_y: None,
@@ -195,16 +175,9 @@ impl TextArea {
 
         let max_width = self.size.width;
 
-        let padding_x = if self.focused {
-            self.component_style_focused.border_width as f32 + 5.0
-        } else {
-            self.component_style_focused.border_width as f32 + 5.0
-        };
-        let padding_y = if self.focused {
-            self.component_style_focused.border_width as f32 + 5.0
-        } else {
-            self.component_style_focused.border_width as f32 + 5.0
-        };
+        let bw = context.theme.style_for(&self.component_state).border_width as f32;
+        let padding_x = 5.0 + bw;
+        let padding_y = 5.0 + bw;
 
         let start_x = self.position.x as f32 + padding_x;
         let base_y =
@@ -265,11 +238,11 @@ impl TextArea {
                 )
                 .collect();
 
-            let text_color = if self.focused {
-                self.component_style_focused.text_color.value
-            } else {
-                self.component_style.text_color.value
-            };
+            let text_color = context
+                .theme
+                .style_for(&self.component_state)
+                .edit_text_color
+                .value;
 
             for glyph in glyphs {
                 if let Some(bb) = glyph.pixel_bounding_box() {
@@ -317,16 +290,22 @@ impl TextArea {
     /// Draw the Button border.
     ///
     fn draw_border(&self, context: &mut BufferContext) {
-        let border_color = if self.focused {
-            self.component_style_focused.border_color
-        } else {
-            self.component_style.border_color
-        };
-        let bw = if self.focused {
-            self.component_style_focused.border_width
-        } else {
-            self.component_style.border_width
-        };
+        // let border_color = if self.focused {
+        //     self.component_style_focused.border_color.value
+        // } else {
+        //     self.component_style.border_color.value
+        // };
+        // let bw = if self.focused {
+        //     self.component_style_focused.border_width
+        // } else {
+        //     self.component_style.border_width
+        // };
+        let border_width = context.theme.style_for(&self.component_state).border_width;
+        let border_color = context
+            .theme
+            .style_for(&self.component_state)
+            .border_color
+            .value;
         let x0 = self.position.x as usize;
         let y0 = self.position.y as usize;
         let x1 = self.position.x as usize + self.size.width as usize;
@@ -339,10 +318,10 @@ impl TextArea {
         let clipped_y1 = y1.min(screen_height);
         for y in clipped_y0..clipped_y1 {
             for x in clipped_x0..clipped_x1 {
-                let is_top = y < y0 + bw;
-                let is_bottom = y >= y1.saturating_sub(bw);
-                let is_left = x < x0 + bw;
-                let is_right = x >= x1.saturating_sub(bw);
+                let is_top = y < y0 + border_width;
+                let is_bottom = y >= y1.saturating_sub(border_width);
+                let is_left = x < x0 + border_width;
+                let is_right = x >= x1.saturating_sub(border_width);
 
                 if is_top || is_bottom || is_left || is_right {
                     let idx = y * screen_width + x;
@@ -358,7 +337,13 @@ impl TextArea {
 impl Component for TextArea {
     fn handle_mouse_event(&mut self, input: MouseInput) {
         if input.pressed {
-            self.focused = self.contains(input.position.x, input.position.y);
+            if self.contains(input.position.x, input.position.y) {
+                self.focused = true;
+                self.component_state = ComponentState::Focused;
+            } else {
+                self.focused = false;
+                self.component_state = ComponentState::Active;
+            }
             self.dragging_scrollbar = self.scrollbar_contains(input.position.x, input.position.y);
         }
         if self.dragging_scrollbar {
@@ -371,9 +356,17 @@ impl Component for TextArea {
         // TODO: BUG: If you click on another component but then release on TextArea it gets focus.
         //
         if input.just_released {
-            self.focused = self.contains(input.position.x, input.position.y);
-            self.dragging_scrollbar = false;
-            self.last_mouse_y = None;
+            if self.component_state == ComponentState::Disabled {
+                if self.contains(input.position.x, input.position.y) {
+                    self.focused = true;
+                    self.component_state = ComponentState::Focused;
+                } else {
+                    self.focused = false;
+                    self.component_state = ComponentState::Active;
+                }
+                self.dragging_scrollbar = false;
+                self.last_mouse_y = None;
+            }
         }
         //println!("self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}", input, self.dragging_scrollbar, self.visible_scrolling_offset, input.position.y, self.last_mouse_y);
     }
@@ -468,17 +461,23 @@ impl Component for TextArea {
         let thumb_y_offset =
             (self.visible_scrolling_offset / max_scroll) * (track_h as f32 - thumb_height);
 
-        // draw scrollbar track
+        let back_color = context.theme.style_for(&self.component_state).back_color;
+        let scrollbar_color_thumb = back_color.value;
+        let scrollbar_color_track = back_color.lighten().value;
+
+        // Draw scrollbar track
         for y in 0..track_h {
             for x in 0..self.scrollbar_width {
                 let idx = (area_y + y) * context.screen_size.width as usize + (track_x + x);
                 if idx < context.buffer.len() {
-                    context.buffer[idx] = 0xFFE0E0E0;
+                    context.buffer[idx] = scrollbar_color_track; //0xFFE0E0E0;
                 }
             }
         }
 
-        // draw scrollbar thumb
+        //
+        // Draw scrollbar thumb
+        //
         let thumb_top = thumb_y_offset.round() as usize;
         for y in 0..(thumb_height as usize) {
             let ty = thumb_top + y;
@@ -488,7 +487,7 @@ impl Component for TextArea {
             for x in 0..self.scrollbar_width {
                 let idx = (area_y + ty) * context.screen_size.width as usize + (track_x + x);
                 if idx < context.buffer.len() {
-                    context.buffer[idx] = 0x00FF0000;
+                    context.buffer[idx] = scrollbar_color_thumb; //0x00FF0000;
                 }
             }
         }
@@ -496,22 +495,24 @@ impl Component for TextArea {
         //
         // TODO: Draw cursor...
         //
+        // TODO: Code is not wrapping. Need to move this to text drawing function?
+        //
         if self.focused {
-            let cx = px + self.cursor_index * 6;
-            let cy = py + 10;
-            if cx < screen_w && cy < screen_h {
-                context.buffer[cy * screen_w + cx] = 0x00FF0000; // red cursor
-            }
-            if cx < screen_w && cy < screen_h {
-                context.buffer[cy * screen_w + cx + 1] = 0x00FF0000; // red cursor
-            }
-            if cx < screen_w && cy < screen_h {
-                context.buffer[cy * screen_w + cx + 2] = 0x00FF0000; // red cursor
-            }
-            println!(
-                "self.cursor_index = {} cx: {} cy: {} ",
-                self.cursor_index, cx, cy
-            );
+            // let cx = px + self.cursor_index * 6;
+            // let cy = py + 10;
+            // if cx < screen_w && cy < screen_h {
+            //     context.buffer[cy * screen_w + cx] = 0x00FF0000; // red cursor
+            // }
+            // if cx < screen_w && cy < screen_h {
+            //     context.buffer[cy * screen_w + cx + 1] = 0x00FF0000; // red cursor
+            // }
+            // if cx < screen_w && cy < screen_h {
+            //     context.buffer[cy * screen_w + cx + 2] = 0x00FF0000; // red cursor
+            // }
+            // println!(
+            //     "self.cursor_index = {} cx: {} cy: {} ",
+            //     self.cursor_index, cx, cy
+            // );
         }
     }
 

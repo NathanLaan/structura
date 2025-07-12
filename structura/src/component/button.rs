@@ -19,7 +19,7 @@ pub struct Button {
     pub size: Size,
     pub text: String,
     pub component_state: ComponentState,
-    pub component_style: ComponentStyle,
+    //pub component_style: ComponentStyle,
     on_mouse_over: Option<Box<dyn FnMut()>>,
     on_mouse_click: Option<Box<dyn FnMut()>>,
     mouse_dragging: bool,
@@ -38,7 +38,7 @@ impl Default for Button {
             },
             text: "button".to_string(),
             component_state: ComponentState::Active,
-            component_style: ComponentStyle::default(),
+            //component_style: ComponentStyle::default(),
             on_mouse_over: None,
             on_mouse_click: None,
             mouse_dragging: false,
@@ -65,7 +65,7 @@ impl Button {
             // border_width: 2,
             text,
             component_state: ComponentState::Active,
-            component_style: ComponentStyle::default(),
+            //component_style: ComponentStyle::default(),
             on_mouse_click: None,
             on_mouse_over: None,
             mouse_dragging: false,
@@ -172,7 +172,7 @@ impl Button {
     fn fill_background(&self, context: &mut BufferContext) {
         let screen_width = context.screen_size.width as usize;
         let screen_height = context.screen_size.height as usize;
-        let bw = self.component_style.border_width;
+        let bw = context.theme.style_for(&self.component_state).border_width;
         let x0 = self.position.x as usize;
         let y0 = self.position.y as usize;
         let x1 = self.position.x as usize + self.size.width as usize;
@@ -203,7 +203,7 @@ impl Button {
     /// Draw the Button border.
     ///
     fn draw_border(&self, context: &mut BufferContext) {
-        let bw = self.component_style.border_width;
+        let bw = context.theme.style_for(&self.component_state).border_width;
         let x0 = self.position.x as usize;
         let y0 = self.position.y as usize;
         let x1 = self.position.x as usize + self.size.width as usize;
@@ -214,6 +214,11 @@ impl Button {
         let clipped_y0 = y0.min(screen_height);
         let clipped_x1 = x1.min(screen_width);
         let clipped_y1 = y1.min(screen_height);
+        let border_color = context
+            .theme
+            .style_for(&self.component_state)
+            .border_color
+            .value;
         for y in clipped_y0..clipped_y1 {
             for x in clipped_x0..clipped_x1 {
                 let is_top = y < y0 + bw;
@@ -224,7 +229,7 @@ impl Button {
                 if is_top || is_bottom || is_left || is_right {
                     let idx = y * screen_width + x;
                     if idx < context.buffer.len() {
-                        context.buffer[idx] = self.component_style.border_color;
+                        context.buffer[idx] = border_color;
                     }
                 }
             }

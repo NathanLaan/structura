@@ -101,13 +101,16 @@ impl ComponentTheme for DefaultComponentTheme {
 
 #[derive(Debug, Clone)]
 pub struct ComponentStyle {
-    pub text_color: Color,
+    ///
+    pub edit_text_color: Color,
+
+    pub edit_back_color: Color,
 
     /// Foreground color. Used for text on components, such as a `Button`.
     pub fore_color: Color,
     pub back_color: Color,
-    pub cursor_color: u32,
-    pub border_color: u32,
+    pub cursor_color: Color,
+    pub border_color: Color,
     pub border_width: usize,
 }
 
@@ -124,80 +127,92 @@ impl ComponentStyle {
         border_width: usize,
     ) -> Self {
         Self {
-            text_color: Color { value: text_color },
+            edit_text_color: Color { value: text_color },
+            edit_back_color: Color { value: back_color },
             fore_color: Color { value: fore_color },
             back_color: Color { value: back_color },
-            cursor_color,
-            border_color,
+            cursor_color: Color {
+                value: cursor_color,
+            },
+            border_color: Color {
+                value: border_color,
+            },
             border_width,
         }
     }
 
     pub fn darken(&self) -> ComponentStyle {
         ComponentStyle {
-            text_color: self.text_color.darken(),
+            edit_text_color: self.edit_text_color.darken(),
+            edit_back_color: self.edit_back_color.darken(),
             fore_color: self.fore_color.darken(),
             back_color: self.back_color.darken(),
-            cursor_color: self.cursor_color,
-            border_color: self.border_color,
+            cursor_color: self.cursor_color.darken(),
+            border_color: self.border_color.darken(),
             border_width: self.border_width,
         }
     }
 
     pub fn lighten(&self) -> ComponentStyle {
         ComponentStyle {
-            text_color: self.text_color.lighten(),
+            edit_text_color: self.edit_text_color.lighten(),
+            edit_back_color: self.edit_back_color.lighten(),
             fore_color: self.fore_color.lighten(),
             back_color: self.back_color.lighten(),
-            cursor_color: self.cursor_color,
-            border_color: self.border_color,
+            cursor_color: self.cursor_color.lighten(),
+            border_color: self.border_color.lighten(),
             border_width: self.border_width,
         }
     }
 
     pub const STYLE_ACTIVE: ComponentStyle = ComponentStyle {
-        text_color: Color { value: 0xFF222222 },
+        edit_text_color: Color { value: 0xFF222222 },
+        edit_back_color: Color { value: 0xFFFFFFFF },
         //text_color: 0xFF000000,
         fore_color: Color { value: 0xFFFF3333 },
         back_color: Color { value: 0xFF0033CC },
-        cursor_color: 0x000000,
-        border_color: 0x000000,
+        cursor_color: Color { value: 0xFF000000 },
+        border_color: Color { value: 0xFF000000 },
         border_width: 2,
     };
 
     pub const STYLE_HOVERED: ComponentStyle = ComponentStyle {
-        text_color: Color { value: 0xFF000000 },
+        edit_text_color: Color { value: 0xFF000000 },
+        edit_back_color: Color { value: 0xFFFFFFFF },
         fore_color: Color { value: 0xFFFF0000 },
         back_color: Color { value: 0xFF0077CC },
-        cursor_color: 0x000000,
-        border_color: 0x000000,
+        cursor_color: Color { value: 0xFF000000 },
+        border_color: Color { value: 0xFF000000 },
         border_width: 2,
     };
 
     pub const STYLE_PRESSED: ComponentStyle = ComponentStyle {
-        text_color: Color { value: 0xFF000000 },
+        edit_text_color: Color { value: 0xFF000000 },
+        edit_back_color: Color { value: 0xFFFFFFFF },
         fore_color: Color { value: 0xFF000000 },
         back_color: Color { value: 0xFF0099CC },
-        cursor_color: 0x000000,
-        border_color: 0x000000,
+        cursor_color: Color { value: 0xFF000000 },
+        border_color: Color { value: 0xFF0077CC },
         border_width: 2,
     };
 
     pub const STYLE_FOCUSED: ComponentStyle = ComponentStyle {
-        text_color: Color { value: 0xFF000000 },
+        edit_text_color: Color { value: 0xFF000000 },
+        edit_back_color: Color { value: 0xFFFFFFFF },
         fore_color: Color { value: 0xFF000000 },
         back_color: Color { value: 0xFF0099CC },
-        cursor_color: 0x000000,
-        border_color: 0x000000,
-        border_width: 2,
+        cursor_color: Color { value: 0xFF000000 },
+        border_color: Color { value: 0xFF000000 },
+        border_width: 12,
     };
 
     pub const STYLE_DISABLED: ComponentStyle = ComponentStyle {
-        text_color: Color { value: 0xFF000000 },
+        edit_text_color: Color { value: 0xFF000000 },
+        edit_back_color: Color { value: 0xFFFFFFFF },
         fore_color: Color { value: 0xFF000000 },
         back_color: Color { value: 0xFFCCCCCC },
-        cursor_color: 0x000000,
-        border_color: 0x000000,
+        cursor_color: Color { value: 0xFF000000 },
+        border_color: Color { value: 0xFF000000 },
         border_width: 2,
     };
 
