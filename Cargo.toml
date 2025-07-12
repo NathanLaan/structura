@@ -1,5 +1,5 @@
 [workspace]
-members = ["structura-app", "structura-lib"]
+members = ["structura-app", "structura"]
 #
 # resolver = "3"
 #

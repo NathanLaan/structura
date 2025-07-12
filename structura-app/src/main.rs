@@ -4,15 +4,15 @@
 
 use std::cell::RefCell;
 use std::rc::Rc;
-use structura_lib::app::Application;
-use structura_lib::component::ComponentHandle;
-use structura_lib::component::button::Button;
-use structura_lib::component::textarea::TextArea;
-use structura_lib::container::Container;
-use structura_lib::container::border::BorderLayout;
-use structura_lib::container::panel::Panel;
-use structura_lib::container::row::Row;
-use structura_lib::geometry::{Point, Size};
+use structura::app::Application;
+use structura::component::ComponentHandle;
+use structura::component::button::Button;
+use structura::component::textarea::TextArea;
+use structura::container::Container;
+use structura::container::border::BorderLayout;
+use structura::container::panel::Panel;
+use structura::container::row::Row;
+use structura::geometry::{Point, Size};
 
 fn main() {
     let textarea1 = Rc::new(RefCell::new(TextArea::new()));
