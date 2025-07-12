@@ -3,7 +3,6 @@
 //!
 
 use crate::component;
-use crate::component::Component;
 use crate::component::style::{ComponentTheme, DefaultComponentTheme};
 use crate::container::ContainerComponent;
 use crate::geometry::{Point, Size};
@@ -13,7 +12,7 @@ use std::marker::PhantomData;
 use std::num::NonZeroU32;
 use std::rc::Rc;
 use winit::application::ApplicationHandler;
-use winit::dpi::{LogicalSize, PhysicalSize};
+use winit::dpi::LogicalSize;
 use winit::event::{ElementState, Event, MouseButton, WindowEvent};
 use winit::event_loop::ActiveEventLoop;
 use winit::event_loop::EventLoop;
@@ -190,7 +189,7 @@ impl Application {
             Event::WindowEvent {
                 event:
                     WindowEvent::CursorMoved {
-                        device_id,
+                        device_id: _,
                         position,
                     },
                 window_id,
@@ -212,9 +211,9 @@ impl Application {
             Event::WindowEvent {
                 event:
                     WindowEvent::KeyboardInput {
-                        device_id,
+                        device_id: _,
                         event,
-                        is_synthetic,
+                        is_synthetic: _,
                     },
                 window_id,
             } if window_id == window.id() => {
@@ -258,7 +257,7 @@ impl Application {
             Event::WindowEvent {
                 event:
                     WindowEvent::MouseWheel {
-                        device_id,
+                        device_id: _,
                         delta,
                         phase,
                     },

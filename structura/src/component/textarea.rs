@@ -4,7 +4,6 @@
 //! A basic editable, multiline text `Component`.
 //!
 
-use crate::component::style::{Color, ComponentStyle};
 use crate::component::{Component, ComponentState};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
@@ -378,7 +377,7 @@ impl Component for TextArea {
     ) {
         if self.focused {
             match delta {
-                winit::event::MouseScrollDelta::LineDelta(x, y) => {
+                winit::event::MouseScrollDelta::LineDelta(_x, y) => {
                     self.visible_scrolling_offset =
                         self.visible_scrolling_offset - (y * self.scroll_amount_y);
                 }
@@ -431,10 +430,10 @@ impl Component for TextArea {
     }
 
     fn draw(&self, context: &mut BufferContext) {
-        let px = self.position.x as usize;
-        let py = self.position.y as usize;
-        let screen_w = context.screen_size.width as usize;
-        let screen_h = context.screen_size.height as usize;
+        // let px = self.position.x as usize;
+        // let py = self.position.y as usize;
+        // let screen_w = context.screen_size.width as usize;
+        // let screen_h = context.screen_size.height as usize;
 
         self.draw_background(context);
         self.draw_border(context);

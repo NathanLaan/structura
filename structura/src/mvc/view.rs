@@ -2,7 +2,7 @@
 //! Structura. View types.
 //!
 
-use crate::component::style::{ComponentTheme, DefaultComponentTheme};
+use crate::component::style::ComponentTheme;
 use crate::geometry::Size;
 use rusttype::Font;
 use softbuffer::Buffer;

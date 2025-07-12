@@ -51,7 +51,9 @@ impl Container for Row {
     ///
     /// Passes in the parent container `width` and `height`.
     ///
-    fn resize(&mut self, width: usize, height: usize) {
+    /// The `Row` does not change its `height` or `width` based on parent changes.
+    ///
+    fn resize(&mut self, _width: usize, _height: usize) {
         // for child in self.children.iter_mut() {
         //     child.resize(width, height);
         // }

@@ -52,7 +52,9 @@ impl Container for Column {
     ///
     /// Passes in the parent container `width` and `height`.
     ///
-    fn resize(&mut self, width: usize, height: usize) {}
+    /// The `Column` does not change its `height` or `width` based on parent changes.
+    ///
+    fn resize(&mut self, _width: usize, _height: usize) {}
 
     ///
     /// Force the `Layout` to update the position of controls within the `Layout`.

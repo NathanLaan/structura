@@ -1,10 +1,9 @@
 //!
 //! # Structura Component: Button.
 //!
-//! A basic button with text.
+//! A basic clickable button with text.
 //!
 
-use crate::component::style::ComponentStyle;
 use crate::component::{Component, ComponentState};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
@@ -15,11 +14,10 @@ use rusttype::{Scale, point};
 /// A basic Button component with text.
 ///
 pub struct Button {
-    pub position: Point,
-    pub size: Size,
-    pub text: String,
-    pub component_state: ComponentState,
-    //pub component_style: ComponentStyle,
+    position: Point,
+    size: Size,
+    text: String,
+    component_state: ComponentState,
     on_mouse_over: Option<Box<dyn FnMut()>>,
     on_mouse_click: Option<Box<dyn FnMut()>>,
     mouse_dragging: bool,
@@ -105,7 +103,6 @@ impl Button {
     /// Update `ComponentState` based on mouse position and state.
     ///
     pub fn handle_mouse_event(&mut self, cursor_x: f64, cursor_y: f64, mouse_pressed: bool) {
-        println!("Button Event: {}", mouse_pressed);
         if self.contains(cursor_x, cursor_y) {
             if mouse_pressed {
                 //println!("Button Pressed: {}", self.text);
@@ -259,7 +256,6 @@ impl Button {
             ComponentState::Active => {}
             ComponentState::Hovered => {}
             ComponentState::Pressed => {
-                println!("Button Pressed {}", self.text);
                 if let Some(handler) = self.on_mouse_click.as_mut() {
                     handler();
                 }

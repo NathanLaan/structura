@@ -73,8 +73,17 @@ impl BorderLayout {
 }
 
 impl Container for BorderLayout {
-    fn push(&mut self, component: Box<dyn Component>) {}
+    fn push(&mut self, _component: Box<dyn Component>) {
+        //
+        // TODO: Return an error?
+        //
+        // TODO: Cycle through and add: N -> W -> C -> E -> S.
+        //
+    }
 
+    ///
+    /// The `BorderLayout` always fills it's parent `Container`.
+    ///
     fn fills_parent_container(&self) -> bool {
         true
     }

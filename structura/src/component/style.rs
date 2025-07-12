@@ -79,6 +79,9 @@ pub trait ComponentTheme {
     fn style_for(&self, state: &ComponentState) -> ComponentStyle;
 }
 
+///
+/// The default `ComponentTheme`.
+///
 pub struct DefaultComponentTheme;
 
 impl Default for DefaultComponentTheme {
@@ -101,9 +104,10 @@ impl ComponentTheme for DefaultComponentTheme {
 
 #[derive(Debug, Clone)]
 pub struct ComponentStyle {
-    ///
+    /// Foreground text color in a `Component` where text can be edited.
     pub edit_text_color: Color,
 
+    /// Background color in a `Component` where text can be edited.
     pub edit_back_color: Color,
 
     /// Foreground color. Used for text on components, such as a `Button`.
@@ -129,6 +133,7 @@ impl ComponentStyle {
         Self {
             edit_text_color: Color { value: text_color },
             edit_back_color: Color { value: back_color },
+            // TODO: edit_border_color...
             fore_color: Color { value: fore_color },
             back_color: Color { value: back_color },
             cursor_color: Color {
@@ -168,7 +173,6 @@ impl ComponentStyle {
     pub const STYLE_ACTIVE: ComponentStyle = ComponentStyle {
         edit_text_color: Color { value: 0xFF222222 },
         edit_back_color: Color { value: 0xFFFFFFFF },
-        //text_color: 0xFF000000,
         fore_color: Color { value: 0xFFFF3333 },
         back_color: Color { value: 0xFF0033CC },
         cursor_color: Color { value: 0xFF000000 },
@@ -203,7 +207,7 @@ impl ComponentStyle {
         back_color: Color { value: 0xFF0099CC },
         cursor_color: Color { value: 0xFF000000 },
         border_color: Color { value: 0xFF000000 },
-        border_width: 12,
+        border_width: 2,
     };
 
     pub const STYLE_DISABLED: ComponentStyle = ComponentStyle {
