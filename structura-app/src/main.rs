@@ -52,12 +52,6 @@ fn main() {
     main_container.set_north(Box::new(row1));
     main_container.set_center(Box::new(panel));
 
-    // let mut row2 = Row::new(20.0, 20.0, 1, 200);
-    // row2.push(Box::new(ComponentHandle::new(textarea1)));
-    // let mut col = Column::new(0.0, 0.0, 10, 1000, 1000);
-    // col.push(Box::new(row1));
-    // col.push(Box::new(row2));
-    // let mut application = Application::new(Box::new(col));
     let mut application = Application::new(Box::new(main_container));
     application.run();
 }
