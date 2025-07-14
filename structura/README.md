@@ -62,6 +62,9 @@ fn main() {
 - [ ] Component: `TextField`: Subset of `TextArea`? Or create a `multi_line` field on `TextArea`.
 - [ ] Component: `Label`.
 - [ ] Component: `ToolTip`.
+- [ ] Component: `List`.
+- [ ] Component: `Tree`.
+- [ ] Component: `Combobox`.
 
 ### Core API
 
@@ -80,3 +83,4 @@ fn main() {
 - [ ] Add font field to TextArea.
 - [ ] Modify TextArea to make scrollbars clickable and draggable. (Works but many bugs).
 - [ ] Add support for TAB key to move between controls. Need to track current focused `Component` in the `Application`.
+- [ ] Window: Dialog support?
