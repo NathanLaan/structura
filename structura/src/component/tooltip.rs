@@ -17,7 +17,7 @@ pub struct Tooltip {
 }
 
 impl Tooltip {
-    
+
     pub fn new (text: String, position: Point, size: Size) -> Self {
         Self {
             text,

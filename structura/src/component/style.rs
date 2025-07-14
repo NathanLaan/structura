@@ -6,6 +6,35 @@
 
 use crate::component::ComponentState;
 
+///
+/// The factor to be applied for `Color::lighten()` and `Color::darken()`.
+/// 
+/// The `ColorFactor` must be a number between `0.0` and `1.0`.
+/// 
+pub struct ColorFactor {
+    pub factor: f32,
+}
+
+impl ColorFactor {
+    pub fn new(factor: f32) -> ColorFactor {
+        ColorFactor { factor }
+    }
+    pub fn double() -> ColorFactor {
+        ColorFactor { factor: ColorFactor::default().factor * 2.0 }
+    }
+}
+
+impl Default for ColorFactor {
+    fn default() -> Self {
+        ColorFactor { factor: 0.2 }
+    }
+}
+
+///
+/// A `Color`, used by `Components` to draw controls, text, and other GUI items.
+/// 
+/// `Color` is defined using tbe `ARGB (0xAARRGGBB)` format, using a `u32` type.
+/// 
 #[derive(Debug, Clone)]
 pub struct Color {
     pub value: u32,
@@ -23,16 +52,16 @@ impl Color {
     /// Darken the color by extracting each channel, and adjusting each channel by an
     /// internal fixed `delta` factor.
     ///
-    pub fn darken(&self) -> Color {
-        Color::adjust_color_brightness(&self, -0.2)
+    pub fn darken(&self, color_factor: ColorFactor) -> Color {
+        Color::adjust_color_brightness(&self, -color_factor.factor)
     }
 
     ///
     /// Lighten the color by extracting each channel, and adjusting each channel by an
     /// internal fixed `delta` factor.
     ///
-    pub fn lighten(&self) -> Color {
-        Color::adjust_color_brightness(&self, 0.2)
+    pub fn lighten(&self, color_factor: ColorFactor) -> Color {
+        Color::adjust_color_brightness(&self, color_factor.factor)
     }
 
     ///
@@ -148,24 +177,24 @@ impl ComponentStyle {
 
     pub fn darken(&self) -> ComponentStyle {
         ComponentStyle {
-            edit_text_color: self.edit_text_color.darken(),
-            edit_back_color: self.edit_back_color.darken(),
-            fore_color: self.fore_color.darken(),
-            back_color: self.back_color.darken(),
-            cursor_color: self.cursor_color.darken(),
-            border_color: self.border_color.darken(),
+            edit_text_color: self.edit_text_color.darken(ColorFactor::default()),
+            edit_back_color: self.edit_back_color.darken(ColorFactor::default()),
+            fore_color: self.fore_color.darken(ColorFactor::default()),
+            back_color: self.back_color.darken(ColorFactor::default()),
+            cursor_color: self.cursor_color.darken(ColorFactor::default()),
+            border_color: self.border_color.darken(ColorFactor::default()),
             border_width: self.border_width,
         }
     }
 
     pub fn lighten(&self) -> ComponentStyle {
         ComponentStyle {
-            edit_text_color: self.edit_text_color.lighten(),
-            edit_back_color: self.edit_back_color.lighten(),
-            fore_color: self.fore_color.lighten(),
-            back_color: self.back_color.lighten(),
-            cursor_color: self.cursor_color.lighten(),
-            border_color: self.border_color.lighten(),
+            edit_text_color: self.edit_text_color.lighten(ColorFactor::default()),
+            edit_back_color: self.edit_back_color.lighten(ColorFactor::default()),
+            fore_color: self.fore_color.lighten(ColorFactor::default()),
+            back_color: self.back_color.lighten(ColorFactor::default()),
+            cursor_color: self.cursor_color.lighten(ColorFactor::default()),
+            border_color: self.border_color.lighten(ColorFactor::default()),
             border_width: self.border_width,
         }
     }

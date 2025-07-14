@@ -10,6 +10,7 @@ use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{PositionedGlyph, Scale, point};
 use winit::keyboard::{Key, NamedKey};
+use crate::component::style::ColorFactor;
 
 ///
 /// TextArea control for displaying editable multi-line, scrollable text.
@@ -462,7 +463,7 @@ impl Component for TextArea {
 
         let back_color = context.theme.style_for(&self.component_state).back_color;
         let scrollbar_color_thumb = back_color.value;
-        let scrollbar_color_track = back_color.lighten().value;
+        let scrollbar_color_track = back_color.lighten(ColorFactor::double()).value;
 
         // Draw scrollbar track
         for y in 0..track_h {
