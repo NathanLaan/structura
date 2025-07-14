@@ -287,7 +287,7 @@ impl Application {
 ///
 /// Internal definition for constructable winit application.
 ///
-pub struct WinitApp<ContainedState, SurfaceState, Init, InitSurface, Handler> {
+struct WinitApp<ContainedState, SurfaceState, Init, InitSurface, Handler> {
     /// Closure to initialize `state`.
     init: Init,
 
@@ -318,12 +318,6 @@ where
         self.state = Some(state);
     }
 
-    fn suspended(&mut self, _event_loop: &ActiveEventLoop) {
-        let surface_state = self.surface_state.take();
-        debug_assert!(surface_state.is_some());
-        drop(surface_state);
-    }
-
     fn window_event(
         &mut self,
         event_loop: &ActiveEventLoop,
@@ -350,11 +344,17 @@ where
             );
         }
     }
+
+    fn suspended(&mut self, _event_loop: &ActiveEventLoop) {
+        let surface_state = self.surface_state.take();
+        debug_assert!(surface_state.is_some());
+        drop(surface_state);
+    }
 }
 
 /// Run a Winit application.
 #[allow(unused_mut)]
-pub fn _run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> + 'static) {
+fn _run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> + 'static) {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     event_loop.run_app(&mut app).unwrap();
 
@@ -364,7 +364,7 @@ pub fn _run_app(event_loop: EventLoop<()>, mut app: impl ApplicationHandler<()> 
 
 /// Create a window from a set of window attributes.
 #[allow(dead_code)]
-pub fn _make_window(
+fn _make_window(
     elwt: &ActiveEventLoop,
     f: impl FnOnce(WindowAttributes) -> WindowAttributes,
 ) -> Rc<Window> {
@@ -378,7 +378,7 @@ pub fn _make_window(
 ///
 /// Utility to encapsulate the process to stand up a WinitApp.
 ///
-pub struct WinitAppBuilder<ContainedState, SurfaceState, Init, InitSurface> {
+struct WinitAppBuilder<ContainedState, SurfaceState, Init, InitSurface> {
     /// Closure to initialize `state`.
     init: Init,
     /// Closure to initialize `surface_state`.
