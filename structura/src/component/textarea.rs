@@ -4,13 +4,13 @@
 //! A basic editable, multiline text `Component`.
 //!
 
+use crate::component::style::ColorFactor;
 use crate::component::{Component, ComponentState};
 use crate::event::MouseInput;
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 use rusttype::{PositionedGlyph, Scale, point};
 use winit::keyboard::{Key, NamedKey};
-use crate::component::style::ColorFactor;
 
 ///
 /// TextArea control for displaying editable multi-line, scrollable text.
@@ -336,27 +336,16 @@ impl TextArea {
 
 impl Component for TextArea {
     fn handle_mouse_event(&mut self, input: MouseInput) {
-        if input.pressed {
-            if self.contains(input.position.x, input.position.y) {
-                self.focused = true;
-                self.component_state = ComponentState::Focused;
-            } else {
-                self.focused = false;
-                self.component_state = ComponentState::Active;
-            }
-            self.dragging_scrollbar = self.scrollbar_contains(input.position.x, input.position.y);
-        }
-        if self.dragging_scrollbar {
-            if let Some(last_y) = self.last_mouse_y {
-                self.visible_scrolling_offset = (last_y - self.position.y) as f32;
-            }
-            self.last_mouse_y = Some(input.position.y);
-        }
-        //
-        // TODO: BUG: If you click on another component but then release on TextArea it gets focus.
-        //
-        if input.just_released {
-            if self.component_state == ComponentState::Disabled {
+        if self.component_state != ComponentState::Disabled {
+            // println!(
+            //     "self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}",
+            //     input,
+            //     self.dragging_scrollbar,
+            //     self.visible_scrolling_offset,
+            //     input.position.y,
+            //     self.last_mouse_y
+            // );
+            if input.pressed {
                 if self.contains(input.position.x, input.position.y) {
                     self.focused = true;
                     self.component_state = ComponentState::Focused;
@@ -364,11 +353,39 @@ impl Component for TextArea {
                     self.focused = false;
                     self.component_state = ComponentState::Active;
                 }
+                self.dragging_scrollbar =
+                    self.scrollbar_contains(input.position.x, input.position.y);
+            }
+            if self.dragging_scrollbar {
+                println!(
+                    "self.dragging_scrollbar: vso: {:?}, ipy: {:?}, lmy: {:?}",
+                    self.visible_scrolling_offset,
+                    input.position.y,
+                    self.last_mouse_y
+                );
+                if let Some(last_y) = self.last_mouse_y {
+                    self.visible_scrolling_offset = (last_y - self.position.y) as f32;
+                }
+                self.last_mouse_y = Some(input.position.y);
+            }
+            //
+            // TODO: BUG: If you click on another component but then release on TextArea it gets focus.
+            //
+            if input.just_released {
+                if self.contains(input.position.x, input.position.y) {
+                    self.focused = true;
+                    self.component_state = ComponentState::Focused;
+                } else {
+                    self.focused = false;
+                    self.component_state = ComponentState::Active;
+                }
+                //
+                // Always:
+                //
                 self.dragging_scrollbar = false;
                 self.last_mouse_y = None;
             }
         }
-        //println!("self.dragging_scrollbar: {:?}, {:?}, {:?}, {:?}, {:?}", input, self.dragging_scrollbar, self.visible_scrolling_offset, input.position.y, self.last_mouse_y);
     }
 
     fn handle_mouse_wheel_event(
@@ -464,6 +481,8 @@ impl Component for TextArea {
         let back_color = context.theme.style_for(&self.component_state).back_color;
         let scrollbar_color_thumb = back_color.value;
         let scrollbar_color_track = back_color.lighten(ColorFactor::double()).value;
+
+        println!("max_scroll: {}", max_scroll);
 
         // Draw scrollbar track
         for y in 0..track_h {

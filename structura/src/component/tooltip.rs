@@ -17,8 +17,7 @@ pub struct Tooltip {
 }
 
 impl Tooltip {
-
-    pub fn new (text: String, position: Point, size: Size) -> Self {
+    pub fn new(text: String, position: Point, size: Size) -> Self {
         Self {
             text,
             position,
@@ -26,19 +25,17 @@ impl Tooltip {
             visible: true,
         }
     }
-
 }
 
 impl Component for Tooltip {
-
-    fn handle_mouse_event(&mut self, input: MouseInput) {
-    }
+    fn handle_mouse_event(&mut self, input: MouseInput) {}
 
     fn handle_mouse_wheel_event(
         &mut self,
         _event: &winit::event::MouseScrollDelta,
         _phase: &winit::event::TouchPhase,
-    ) {}
+    ) {
+    }
 
     fn handle_keyboard_event(&mut self, _event: &winit::event::KeyEvent) {}
 
@@ -67,11 +64,13 @@ impl Component for Tooltip {
     }
 
     fn set_size(&mut self, width: usize, height: usize) {
-        self.size = Size { width: width as u32, height: height as u32 };
+        self.size = Size {
+            width: width as u32,
+            height: height as u32,
+        };
     }
 
     fn get_size(&self) -> Size {
         self.size.clone()
     }
 }
-

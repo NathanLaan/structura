@@ -8,9 +8,9 @@ use crate::component::ComponentState;
 
 ///
 /// The factor to be applied for `Color::lighten()` and `Color::darken()`.
-/// 
+///
 /// The `ColorFactor` must be a number between `0.0` and `1.0`.
-/// 
+///
 pub struct ColorFactor {
     pub factor: f32,
 }
@@ -20,7 +20,9 @@ impl ColorFactor {
         ColorFactor { factor }
     }
     pub fn double() -> ColorFactor {
-        ColorFactor { factor: ColorFactor::default().factor * 2.0 }
+        ColorFactor {
+            factor: ColorFactor::default().factor * 2.0,
+        }
     }
 }
 
@@ -32,9 +34,9 @@ impl Default for ColorFactor {
 
 ///
 /// A `Color`, used by `Components` to draw controls, text, and other GUI items.
-/// 
+///
 /// `Color` is defined using tbe `ARGB (0xAARRGGBB)` format, using a `u32` type.
-/// 
+///
 #[derive(Debug, Clone)]
 pub struct Color {
     pub value: u32,
