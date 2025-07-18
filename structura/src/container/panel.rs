@@ -18,6 +18,10 @@ pub struct Panel {
 }
 
 impl Panel {
+    
+    ///
+    /// Constructor for `Panel`.
+    /// 
     pub fn new() -> Self {
         Self {
             position: Point { x: 0.0, y: 0.0 },
@@ -45,13 +49,11 @@ impl Container for Panel {
     /// Passes in the parent container `width` and `height`.
     ///
     fn resize(&mut self, width: usize, height: usize) {
-        println!("Panel::resize");
         self.size.width = width as u32;
         self.size.height = height as u32;
         self.update_layout();
     }
     fn update_layout(&mut self) {
-        println!("update_layout");
         if let Some(comp) = self.component.as_mut() {
             comp.set_position(self.position.x, self.position.y);
             comp.set_size(self.size.width as usize, self.size.height as usize);
