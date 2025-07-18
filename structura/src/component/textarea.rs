@@ -109,23 +109,21 @@ impl TextArea {
         self.handle_event();
     }
 
-    // pub fn push_str(&mut self, str: &str) {
-    //     self.text.insert_str(self.cursor_index, str);
-    //     self.cursor_index += str.len();
-    //     self.handle_event();
-    // }
-
-    // pub fn set_text(&mut self, text: String) {
-    //     self.text = text;
-    // }
-
-    pub fn contains(&self, px: f64, py: f64) -> bool {
-        px >= self.position.x
-            && px < self.position.x + self.size.width as f64
-            && py >= self.position.y
-            && py < self.position.y + self.size.height as f64
+    ///
+    /// Checks if the specified `px` and `py` coordinates are inside the
+    /// bounding box of the `TextArea`.
+    ///
+    fn contains(&self, x: f64, y: f64) -> bool {
+        x >= self.position.x
+            && x < self.position.x + self.size.width as f64
+            && y >= self.position.y
+            && y < self.position.y + self.size.height as f64
     }
 
+    ///
+    /// Checks if the specified `x` and `y` coordinates are inside the
+    /// bounding box of the scrollbar for the `TextArea`.
+    ///
     fn scrollbar_contains(&self, x: f64, y: f64) -> bool {
         let scroll_x = self.position.x + (self.size.width - self.scrollbar_width as u32) as f64;
         x >= scroll_x
