@@ -355,12 +355,12 @@ impl Component for TextArea {
                     self.scrollbar_contains(input.position.x, input.position.y);
             }
             if self.dragging_scrollbar {
-                println!(
-                    "self.dragging_scrollbar: vso: {:?}, ipy: {:?}, lmy: {:?}",
-                    self.visible_scrolling_offset,
-                    input.position.y,
-                    self.last_mouse_y
-                );
+                // println!(
+                //     "self.dragging_scrollbar: vso: {:?}, ipy: {:?}, lmy: {:?}",
+                //     self.visible_scrolling_offset,
+                //     input.position.y,
+                //     self.last_mouse_y
+                // );
                 if let Some(last_y) = self.last_mouse_y {
                     self.visible_scrolling_offset = (last_y - self.position.y) as f32;
                 }
@@ -479,8 +479,6 @@ impl Component for TextArea {
         let back_color = context.theme.style_for(&self.component_state).back_color;
         let scrollbar_color_thumb = back_color.value;
         let scrollbar_color_track = back_color.lighten(ColorFactor::double()).value;
-
-        println!("max_scroll: {}", max_scroll);
 
         // Draw scrollbar track
         for y in 0..track_h {
