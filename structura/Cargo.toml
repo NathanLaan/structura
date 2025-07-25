@@ -1,0 +1,15 @@
+[package]
+name = "structura"
+version = "0.3.3"
+edition = "2024"
+license = "MIT"
+authors = ["Nathan Laan"]
+homepage = "https://github.com/NathanLaan/structura/"
+repository = "https://github.com/NathanLaan/structura/"
+description = "A Rust GUI Framework."
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+rusttype = "0.9"
+winit = { version="0.30" }
+softbuffer = "0.4.6"

@@ -1,0 +1,9 @@
+# cargo build files
+target/
+debug/
+
+# rustfmt backup files
+**/*.rs.bk
+
+# RustRover
+.idea/

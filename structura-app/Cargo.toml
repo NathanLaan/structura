@@ -1,0 +1,12 @@
+[package]
+name = "structura-app"
+version = "0.3.3"
+edition = "2024"
+license = "MIT"
+authors = ["Nathan Laan"]
+homepage = "https://github.com/NathanLaan/structura/"
+repository = "https://github.com/NathanLaan/structura/"
+description = "A test app for the Structura Rust GUI Framework."
+
+[dependencies]
+structura = { path = "../structura" }

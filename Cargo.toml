@@ -1,0 +1,14 @@
+[workspace]
+members = ["structura-app", "structura"]
+#
+# resolver = "3"
+#
+# No feature unification across workspace members.
+# Members can have separate feature sets per crate.
+# This enables more precise dependency resolution.
+#
+# Dependencies of workspace packages are not included
+# unless built directly. This reduces build times and
+# helps avoid unnecessary dependency resolution.
+#
+resolver = "3"
