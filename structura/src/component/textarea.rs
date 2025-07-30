@@ -363,12 +363,11 @@ impl Component for TextArea {
                 // );
                 println!("scale_factor: {}", input.scale_factor);
                 let delta = if let Some(last_y) = self.last_mouse_y {
-                    last_y - (input.position.y)// * input.scale_factor)
+                    last_y - (input.position.y) // * input.scale_factor)
                 } else {
                     0.0
                 };
-                self.visible_scrolling_offset =
-                    self.visible_scrolling_offset - delta as f32;
+                self.visible_scrolling_offset = self.visible_scrolling_offset - delta as f32;
                 self.last_mouse_y = Some(input.position.y);
             }
             //

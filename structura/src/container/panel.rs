@@ -18,10 +18,9 @@ pub struct Panel {
 }
 
 impl Panel {
-    
     ///
     /// Constructor for `Panel`.
-    /// 
+    ///
     pub fn new() -> Self {
         Self {
             position: Point { x: 0.0, y: 0.0 },
