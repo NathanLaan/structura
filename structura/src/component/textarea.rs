@@ -363,7 +363,7 @@ impl Component for TextArea {
                 // );
                 println!("scale_factor: {}", input.scale_factor);
                 let delta = if let Some(last_y) = self.last_mouse_y {
-                    last_y - (input.position.y * input.scale_factor)
+                    last_y - (input.position.y)// * input.scale_factor)
                 } else {
                     0.0
                 };
