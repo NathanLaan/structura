@@ -120,10 +120,13 @@ impl Application {
         active_event_loop: &ActiveEventLoop,
     ) {
         let window = &state.0;
-        let mut scale_factor = 1.0;
-        if let Some(h) = window.current_monitor() {
-            scale_factor = h.scale_factor();
-        }
+        let scale_factor = window.scale_factor();
+        // let mut scale_factor = 1.0;
+        // if let Some(h) = window.current_monitor() {
+        //     scale_factor = h.scale_factor();
+        // }
+
+        println!("handle_events scale_factor: {}", scale_factor);
 
         match event {
             Event::WindowEvent {
