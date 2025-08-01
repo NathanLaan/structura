@@ -121,12 +121,13 @@ impl Application {
     ) {
         let window = &state.0;
         let scale_factor = window.scale_factor();
+        //
+        // The following code should work but does not seem to work on Linux Wayland.
+        //
         // let mut scale_factor = 1.0;
         // if let Some(h) = window.current_monitor() {
         //     scale_factor = h.scale_factor();
         // }
-
-        println!("handle_events scale_factor: {}", scale_factor);
 
         match event {
             Event::WindowEvent {
