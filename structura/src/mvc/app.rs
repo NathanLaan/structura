@@ -21,6 +21,22 @@ use winit::window::{Window, WindowAttributes, WindowId};
 // TODO: Track the component that currently has focus?
 //
 
+pub struct WindowSettings {
+    pub title: String,
+    pub width: f64,
+    pub height: f64,
+}
+
+impl Default for WindowSettings {
+    fn default() -> Self {
+        Self {
+            title: String::from("Structura Test App"),
+            width: 1280.0,
+            height: 1024.0,
+        }
+    }
+}
+
 ///
 /// Structure Application wrapper.
 ///
@@ -29,6 +45,7 @@ pub struct Application {
     pub cursor_pos: Option<Point>,
     pub mouse_pressed: bool,
     pub theme: Box<dyn ComponentTheme>,
+    pub application_settings: WindowSettings,
     //
     // TODO: Separate UI rendering handle?
     //
@@ -51,6 +68,7 @@ impl Application {
             cursor_pos: None,
             mouse_pressed: false,
             theme: Box::new(DefaultComponentTheme::default()),
+            application_settings: WindowSettings::default(),
             //message_join_handle: None,
         }
     }
@@ -59,15 +77,17 @@ impl Application {
     /// Initialize and run.
     ///
     pub fn run(&mut self) {
-        let title = "Structura.App";
-        let width = 1280.0;
-        let height = 1024.0;
+        let title = &self.application_settings.title.clone();
+        let width = self.application_settings.width;
+        let height = self.application_settings.height;
 
         let mut app = WinitAppBuilder::create_winit_app(
-            |elwt| Application::create_window_and_context(elwt, title, width, height),
+            |elwt| Application::create_window_and_context(elwt,
+                                                          title,
+                                                          width,
+                                                          height,),
             Application::create_surface,
         )
-        //.with_event_handler(Application::handle_events);
         .with_event_handler({
             let this = self; // capture mutable self
             move |state, surface, event, elwt| this.handle_events(state, surface, event, elwt)
