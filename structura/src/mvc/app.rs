@@ -21,6 +21,9 @@ use winit::window::{Window, WindowAttributes, WindowId};
 // TODO: Track the component that currently has focus?
 //
 
+///
+/// Structura window settings.
+///
 pub struct WindowSettings {
     pub title: String,
     pub width: f64,
@@ -38,7 +41,7 @@ impl Default for WindowSettings {
 }
 
 ///
-/// Structure Application wrapper.
+/// Structura Application wrapper.
 ///
 pub struct Application {
     pub root: Box<dyn ContainerComponent>,
