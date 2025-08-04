@@ -85,10 +85,7 @@ impl Application {
         let height = self.application_settings.height;
 
         let mut app = WinitAppBuilder::create_winit_app(
-            |elwt| Application::create_window_and_context(elwt,
-                                                          title,
-                                                          width,
-                                                          height,),
+            |elwt| Application::create_window_and_context(elwt, title, width, height),
             Application::create_surface,
         )
         .with_event_handler({

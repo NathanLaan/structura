@@ -15,11 +15,10 @@ pub struct GapBuffer {
 }
 
 impl GapBuffer {
-
     ///
     /// Constructor.
-    /// 
-    pub fn with_capacity(size: usize) -> Self {
+    ///
+    pub fn new(size: usize) -> Self {
         Self {
             buffer: vec!['\0'; size],
             gap_start: 0,
@@ -27,9 +26,9 @@ impl GapBuffer {
         }
     }
 
-    /// 
+    ///
     /// Insert a character at the current cursor position.
-    /// 
+    ///
     pub fn insert(&mut self, c: char) {
         if self.gap_start == self.gap_end {
             self.grow();
@@ -38,9 +37,9 @@ impl GapBuffer {
         self.gap_start += 1;
     }
 
-    /// 
+    ///
     /// Move the cursor left.
-    /// 
+    ///
     pub fn move_left(&mut self) {
         if self.gap_start > 0 {
             self.gap_start -= 1;
@@ -49,9 +48,9 @@ impl GapBuffer {
         }
     }
 
-    /// 
+    ///
     /// Move the cursor right.
-    /// 
+    ///
     pub fn move_right(&mut self) {
         if self.gap_end < self.buffer.len() {
             self.buffer[self.gap_start] = self.buffer[self.gap_end];
@@ -60,18 +59,18 @@ impl GapBuffer {
         }
     }
 
-    /// 
+    ///
     /// Delete a character before the cursor.
-    /// 
+    ///
     pub fn delete(&mut self) {
         if self.gap_start > 0 {
             self.gap_start -= 1;
         }
     }
 
-    /// 
+    ///
     /// Grow the gap.
-    /// 
+    ///
     fn grow(&mut self) {
         let new_capacity = self.buffer.len() * 2;
         let mut new_buffer = vec!['\0'; new_capacity];
@@ -89,9 +88,9 @@ impl GapBuffer {
         self.gap_end = new_gap_end;
     }
 
-    /// 
+    ///
     /// Get the contents as a String.
-    /// 
+    ///
     pub fn contents(&self) -> String {
         self.buffer[..self.gap_start]
             .iter()
@@ -99,10 +98,25 @@ impl GapBuffer {
             .collect()
     }
 
-    /// 
+    ///
     /// Get current cursor position.
-    /// 
+    ///
     pub fn cursor(&self) -> usize {
         self.gap_start
+    }
+}
+
+pub struct TextEditor {
+    pub buffer: GapBuffer,
+}
+
+impl TextEditor {
+    ///
+    /// Constructor
+    ///
+    pub fn new(capacity: usize) -> Self {
+        Self {
+            buffer: GapBuffer::new(capacity),
+        }
     }
 }
