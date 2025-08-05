@@ -2,6 +2,12 @@
 //!
 //!
 
+use winit::event::{KeyEvent, MouseScrollDelta, TouchPhase};
+use crate::component::Component;
+use crate::event::MouseInput;
+use crate::geometry::{Point, Size};
+use crate::view::BufferContext;
+
 pub struct Text {
     pub content: String,
     pub x: i32,
@@ -118,5 +124,71 @@ impl TextEditor {
         Self {
             buffer: GapBuffer::new(capacity),
         }
+    }
+    
+    fn draw_text(&mut self, buffer: &mut [u32], width: u32, text: &str) {
+        for (i, c) in text.chars().enumerate() {
+            let x = (i as u32 % (width / 8)) * 8;
+            let y = (i as u32 / (width / 8)) * 16;
+            self.draw_char(buffer, width, x, y, c);
+        }
+    }
+
+    ///
+    /// Draw character
+    /// 
+    fn draw_char(&mut self, buffer: &mut [u32], width: u32, x: u32, y: u32, _c: char) {
+        for dy in 0..16 {
+            for dx in 0..8 {
+                let px = x + dx;
+                let py = y + dy;
+                if px < width {
+                    let idx = (py * width + px) as usize;
+                    if idx < buffer.len() {
+                        buffer[idx] = 0x000000; // black pixels (placeholder)
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+impl Component for TextEditor {
+    fn handle_mouse_event(&mut self, input: MouseInput) {
+        todo!()
+    }
+
+    fn handle_mouse_wheel_event(&mut self, event: &MouseScrollDelta, phase: &TouchPhase) {
+        todo!()
+    }
+
+    fn handle_keyboard_event(&mut self, event: &KeyEvent) {
+        todo!()
+    }
+
+    fn draw(&self, context: &mut BufferContext) {
+        // for pixel in context.buffer {
+        //     *pixel = 0xFFFFFF; // white background
+        // }
+        //
+        // // Naive monospaced rendering (each char = 8x16 pixel block)
+        // draw_text(&mut frame, width, &buffer.contents());
+    }
+
+    fn set_position(&mut self, x: f64, y: f64) {
+        todo!()
+    }
+
+    fn get_position(&self) -> Point {
+        todo!()
+    }
+
+    fn set_size(&mut self, width: usize, height: usize) {
+        todo!()
+    }
+
+    fn get_size(&self) -> Size {
+        todo!()
     }
 }
