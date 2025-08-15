@@ -49,7 +49,7 @@ pub trait Component {
     fn handle_mouse_event(&mut self, input: MouseInput);
 
     ///
-    /// Called whenever the user make a MouseWheel input.
+    /// Called whenever the user makes a MouseWheel input.
     ///
     fn handle_mouse_wheel_event(
         &mut self,
