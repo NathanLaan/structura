@@ -8,6 +8,7 @@ pub mod style;
 pub mod text;
 pub mod textarea;
 mod tooltip;
+mod textedit;
 
 use crate::event::MouseInput;
 use crate::geometry::Point;
