@@ -1,9 +1,8 @@
-use winit::event::{ElementState, KeyEvent, MouseButton, MouseScrollDelta, TouchPhase};
+use winit::event::{ElementState, MouseScrollDelta, VirtualKeyCode, WindowEvent};
 use winit::keyboard::{KeyCode, PhysicalKey};
 use crate::component::Component;
 use crate::event::MouseInput;
-// Assuming these types exist in your codebase
-// You may need to adjust imports based on your actual structure
+
 use crate::geometry::{Point, Size};
 use crate::view::BufferContext;
 
@@ -359,6 +358,8 @@ impl Component for TextEdit {
         //let shift_held = event.modifiers.shift_key();
         //let ctrl_held = event.modifiers.control_key();
 
+        let shift_held = event.modifiers.shift();
+
         match event.physical_key {
             PhysicalKey::Code(KeyCode::Backspace) => {
                 self.delete_char_before();
@@ -450,7 +451,7 @@ impl Component for TextEdit {
             self.border_color,
         );
 
-        // Set up clipping region for text (simplified - real implementation would use proper clipping)
+        // Set up clipping region for text
         let text_area_x = self.position.x + self.padding;
         let text_area_y = self.position.y + self.padding;
         let text_area_width = self.size.width as f64 - 2.0 * self.padding;
@@ -461,7 +462,8 @@ impl Component for TextEdit {
             let start_pos = start.min(end);
             let end_pos = start.max(end);
 
-            // Simplified selection rendering - in practice you'd need to handle multi-line selections
+            // Simplified selection rendering
+            // TODO: need to handle multi-line selections
             let start_screen = self.cursor_to_screen_pos(start_pos);
             let end_screen = self.cursor_to_screen_pos(end_pos);
 
@@ -514,6 +516,6 @@ impl Component for TextEdit {
     }
 
     fn get_size(&self) -> Size {
-        self.size
+        self.size.clone()
     }
 }
